@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.BasEmployeeAuditMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="audit_comp" property="auditComp" jdbcType="BIGINT" />
+    <result column="application_role_type" property="applicationRoleType" jdbcType="SMALLINT" />
+    <result column="application_desc" property="applicationDesc" jdbcType="VARCHAR" />
+    <result column="application_time" property="applicationTime" jdbcType="TIMESTAMP" />
+    <result column="audit_item" property="auditItem" jdbcType="SMALLINT" />
+    <result column="audit_opinion" property="auditOpinion" jdbcType="SMALLINT" />
+    <result column="audit_reject_reason" property="auditRejectReason" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, member_id, audit_comp, application_role_type, application_desc, application_time, 
+    audit_item, audit_opinion, audit_reject_reason, audit_desc, audit_user, audit_time
+  </sql>
+  
+  <!-- 查询是否存在身份认证信息 -->
+  <select id="queryShenFenAuditInfo" resultType="net.okdi.api.entity.BasEmployeeAudit" parameterType="java.util.Map">
+  		select id from bas_employeeaudit where audit_item = 1 and member_id = #{memberId}
+  </select>
+  
+  <insert id="insertAuditInfo" parameterType="net.okdi.api.entity.BasEmployeeAudit" >  
+       INSERT INTO bas_employeeaudit (  
+           id,   
+           member_id,   
+           audit_item,   
+           audit_opinion,
+           audit_comp,
+           application_role_type
+           )   
+       VALUES (  
+           #{id},   
+           #{memberId},   
+           #{auditItem},   
+           #{auditOpinion},
+           #{auditComp},
+           #{applicationRoleType}
+           )  
+  </insert> 
+  
+  <!-- 修改身份证认证信息状态为0待审核 -->
+  <update id="updateAuditShenFen" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 0,audit_comp = #{compId},application_role_type = #{roleType}
+		WHERE
+			audit_item = 1
+		AND member_id = #{memberId}
+  </update>
+  <!-- 修改身份证认证信息状态为-1未完善 -->
+  <update id="updateAuditShenFen2" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_comp = #{compId},application_role_type = #{roleType}
+		WHERE
+			audit_item = 1
+		AND member_id = #{memberId}
+  </update>
+  <!-- 实名认证审核通过 -->
+  <update id="passCheckSM" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 1,audit_time = #{auditTime},audit_desc = #{remark}
+		WHERE
+			audit_item = 1
+		AND member_id = #{memberId}
+  </update>
+  
+  <!-- 实名认证审核拒绝 -->
+  <update id="refuseCheckSM" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 2,
+		audit_time = #{auditTime},
+		audit_reject_reason = #{reasonNum},audit_desc = #{remark}
+		WHERE
+			audit_item = 1
+		AND member_id = #{memberId}
+  </update>
+  <!-- 快递员认证审核通过 -->
+  <update id="passCheckKD" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 1,audit_time = #{auditTime},audit_desc = #{remark}
+		WHERE
+			audit_item = 3
+		AND member_id = #{memberId}
+  </update>
+  
+  <!-- 快递员认证强制审核通过 -->
+  <update id="insertBasEmployeeAudit" parameterType="java.util.Map">
+  	insert into 
+  	  bas_employeeaudit
+  	 (id,
+  	  member_id,
+  	  audit_comp,
+  	  application_role_type,
+  	  audit_item,
+  	  audit_opinion,
+  	  audit_desc,
+  	  audit_time)
+	values(
+	   #{id},
+	   #{memberId},
+	   #{compId},
+	   #{roleType},
+	   '3',
+	   #{status},
+	   #{remark},
+	   #{auditTime}
+	 )
+  </update>
+  
+  <!--快递员认证审核拒绝 -->
+  <update id="refuseCheckKD" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 2,
+		audit_time = #{auditTime},
+		audit_reject_reason = #{reasonNum},audit_desc = #{remark}
+		WHERE
+			audit_item = 3
+		AND member_id = #{memberId}
+  </update>
+  
+  <!-- 审核归属地认证 -->
+  <update id="guishuAudit" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = #{status}
+		WHERE
+			audit_item = 2
+		AND member_id = #{memberId}
+  </update>
+  <!-- 通过memberId查询实名认证状态信息 -->
+  <select id="queryRealNameStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	member_id,
+	audit_item,
+	audit_opinion,
+	application_role_type
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 1
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+  <!-- 通过memberId查询客服确认快递员通过信息 -->
+  <select id="querySureExpress" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	member_id,
+	audit_item,
+	audit_opinion,
+	application_role_type
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 4
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+  <!-- 通过memberId查询快递员认证状态信息 -->
+  <select id="queryExpressStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	member_id,
+	audit_item,
+	audit_opinion,
+	application_desc,
+	audit_comp,
+	application_role_type,
+	audit_reject_reason,
+	audit_desc
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 3
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+  <!-- 修改快递员认证审核信息0待审核 -->
+  <update id="updateExpressAudit" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = 0,application_desc = #{expressNumStr},audit_comp = #{compId},application_role_type = #{roleType}
+		WHERE
+			audit_item = 3
+		AND member_id = #{memberId}
+  </update>
+  <!-- 修改快递员认证审核信息未完善 -->
+  <update id="updateExpressAudit2" parameterType="java.util.Map">
+  	UPDATE bas_employeeaudit
+		SET audit_comp = #{compId},application_role_type = #{roleType}
+		WHERE
+			audit_item = 3
+		AND member_id = #{memberId}
+  </update>
+  <!-- 保存快递员认证审核信息未完善 -->
+  <insert id="saveExpressAuditJump" parameterType="java.util.Map" >  
+      INSERT INTO bas_employeeaudit (  
+          id,   
+          member_id,   
+          audit_item,   
+          audit_opinion,
+          audit_comp,
+          application_role_type
+          )   
+      VALUES (  
+          #{id},   
+          #{memberId},   
+          3,   
+          -1,
+          #{compId},
+          #{roleType}
+          )   
+  </insert> 
+  <!-- 保存快递员认证审核信息完善 -->
+  <insert id="saveExpressAudit" parameterType="java.util.Map" >  
+      INSERT INTO bas_employeeaudit (  
+          id,   
+          member_id,   
+          audit_item,   
+          audit_opinion,
+          audit_comp,
+          application_role_type,
+          application_desc
+          )   
+      VALUES (  
+          #{id},   
+          #{memberId},   
+          3,   
+          0,
+          #{compId},
+          #{roleType},
+          #{expressNumStr}
+          )  
+  </insert> 
+<!-- 通过memberId查询实名认证信息 -->
+  <select id="queryRealNameAuditInfo" resultType="java.util.Map" parameterType="java.lang.String">
+  		SELECT DISTINCT
+  			a.member_id,
+			a.member_name,
+			a.id_num,
+			a.member_phone,
+			b.audit_comp,
+			b.application_role_type,
+			b.audit_opinion,
+			b.audit_reject_reason,
+			b.audit_desc
+		FROM
+			member_info a
+		LEFT JOIN bas_employeeaudit b ON a.member_id = b.member_id
+		WHERE
+			a.member_id = #{memberId}
+		AND b.audit_item = 1 limit 0,1
+  </select>
+<!-- 通过memberId查询归属认证信息 -->
+  <select id="queryAddressAuditInfo" resultType="java.util.Map" parameterType="java.lang.String">
+  		SELECT DISTINCT
+  			a.member_id,
+			a.member_name,
+			a.id_num,
+			a.member_phone,
+			b.audit_comp,
+			b.application_role_type,
+			b.audit_opinion
+		FROM
+			member_info a
+		LEFT JOIN bas_employeeaudit b ON a.member_id = b.member_id
+		WHERE
+			a.member_id = #{memberId}
+		AND b.audit_item = 2
+  </select>
+  
+  <select id = "queryRoleInfoAndRaltion" resultType="java.util.HashMap">
+  
+SELECT
+	b.member_id AS memberId,
+	t2.audit_opinion AS verifyFlag,
+	t1.audit_opinion AS relationFlag,
+	t3.audit_opinion AS expressFlag,
+	t1.audit_comp AS compId,
+	t1.application_role_type AS roleId
+from 
+	(
+		SELECT
+			x.audit_opinion,
+			x.member_id,
+		x.audit_comp,
+		x.application_role_type
+		FROM
+			bas_employeeaudit x
+		WHERE
+			x.audit_item = 2
+
+	) AS t1 
+LEFT JOIN (
+	SELECT
+		x.audit_opinion,
+		x.member_id
+	FROM
+		bas_employeeaudit x
+	WHERE
+		x.audit_item = 1
+) AS t2 ON t1.member_id = t2.member_id
+LEFT JOIN (
+	SELECT
+		x.audit_opinion,
+		x.member_id
+	FROM
+		bas_employeeaudit x
+	WHERE
+		x.audit_item = 3
+) AS t3 ON t3.member_id = t3.member_id
+LEFT JOIN bas_employeeaudit b ON t1.member_id = b.member_id
+WHERE
+	b.member_id = #{memberId}
+GROUP BY
+	b.member_id=#{memberId}
+   
+  
+  
+  </select>
+  
+  <select id ="querAuditFlag" resultType="java.lang.String">
+  select ifnull(b.audit_opinion,-1) as auditOpinion from bas_employeeaudit b 
+  where b.audit_item = #{auditItem} and b.member_id = #{memberId}
+  
+  </select>
+  
+  <select id = "queryBasEmployeeAudit" resultMap="BaseResultMap">
+    select  id, member_id, application_time,audit_comp, application_role_type, application_desc, 
+    audit_item, audit_opinion, audit_reject_reason, audit_desc, audit_user, audit_time
+    from  bas_employeeaudit b 
+  where b.audit_item = #{auditItem} and b.member_id = #{memberId} GROUP BY
+  b.member_id
+  
+  </select>
+  
+  <select id = "getRelation" resultType="java.lang.Integer">
+    select  count(1)
+    from  bas_employeeaudit b
+    where member_id = #{memberId} 
+     and audit_comp = #{auditComp} 
+        and application_role_type=#{applicationRoleType}
+        and  audit_item=  #{auditItem}
+        and audit_opinion=#{auditOpinion}
+  
+  </select>
+  
+  
+  <insert id = "inserRelation">
+  insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								audit_item,
+  								audit_opinion,
+  								audit_time)
+							values(
+								#{id},
+								#{memberId},
+								#{auditComp},
+								#{applicationRoleType},
+								#{auditItem},
+								#{auditOpinion},
+								#{auditTime}
+								)
+  </insert>
+  
+  <delete id = "deleteWrongData">
+  delete from bas_employeeaudit where id = #{auditId}
+  </delete>
+  
+  <select id = "queryWrongDataByMobile" resultMap="BaseResultMap">
+  
+  select t.id,t.member_id,t.audit_comp,t.audit_item,t.audit_opinion from bas_employeeaudit t where t.member_id in (
+
+select m.member_id from member_info m where m.member_phone = #{mobile}
+
+)
+  </select>
+  
+  <delete id="deleExpressAudit" parameterType="java.util.HashMap">
+  	DELETE
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 3
+	AND application_role_type = #{roleType} AND member_id = #{memberId} AND audit_opinion = -1
+  </delete>
+  
+  <select id="queryRepeatOrderByOrderAndNetId"  resultType="java.util.HashMap">
+      select #{order} as orderNo,info.member_id ,member_phone
+		from bas_employeeaudit emp
+		INNER JOIN 
+		   member_info info
+		  on emp.member_id=info.member_id
+		INNER JOIN
+		   bas_compinfo comp
+		  on comp.comp_id=emp.audit_comp
+		INNER JOIN
+		  bas_netinfo net
+		  on net.net_id= comp.belong_to_net_id
+		where application_desc like CONCAT('%,',#{order},'%') 
+		    and net.net_id=#{netId}
+		    and info.member_phone!=#{phone}
+		ORDER BY member_phone
+      
+  </select>
+  <!-- 客服确认快递员待确认按钮初始化状态为0的数据 -->
+  <insert id="waitSureOper" parameterType="java.util.HashMap">
+  	INSERT INTO bas_employeeaudit (
+		id,
+		member_id,
+		audit_comp,
+		application_role_type,
+		application_time,
+		audit_item,
+		audit_opinion,
+		audit_time
+		)
+	VALUES
+		(
+		#{id},
+		#{memberId},
+		#{compId},
+		#{roleType},
+		#{applicationTime},
+		4,
+		0,
+		#{auditTime}
+		)
+  </insert>
+  <!-- 修改4状态为已通过1 -->
+  <update id="updateSureStatus">
+	  	UPDATE bas_employeeaudit
+		SET audit_opinion = 1,
+		audit_time = #{auditTime}
+		WHERE
+			member_id = #{memberId}
+		AND audit_comp = #{compId}
+		AND application_role_type = #{roleType}
+		AND audit_item = 4
+  </update>
+  <!-- 客服确认快递员按钮创建状态为1已通过的数据 -->
+  <insert id="saveNewSureOper" parameterType="java.util.HashMap">
+  	INSERT INTO bas_employeeaudit (
+		id,
+		member_id,
+		audit_comp,
+		application_role_type,
+		application_time,
+		audit_item,
+		audit_opinion,
+		audit_time
+		)
+	VALUES
+		(
+		#{id},
+		#{memberId},
+		#{compId},
+		#{roleType},
+		#{applicationTime},
+		4,
+		1,
+		#{auditTime}
+		)
+  </insert>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</mapper>

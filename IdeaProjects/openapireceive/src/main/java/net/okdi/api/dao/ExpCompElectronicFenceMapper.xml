@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.ExpCompElectronicFenceMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCompElectronicFence">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="net_id" jdbcType="BIGINT" property="netId" />
+		<result column="comp_id" jdbcType="BIGINT" property="compId" />
+		<result column="min_longitude" jdbcType="DECIMAL" property="minLongitude" />
+		<result column="max_longitude" jdbcType="DECIMAL" property="maxLongitude" />
+		<result column="min_latitude" jdbcType="DECIMAL" property="minLatitude" />
+		<result column="max_latitude" jdbcType="DECIMAL" property="maxLatitude" />
+		<result column="longitude_str" jdbcType="LONGVARCHAR" property="longitudeStr" />
+		<result column="latitude_str" jdbcType="LONGVARCHAR" property="latitudeStr" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, net_id, comp_id, min_longitude, max_longitude,
+		min_latitude,
+		max_latitude, longitude_str, latitude_str
+  	</sql>
+  	
+  	<sql id="column_list">
+		longitude_str as longitudeStr, latitude_str as latitudeStr
+  	</sql>
+
+	<select id="getListByLonLat" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from exp_comp_electronic_fence
+		where min_longitude<![CDATA[<=]]>#{longitude}
+		and #{longitude}<![CDATA[<=]]>max_longitude
+		and min_latitude <![CDATA[<=]]>#{latitude}
+		and #{latitude}<![CDATA[<=]]>max_latitude
+	</select>
+	 <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exp_comp_electronic_fence
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from exp_comp_electronic_fence
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpCompElectronicFence">
+    insert into exp_comp_electronic_fence (id, net_id, comp_id, 
+      min_longitude, max_longitude, min_latitude, 
+      max_latitude, longitude_str, latitude_str
+      )
+    values (#{id,jdbcType=BIGINT}, #{netId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{minLongitude,jdbcType=DECIMAL}, #{maxLongitude,jdbcType=DECIMAL}, #{minLatitude,jdbcType=DECIMAL}, 
+      #{maxLatitude,jdbcType=DECIMAL}, #{longitudeStr,jdbcType=LONGVARCHAR}, #{latitudeStr,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="net.okdi.api.entity.ExpCompElectronicFence">
+    update exp_comp_electronic_fence
+    set net_id = #{netId,jdbcType=BIGINT},
+      comp_id = #{compId,jdbcType=BIGINT},
+      min_longitude = #{minLongitude,jdbcType=DECIMAL},
+      max_longitude = #{maxLongitude,jdbcType=DECIMAL},
+      min_latitude = #{minLatitude,jdbcType=DECIMAL},
+      max_latitude = #{maxLatitude,jdbcType=DECIMAL},
+      longitude_str = #{longitudeStr,jdbcType=LONGVARCHAR},
+      latitude_str = #{latitudeStr,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="queryCompFence" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exp_comp_electronic_fence
+    where comp_id = #{compId,jdbcType=BIGINT}
+  </select>
+	<insert id="saveBatch" parameterType="net.okdi.api.entity.ExpCompAreaAddress">
+		insert into exp_comp_electronic_fence (id, net_id, comp_id,
+		min_longitude, max_longitude, min_latitude,
+		max_latitude,
+		longitude_str, latitude_str
+		)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id,jdbcType=BIGINT}, #{item.netId,jdbcType=BIGINT},
+			#{item.compId,jdbcType=BIGINT},
+			#{item.minLongitude,jdbcType=DECIMAL},
+			#{item.maxLongitude,jdbcType=DECIMAL},
+			#{item.minLatitude,jdbcType=DECIMAL},
+			#{item.maxLatitude,jdbcType=DECIMAL},
+			#{item.longitudeStr,jdbcType=LONGVARCHAR},
+			#{item.latitudeStr,jdbcType=LONGVARCHAR}
+			)
+    </foreach>
+	</insert>
+
+	<select id="getExpCompElectronicLaction" resultType="net.okdi.api.entity.ExpCompElectronicFence"
+		parameterType="java.lang.Long">
+		select
+		<include refid="column_list" />
+		from exp_comp_electronic_fence where comp_id=#{compId}
+	</select>
+</mapper>

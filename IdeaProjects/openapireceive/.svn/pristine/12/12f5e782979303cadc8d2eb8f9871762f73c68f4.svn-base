@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.VoiceSetMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.VoiceSet" >
+    <id column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="flag" property="flag" jdbcType="SMALLINT" />
+  </resultMap>
+  
+  <select id = "queryVoiceSet" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  select member_id,flag from voice_set where member_id = #{memberId}
+  </select>
+  
+  <insert id = "insertVoiceSet" parameterType="java.util.HashMap" >
+    insert into voice_set (member_id, flag)
+    values (#{memberId,jdbcType=BIGINT}, #{flag,jdbcType=SMALLINT})
+  </insert>
+  
+  <update id = "updateVoiceSet" parameterType="java.util.HashMap">
+      update voice_set
+    set flag = #{flag} where member_id = #{memberId}
+  </update>
+</mapper>

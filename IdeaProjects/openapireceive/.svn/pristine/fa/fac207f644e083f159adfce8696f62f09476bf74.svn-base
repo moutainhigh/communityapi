@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.NoticeCenterMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.NoticeCenter" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="create_comp_id" property="createCompId" jdbcType="BIGINT" />
+    <result column="comp_audit_log_id" property="compAuditLogId" jdbcType="BIGINT" />
+    <result column="member_audit_log_id" property="memberAuditLogId" jdbcType="BIGINT" />
+    <result column="menu_type" property="menuType" jdbcType="SMALLINT" />
+    <result column="notice_title" property="noticeTitle" jdbcType="VARCHAR" />
+    <result column="notice_content" property="noticeContent" jdbcType="VARCHAR" />
+    <result column="is_read" property="isRead" jdbcType="SMALLINT" />
+    <result column="notice_type" property="noticeType" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, comp_id, create_comp_id, comp_audit_log_id, member_audit_log_id, menu_type, notice_title, 
+    notice_content, is_read, notice_type, create_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="net.okdi.api.entity.NoticeCenterExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from notice_center
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from notice_center
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from notice_center
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.okdi.api.entity.NoticeCenterExample" >
+    delete from notice_center
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.NoticeCenter" >
+    insert into notice_center (id, comp_id, create_comp_id, 
+      comp_audit_log_id, member_audit_log_id, menu_type, 
+      notice_title, notice_content, is_read, 
+      notice_type, create_time)
+    values (#{id,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{createCompId,jdbcType=BIGINT}, 
+      #{compAuditLogId,jdbcType=BIGINT}, #{memberAuditLogId,jdbcType=BIGINT}, #{menuType,jdbcType=SMALLINT}, 
+      #{noticeTitle,jdbcType=VARCHAR}, #{noticeContent,jdbcType=VARCHAR}, #{isRead,jdbcType=SMALLINT}, 
+      #{noticeType,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.NoticeCenter" >
+    insert into notice_center
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="createCompId != null" >
+        create_comp_id,
+      </if>
+      <if test="compAuditLogId != null" >
+        comp_audit_log_id,
+      </if>
+      <if test="memberAuditLogId != null" >
+        member_audit_log_id,
+      </if>
+      <if test="menuType != null" >
+        menu_type,
+      </if>
+      <if test="noticeTitle != null" >
+        notice_title,
+      </if>
+      <if test="noticeContent != null" >
+        notice_content,
+      </if>
+      <if test="isRead != null" >
+        is_read,
+      </if>
+      <if test="noticeType != null" >
+        notice_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="createCompId != null" >
+        #{createCompId,jdbcType=BIGINT},
+      </if>
+      <if test="compAuditLogId != null" >
+        #{compAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAuditLogId != null" >
+        #{memberAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="menuType != null" >
+        #{menuType,jdbcType=SMALLINT},
+      </if>
+      <if test="noticeTitle != null" >
+        #{noticeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="isRead != null" >
+        #{isRead,jdbcType=SMALLINT},
+      </if>
+      <if test="noticeType != null" >
+        #{noticeType,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.okdi.api.entity.NoticeCenterExample" resultType="java.lang.Integer" >
+    select count(*) from notice_center
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update notice_center
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.compId != null" >
+        comp_id = #{record.compId,jdbcType=BIGINT},
+      </if>
+      <if test="record.createCompId != null" >
+        create_comp_id = #{record.createCompId,jdbcType=BIGINT},
+      </if>
+      <if test="record.compAuditLogId != null" >
+        comp_audit_log_id = #{record.compAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="record.memberAuditLogId != null" >
+        member_audit_log_id = #{record.memberAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="record.menuType != null" >
+        menu_type = #{record.menuType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.noticeTitle != null" >
+        notice_title = #{record.noticeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.noticeContent != null" >
+        notice_content = #{record.noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isRead != null" >
+        is_read = #{record.isRead,jdbcType=SMALLINT},
+      </if>
+      <if test="record.noticeType != null" >
+        notice_type = #{record.noticeType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update notice_center
+    set id = #{record.id,jdbcType=BIGINT},
+      comp_id = #{record.compId,jdbcType=BIGINT},
+      create_comp_id = #{record.createCompId,jdbcType=BIGINT},
+      comp_audit_log_id = #{record.compAuditLogId,jdbcType=BIGINT},
+      member_audit_log_id = #{record.memberAuditLogId,jdbcType=BIGINT},
+      menu_type = #{record.menuType,jdbcType=SMALLINT},
+      notice_title = #{record.noticeTitle,jdbcType=VARCHAR},
+      notice_content = #{record.noticeContent,jdbcType=VARCHAR},
+      is_read = #{record.isRead,jdbcType=SMALLINT},
+      notice_type = #{record.noticeType,jdbcType=SMALLINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.NoticeCenter" >
+    update notice_center
+    <set >
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="createCompId != null" >
+        create_comp_id = #{createCompId,jdbcType=BIGINT},
+      </if>
+      <if test="compAuditLogId != null" >
+        comp_audit_log_id = #{compAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="memberAuditLogId != null" >
+        member_audit_log_id = #{memberAuditLogId,jdbcType=BIGINT},
+      </if>
+      <if test="menuType != null" >
+        menu_type = #{menuType,jdbcType=SMALLINT},
+      </if>
+      <if test="noticeTitle != null" >
+        notice_title = #{noticeTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="noticeContent != null" >
+        notice_content = #{noticeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="isRead != null" >
+        is_read = #{isRead,jdbcType=SMALLINT},
+      </if>
+      <if test="noticeType != null" >
+        notice_type = #{noticeType,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.NoticeCenter" >
+    update notice_center
+    set comp_id = #{compId,jdbcType=BIGINT},
+      create_comp_id = #{createCompId,jdbcType=BIGINT},
+      comp_audit_log_id = #{compAuditLogId,jdbcType=BIGINT},
+      member_audit_log_id = #{memberAuditLogId,jdbcType=BIGINT},
+      menu_type = #{menuType,jdbcType=SMALLINT},
+      notice_title = #{noticeTitle,jdbcType=VARCHAR},
+      notice_content = #{noticeContent,jdbcType=VARCHAR},
+      is_read = #{isRead,jdbcType=SMALLINT},
+      notice_type = #{noticeType,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

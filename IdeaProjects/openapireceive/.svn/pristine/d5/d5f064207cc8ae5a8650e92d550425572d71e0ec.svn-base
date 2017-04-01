@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.SmsSendRecordMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.SmsSendRecord" >
+    <id column="SMS_ID" property="smsId" jdbcType="BIGINT" />
+    <result column="SMS_CONTENT" property="smsContent" jdbcType="VARCHAR" />
+    <result column="RECEIVER_MOBILE" property="receiverMobile" jdbcType="VARCHAR" />
+    <result column="MEMBER_ID" property="memberId" jdbcType="BIGINT" />
+    <result column="MEMBER_MOBILE" property="memberMobile" jdbcType="VARCHAR" />
+    <result column="COMP_ID" property="compId" jdbcType="BIGINT" />
+    <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SMS_ID, SMS_CONTENT, RECEIVER_MOBILE, MEMBER_ID, MEMBER_MOBILE, COMP_ID, CREATED_TIME
+  </sql>
+  <select id="querySmsSendRecord" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sms_send_record
+    where MEMBER_ID = #{memberId,jdbcType=BIGINT} AND CREATED_TIME BETWEEN CONCAT(#{time}," 00:00:00") and CONCAT(#{time}," 23:59:59") order by CREATED_TIME desc
+  </select>
+  <insert id="saveSmsSendRecordBatch" parameterType="net.okdi.api.entity.SmsSendRecord" >
+    insert into sms_send_record (SMS_ID, SMS_CONTENT, RECEIVER_MOBILE, 
+      MEMBER_ID, MEMBER_MOBILE, COMP_ID)
+    values 
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.smsId,jdbcType=BIGINT}, #{item.smsContent,jdbcType=VARCHAR}, #{item.receiverMobile,jdbcType=VARCHAR}, 
+      #{item.memberId,jdbcType=BIGINT}, #{item.memberMobile,jdbcType=VARCHAR}, #{item.compId,jdbcType=BIGINT})
+    </foreach>  
+  </insert>
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCompRelationMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCompRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="parent_net_id" property="parentNetId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="parent_comp_id" property="parentCompId" jdbcType="BIGINT" />
+    <result column="area_color" property="areaColor" jdbcType="CHAR" />
+    <result column="serial_number" property="serialNumber" jdbcType="TINYINT" />
+    <result column="comp_level" property="compLevel" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="relation_status" property="relationStatus" jdbcType="TINYINT" />
+  </resultMap>
+  
+    <sql id="Base_Column_List" >
+    id, parent_net_id, comp_id, parent_comp_id, area_color, serial_number, comp_level, 
+    create_time, relation_status
+  </sql>
+ <insert id = "doAddRelation" >
+ insert into exp_comp_relation(
+ 								id,
+ 								parent_net_id,
+ 								comp_id,
+ 								parent_comp_id,
+ 								area_color,
+ 								comp_level,
+ 								create_time,
+ 								relation_status)
+ 								values(
+ 								#{0},
+ 								#{1},
+ 								#{2},
+ 								#{3},
+ 								'#c2c2c2',
+ 								1,
+ 								#{4},
+ 								1
+ 								)
+ </insert>
+ 
+ 
+   <insert id="insert" parameterType="net.okdi.api.entity.ExpCompRelation" >
+    insert into exp_comp_relation (id, parent_net_id, comp_id, 
+      parent_comp_id, area_color, serial_number, 
+      comp_level, create_time, relation_status
+      )
+    values (#{id,jdbcType=BIGINT}, #{parentNetId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{parentCompId,jdbcType=BIGINT}, #{areaColor,jdbcType=CHAR}, #{serialNumber,jdbcType=TINYINT}, 
+      #{compLevel,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{relationStatus,jdbcType=TINYINT}
+      )
+  </insert>
+  
+ <delete id = "deleteCompRelation">
+ delete from exp_comp_relation where comp_id =#{compId} and parent_comp_id=#{parentCompId} 
+ </delete>
+  <select id = "getMemInfo" parameterType="java.lang.Long" resultType="java.util.HashMap">
+  select 
+			e.comp_id as memberId,
+			b.comp_name as memberName,
+			c.responsible,
+			e.parent_comp_id as parentId,		
+ 			b.comp_type_num as compTypeNum,
+ 			'无' as roleId,
+ 			c.responsible_telephone as phone,
+ 			e.area_color as areaColor	
+ 			from exp_comp_relation e LEFT JOIN bas_compinfo b on e.comp_id= b.comp_id
+ 			left join bas_compbusiness c on b.comp_id = c.comp_id
+	where b.comp_status=1 and  e.parent_comp_id=#{parentId}
+  </select>
+  
+  <select id = "queryCompRelationByBusinessId" resultMap="BaseResultMap">
+  
+SELECT
+	a.id AS relationId,
+	a.parent_net_id AS netId,
+	a.comp_id AS compId,
+	a.parent_comp_id AS parentCompId,
+	a.area_color AS areaColor
+FROM
+	exp_comp_relation a
+WHERE
+	(a.comp_id = #{1} and a.parent_comp_id = #{0}) or (a.comp_id = #{0} and a.parent_comp_id = #{1})
+  </select>
+  
+   <select id ="selectRelation" parameterType="java.lang.Long" resultType="java.util.HashMap">
+	select a.id as relationId, a.parent_net_id as netId,a.comp_id as compId,
+	a.parent_comp_id as parentCompId,a.area_color as areaColor from exp_comp_relation a
+	where a.parent_comp_id=#{parentCompId}
+	order by a.create_time desc
+ </select>
+  
+  <select id = "isConsuming" resultMap="BaseResultMap">
+  SELECT
+	a.id AS relationId,
+	a.parent_net_id AS netId,
+	a.comp_id AS compId,
+	a.parent_comp_id AS parentCompId,
+	a.area_color AS areaColor
+FROM
+	exp_comp_relation a
+WHERE
+	(a.comp_id = #{1} and a.parent_comp_id <![CDATA[<>]]> #{0}) or (a.comp_id = #{0} and a.parent_comp_id <![CDATA[<>]]> #{1})
+  </select>
+  
+  <select id = "findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  select 
+  <include refid="Base_Column_List"/>
+  from exp_comp_relation where id = #{relationId}
+  </select>
+    <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from exp_comp_relation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <update id = "editAreaColor">
+  update exp_comp_relation set area_color = #{areaColor} where id = #{relationId}
+  </update>
+  
+ <select id = "queryRelationByCompId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+   select 
+  <include refid="Base_Column_List"/>
+  from exp_comp_relation where 1=1 and (parent_comp_id = #{compId} or comp_id = #{compId})
+ </select> 
+</mapper>

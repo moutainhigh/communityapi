@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.NetinfoApplyMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.apiV2.entity.NetInfoApply" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="net_name" property="netName" jdbcType="VARCHAR" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="operatorName" property="operatorName" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="net_status" property="netStatus" jdbcType="SMALLINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id,net_name, telphone, create_time, member_phone, note, operatorName, update_time, 
+    net_status
+  </sql>
+	<insert id="insertNetInfoApply" parameterType="java.util.Map">
+		insert into bas_netinfo_apply(
+		net_name,
+		telphone,
+		member_phone,
+		create_time)
+		values
+		(#{netName},
+		#{telphone},
+		#{memberPhone},
+		#{createTime}
+		)
+		
+	</insert>
+	<select id="selectMaxId" resultType="java.lang.Long">
+	select max(id) from bas_netinfo_apply
+	</select>
+	<select id="queryNetinfoApply" parameterType="java.util.Map" resultType="java.util.Map">
+	select  id ,net_name as netName, telphone as telphone, create_time as createTime, member_phone as memberPhone, note as note, operatorName as operatorName, update_time as updateTime, 
+    net_status as netStatus from bas_netinfo_apply  where 1=1
+   
+    <if test="netName != null and netName !='' ">
+		 and	net_name like CONCAT('%',#{netName},'%') 
+	</if>
+	<if test="memberPhone != null and memberPhone !='' ">
+		and 	member_phone like CONCAT('%',#{memberPhone},'%') 
+	</if>
+	<if test="netStatus != null and netStatus !='' ">
+		and	 net_status=#{netStatus}
+	</if>
+	order by create_time desc limit #{pageNo},#{pageSize}
+	</select>
+	<select id="queryNetinfoApplyCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1)
+     from bas_netinfo_apply  where 1=1
+   
+    <if test="netName != null and netName !='' ">
+		 and	net_name like CONCAT('%',#{netName},'%') 
+	</if>
+	<if test="memberPhone != null and memberPhone !='' ">
+		and 	member_phone like CONCAT('%',#{memberPhone},'%') 
+	</if>
+	<if test="netStatus != null and netStatus !='' ">
+		and	 net_status=#{netStatus}
+	</if>
+	
+	</select>
+	
+	
+	<update id="dealWithById" parameterType="java.util.Map">
+	update bas_netinfo_apply
+	<set>
+	 <if test="note != null" >
+        note = #{note},
+      </if>
+       <if test="operatorName != null" >
+        operatorName = #{operatorName},
+      </if>
+      net_status=1
+	</set>
+	where id=#{id}
+	</update>
+	<select id="queryDeal" parameterType="java.lang.Long" resultType="java.util.Map">
+	select note as note,update_time as updateTime,operatorName as operatorName from 	bas_netinfo_apply where id=#{id}
+	</select>	
+</mapper>

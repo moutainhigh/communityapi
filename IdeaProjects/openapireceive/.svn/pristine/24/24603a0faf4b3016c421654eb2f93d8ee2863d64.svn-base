@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberContactTagRelationMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberContactTagRelationKey" >
+    <id column="contact_id" property="contactId" jdbcType="BIGINT" />
+    <id column="tag_id" property="tagId" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="net.okdi.api.entity.MemberContactTagRelationKey" >
+    delete from member_contact_tag_relation
+    where contact_id = #{contactId,jdbcType=BIGINT}
+      and tag_id = #{tagId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.MemberContactTagRelationKey" >
+    insert into member_contact_tag_relation (contact_id, tag_id)
+    values (#{contactId,jdbcType=BIGINT}, #{tagId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.MemberContactTagRelationKey" >
+    insert into member_contact_tag_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contactId != null" >
+        contact_id,
+      </if>
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contactId != null" >
+        #{contactId,jdbcType=BIGINT},
+      </if>
+      <if test="tagId != null" >
+        #{tagId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateRelation" parameterType="java.util.Map" >
+  UPDATE member_contact_tag_relation
+SET tag_id = #{tagId}
+WHERE
+	contact_id = (
+		SELECT
+			id
+		FROM
+			member_contact
+		WHERE
+			create_user_id = #{createUserId}
+		AND id = #{contactId}
+	)
+  </update>
+  <delete id="deleteContactGroupRela" parameterType="java.lang.Long">
+  delete from member_contact_tag_relation where tag_id = #{tagId}
+  </delete>
+  <delete id="delete" parameterType="java.util.Map">
+  delete from member_contact_tag_relation where 1=1<if test="tagId!=null"> and tag_id = #{tagId}</if> and contact_id = #{contactId}
+  </delete>
+  <select id="getGroupNameByContactId" parameterType="java.lang.Long" resultType="java.util.Map">
+  <!-- select tag_id as groupId from member_contact_tag_relation where contact_id = #{contactId} -->
+  select a.tag_id as groupId,b.tag_name as tagName from member_contact_tag_relation a LEFT JOIN member_tag b on a.tag_id =b.id where a.contact_id = #{contactId}
+  </select>
+  <delete id="deleteOnesContactByTagId">
+  delete from member_contact_tag_relation where contact_id in 
+  <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  #{item}  
+ </foreach>   and tag_id = #{tagId}
+  </delete>
+  <select id="selectContactIds" parameterType="java.lang.Long" resultType="java.lang.Long">
+  select id from member_contact where create_user_id = #{memberId}
+  </select>
+</mapper>

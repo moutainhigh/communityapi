@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.apiV4.dao.ParParcelinfoMapperV4">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ParParcelinfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="exp_waybill_num" jdbcType="VARCHAR" property="expWaybillNum" />
+		<result column="sender_type" jdbcType="SMALLINT" property="senderType" />
+		<result column="sender_comp_id" jdbcType="BIGINT" property="senderCompId" />
+		<result column="sender_user_id" jdbcType="BIGINT" property="senderUserId" />
+		<result column="ord_of_seller_id" jdbcType="VARCHAR" property="ordOfSellerId" />
+		<result column="total_goods_amount" jdbcType="DECIMAL"
+			property="totalGoodsAmount" />
+		<result column="insure_amount" jdbcType="DECIMAL" property="insureAmount" />
+		<result column="tip_amount" jdbcType="DECIMAL" property="tipAmount" />
+		<result column="chare_weight_forsender" jdbcType="DECIMAL"
+			property="chareWeightForsender" />
+		<result column="chare_weight_fortransit" jdbcType="DECIMAL"
+			property="chareWeightFortransit" />
+		<result column="parcel_volume" jdbcType="DECIMAL" property="parcelVolume" />
+		<result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
+		<result column="parcel_remark" jdbcType="VARCHAR" property="parcelRemark" />
+		<result column="goods_payment_method" jdbcType="SMALLINT"
+			property="goodsPaymentMethod" />
+		<result column="cod_amount" jdbcType="DECIMAL" property="codAmount" />
+		<result column="cod_is_recovery" jdbcType="SMALLINT" property="codIsRecovery" />
+		<result column="actual_cod_amount" jdbcType="DECIMAL" property="actualCodAmount" />
+		<result column="freight_payment_method" jdbcType="SMALLINT"
+			property="freightPaymentMethod" />
+		<result column="freight" jdbcType="DECIMAL" property="freight" />
+		<result column="freight_payment_status" jdbcType="SMALLINT"
+			property="freightPaymentStatus" />
+		<result column="payment_method" jdbcType="SMALLINT" property="paymentMethod" />
+		<result column="goods_payment_status" jdbcType="SMALLINT"
+			property="goodsPaymentStatus" />
+		<result column="freight_payment_time" jdbcType="TIMESTAMP"
+			property="freightPaymentTime" />
+		<result column="service_id" jdbcType="BIGINT" property="serviceId" />
+		<result column="tacking_status" jdbcType="SMALLINT" property="tackingStatus" />
+		<result column="sign_result" jdbcType="SMALLINT" property="signResult" />
+		<result column="sign_member" jdbcType="VARCHAR" property="signMember" />
+		<result column="disposal_desc" jdbcType="VARCHAR" property="disposalDesc" />
+		<result column="sign_time" jdbcType="TIMESTAMP" property="signTime" />
+		<result column="sign_goods_total" jdbcType="DECIMAL" property="signGoodsTotal" />
+		<result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+		<result column="comp_id" jdbcType="BIGINT" property="compId" />
+		<result column="net_id" jdbcType="BIGINT" property="netId" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="sign_img_url" jdbcType="VARCHAR" property="signImgUrl" />
+		<result column="parcel_type" jdbcType="CHAR" property="parcelType" />
+		<result column="parcel_end_mark" jdbcType="CHAR" property="parcelEndMark" />
+		<result column="take_task_id" jdbcType="BIGINT" property="takeTaskId" />
+		<result column="send_task_id" jdbcType="BIGINT" property="sendTaskId" />
+		<result column="actual_take_member" jdbcType="BIGINT" property="actualTakeMember" />
+		<result column="actual_send_member" jdbcType="BIGINT" property="actualSendMember" />
+		<result column="receipt_id" jdbcType="BIGINT" property="receiptId" />
+		<result column="print_flag" jdbcType="SMALLINT" property="printFlag" />
+		<result column="no_fly" jdbcType="SMALLINT" property="noFly" />
+		<result column="packing_charges" jdbcType="DECIMAL" property="packingCharges" />
+		<result column="price_premium" jdbcType="DECIMAL" property="pricePremium" />
+		<result column="parcel_status" jdbcType="SMALLINT" property="parcelStatus" />
+	</resultMap>
+ 
+	<sql id="Base_Column_List">
+		id, exp_waybill_num, sender_type, sender_comp_id, sender_user_id,
+		ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount, chare_weight_forsender,
+		chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark, goods_payment_method, cod_amount,
+		cod_is_recovery,
+		actual_cod_amount, freight_payment_method, convert(freight,decimal) as freight,freight_payment_status,
+		payment_method,
+		goods_payment_status, freight_payment_time, service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total, create_user_id, comp_id,
+		net_id, create_time,
+		sign_img_url, parcel_type, parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member,
+		actual_send_member, receipt_id, print_flag, no_fly, packing_charges,
+		price_premium,parcel_status
+	</sql>
+	<sql id="Base_Column_Query">
+		id, exp_waybill_num, sender_type, sender_comp_id, sender_user_id,
+		ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount, chare_weight_forsender,
+		chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark, goods_payment_method, cod_amount,
+		cod_is_recovery,
+		actual_cod_amount, freight_payment_method, freight, freight_payment_status,
+		payment_method,
+		goods_payment_status, freight_payment_time, service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total, create_user_id, comp_id,
+		net_id, create_time,
+		sign_img_url, parcel_type, parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member,
+		actual_send_member, receipt_id, print_flag, no_fly, packing_charges, price_premium,
+		send_name, send_address_id, send_address, send_mobile, send_mobile,
+		send_phone, send_zipcode, send_customer_id,
+		send_contact_id, addressee_name, addressee_address_id, addressee_address,
+		addressee_mobile, addressee_phone, addressee_zipcode,
+		addressee_customer_id,
+		addressee_contact_id, agency_site_id, send_longitude, send_latitude, addressee_longitude,
+		addressee_latitude
+	</sql>
+	<sql id="Blob_Column_List">
+		goods_desc
+	</sql>
+	<!-- 查询待提包裹列表 -->
+	<select id="queryParcelToBeTakenList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			address.addressee_mobile,
+			par.exp_waybill_num,
+			par.id as parId,
+			DATE_FORMAT(
+				par.create_time,
+				'%Y-%m-%d %H:%i'
+			) AS createTime
+		FROM
+			par_parcelinfo par
+		LEFT JOIN par_parceladdress address ON par.id = address.id
+		WHERE
+			par.actual_send_member = #{memberId}
+		AND par.send_task_id IS NULL
+		AND par.parcel_end_mark != 1
+		ORDER BY
+			par.create_time DESC
+		limit #{page.offset},#{page.pageSize}
+	</select>
+  	<!-- 查询待提包裹数量 -->
+  	<select id="queryParcelToBeTakenCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  		SELECT
+			COUNT(1)
+		FROM
+			par_parcelinfo par
+		LEFT JOIN par_parceladdress address ON par.id = address.id
+		WHERE
+			par.actual_send_member = #{memberId}
+		AND par.send_task_id IS NULL
+		AND par.parcel_end_mark != 1
+		ORDER BY
+			par.create_time DESC
+  	</select>
+  	<!-- 查询待提包裹详情 -->
+  	<select id="queryParcelInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		select
+			<include refid="Base_Column_List" />
+		from par_parcelinfo
+		where id = #{parId}
+  	</select>
+  	<!-- 更新包裹异常时间为null -->
+  	<select id="updateExceptionTimeByParId" parameterType="java.lang.String">
+  		UPDATE par_parcelinfo p
+		SET p.exception_time = NULL
+		WHERE
+		p.id = #{id}
+  	</select>
+  	<!-- 查询没有结束且在途的包裹 -->
+    <select id="getParcelInfoByIdNoEnd" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+			<include refid="Base_Column_List" />
+		from par_parcelinfo
+		where id = #{parcelId,jdbcType=BIGINT}  and parcel_end_mark != 1 and tacking_status != 1
+	</select>
+  <!-- 修改包裹信息 -->
+   <update id="updateParcel" >
+    update par_parcelinfo set send_task_id = #{taskId},parcel_status=11,tacking_status=0,error_message=null,actual_send_member = #{createUserId} where id = #{parcelId}
+    </update>
+  
+    
+   
+    <select id="queryTakeIdByMemberId" resultType="java.util.List">
+    	select id from par_parcelinfo where create_user_id=#{memberId}
+    </select>
+    
+  <!-- 根据代收点名称和手机号判断代收点是否存在 -->
+  	<select id="ifCompExist"  resultType="java.util.HashMap">
+		SELECT
+			a.audit_comp as compId,
+			a.member_id as memberId
+		FROM
+			bas_employeeaudit a
+		LEFT JOIN member_info b ON a.member_id = b.member_id
+		LEFT JOIN bas_compinfo c ON a.audit_comp = c.comp_id
+		WHERE
+			a.audit_item = 2
+		AND b.member_phone = #{compMobile}
+		AND c.comp_name LIKE #{compName}
+	</select>
+  
+  
+</mapper>

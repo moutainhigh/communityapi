@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.AssignPackageMapper">
+	<select id="queryEmployeeByCompId" parameterType="java.lang.Long"
+		resultType="net.okdi.apiV4.entity.MemberInfo">
+		SELECT
+		b.member_id AS memberId,
+		m.member_name as memberName,
+		b.role_id as roleId,
+		m.member_phone AS memberPhone
+		FROM
+		bas_employee_relation b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		b.comp_id =#{compId}
+		ORDER BY role_id DESC,
+		m.create_time ASC
+	</select>
+	<select id="queryOtherEmployeeByCompId" parameterType="java.util.HashMap"
+		resultType="net.okdi.apiV4.entity.MemberInfo">
+		SELECT
+		b.member_id AS memberId,
+		m.member_name as memberName,
+		b.role_id as roleId,
+		m.member_phone AS memberPhone
+		FROM
+		bas_employee_relation b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		b.comp_id =#{compId}
+		and m.member_id !=#{memberId}
+		ORDER BY role_id DESC,
+		m.create_time ASC
+	</select>
+	<select id="queryMemberByCompId" parameterType="java.lang.Long"
+		resultType="net.okdi.apiV4.entity.MemberInfo">	
+   SELECT DISTINCT
+        b.audit_comp as compId,
+		b.member_id AS memberId,
+		m.member_name as memberName,
+		b.application_role_type as roleId,
+		m.member_phone AS memberPhone
+		FROM
+		bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		b.audit_comp =#{compId}
+		ORDER BY application_role_type  DESC,
+		m.create_time ASC
+	</select>
+<!-- 	<select id="queryEmployeeByCompId" parameterType="java.lang.Long"
+		resultType="net.okdi.api.vo.VO_MemberInfo">
+		SELECT
+		b.comp_id AS compId,
+		b.member_id AS memberId,
+		CASE m.member_name WHEN '' THEN '快递员' ELSE m.member_name END as memberName,
+		m.member_phone AS memberPhone,
+		m.birthday,
+		m.gender,
+		m.id_num,
+		m.member_address_id as memberAddressId,
+		m.member_detailed_address as
+		memberDetailedAddress,
+		date_format(m.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
+		m.member_detaile_display as memberDetaileDisplay,
+		m.verif_flag as verifFlag,
+		b.role_id AS roleId,
+		b.area_color AS
+		areaColor,
+		b.employee_work_status_flag AS employeeWorkStatusFlag,
+		m.member_source AS memberSource
+		FROM
+		bas_employee_relation b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		b.comp_id =#{compId}
+		ORDER BY role_id DESC,
+		m.create_time ASC
+	</select> -->
+
+	<select id="querySendMemberByMoblie" resultType="java.util.List" parameterType="java.lang.String" > 
+ 		SELECT actual_send_member as sendMember from par_parcelinfo a,par_parceladdress b where a.id=b.id and b.addressee_mobile= #{addresseeMobile}
+ 	</select>
+ 	<!-- 添加一个包裹 -->
+	<insert id="insertParcel" parameterType="net.okdi.api.entity.ParParcelinfo">
+		insert into par_parcelinfo (id, exp_waybill_num, sender_type,
+		sender_comp_id, sender_user_id, ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount,
+		chare_weight_forsender, chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark,
+		goods_payment_method, cod_amount, cod_is_recovery,
+		actual_cod_amount, freight_payment_method,
+		freight, freight_payment_status, payment_method,
+		goods_payment_status, freight_payment_time,
+		service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total,
+		create_user_id, comp_id, net_id,
+		create_time, sign_img_url, parcel_type,
+		parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member, actual_send_member, receipt_id,
+		print_flag, no_fly, packing_charges,
+		price_premium, goods_desc,parcel_status,disposal_desc,pickup_time,exception_time)
+		values (#{id,jdbcType=BIGINT}, #{expWaybillNum,jdbcType=VARCHAR},
+		#{senderType,jdbcType=SMALLINT},
+		#{senderCompId,jdbcType=BIGINT}, #{senderUserId,jdbcType=BIGINT}, #{ordOfSellerId,jdbcType=VARCHAR},
+		#{totalGoodsAmount,jdbcType=DECIMAL},
+		#{insureAmount,jdbcType=DECIMAL}, #{tipAmount,jdbcType=DECIMAL},
+		#{chareWeightForsender,jdbcType=DECIMAL},
+		#{chareWeightFortransit,jdbcType=DECIMAL},
+		#{parcelVolume,jdbcType=DECIMAL}, #{goodsNum,jdbcType=INTEGER},
+		#{parcelRemark,jdbcType=VARCHAR},
+		#{goodsPaymentMethod,jdbcType=SMALLINT},
+		#{codAmount,jdbcType=DECIMAL}, #{codIsRecovery,jdbcType=SMALLINT},
+		#{actualCodAmount,jdbcType=DECIMAL},
+		#{freightPaymentMethod,jdbcType=SMALLINT},
+		#{freight,jdbcType=DECIMAL},
+		#{freightPaymentStatus,jdbcType=SMALLINT},
+		#{paymentMethod,jdbcType=SMALLINT},
+		#{goodsPaymentStatus,jdbcType=SMALLINT},
+		#{freightPaymentTime,jdbcType=TIMESTAMP},
+		#{serviceId,jdbcType=BIGINT}, #{tackingStatus,jdbcType=SMALLINT},
+		#{signResult,jdbcType=SMALLINT},
+		#{signMember,jdbcType=VARCHAR}, #{signTime,jdbcType=TIMESTAMP}, #{signGoodsTotal,jdbcType=DECIMAL},
+		#{createUserId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT},
+		#{netId,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP}, #{signImgUrl,jdbcType=VARCHAR}, #{parcelType,jdbcType=CHAR},
+		#{parcelEndMark,jdbcType=CHAR}, #{takeTaskId,jdbcType=BIGINT},
+		#{sendTaskId,jdbcType=BIGINT},
+		#{actualTakeMember,jdbcType=BIGINT}, #{actualSendMember,jdbcType=BIGINT}, #{receiptId,jdbcType=BIGINT},
+		#{printFlag,jdbcType=SMALLINT}, #{noFly,jdbcType=SMALLINT},
+		#{packingCharges,jdbcType=DECIMAL},
+		#{pricePremium,jdbcType=DECIMAL}, #{goodsDesc,jdbcType=LONGVARCHAR},#{parcelStatus,jdbcType=SMALLINT}
+		,#{disposalDesc,jdbcType=VARCHAR},#{pickupTime,jdbcType=TIMESTAMP},#{exceptionTime})
+	</insert>
+
+	<!-- 插入包裹地址信息 -->
+    <insert id="insertParceladdress" parameterType="net.okdi.api.entity.ParParceladdress">
+     insert into par_parceladdress (id, send_name, send_address_id, 
+      send_address, send_mobile, send_phone, 
+      send_zipcode, send_cas_user_id, send_customer_id, 
+      send_contact_id, addressee_name, addressee_address_id, 
+      addressee_address, addressee_mobile, addressee_phone, 
+      addressee_zipcode, addressee_cas_user_id, addressee_customer_id, 
+      addressee_contact_id, agency_site_id, send_longitude, 
+      send_latitude, addressee_longitude, addressee_latitude
+      )
+    values (#{id,jdbcType=BIGINT}, #{sendName,jdbcType=VARCHAR}, #{sendAddressId,jdbcType=BIGINT}, 
+      #{sendAddress,jdbcType=VARCHAR}, #{sendMobile,jdbcType=VARCHAR}, #{sendPhone,jdbcType=VARCHAR}, 
+      #{sendZipcode,jdbcType=VARCHAR}, #{sendCasUserId,jdbcType=BIGINT}, #{sendCustomerId,jdbcType=BIGINT}, 
+      #{sendContactId,jdbcType=BIGINT}, #{addresseeName,jdbcType=VARCHAR}, #{addresseeAddressId,jdbcType=BIGINT}, 
+      #{addresseeAddress,jdbcType=VARCHAR}, #{addresseeMobile,jdbcType=VARCHAR}, #{addresseePhone,jdbcType=VARCHAR}, 
+      #{addresseeZipcode,jdbcType=VARCHAR}, #{addresseeCasUserId,jdbcType=BIGINT}, #{addresseeCustomerId,jdbcType=BIGINT}, 
+      #{addresseeContactId,jdbcType=BIGINT}, #{agencySiteId,jdbcType=BIGINT}, #{sendLongitude,jdbcType=DECIMAL}, 
+      #{sendLatitude,jdbcType=DECIMAL}, #{addresseeLongitude,jdbcType=DECIMAL}, #{addresseeLatitude,jdbcType=DECIMAL}
+      )
+  </insert>
+	
+	<update id="updateParcelSelective" parameterType="net.okdi.api.entity.ParParcelinfo">
+		update par_parcelinfo
+		<set>
+			<if test="expWaybillNum != null">
+				exp_waybill_num = #{expWaybillNum,jdbcType=VARCHAR},	
+			</if>
+			<if test="compId != null">
+				comp_id = #{compId,jdbcType=BIGINT},
+			</if>
+			<if test="netId != null">
+				net_id = #{netId,jdbcType=BIGINT},
+			</if>
+			<if test="freight != null">
+				freight = #{freight,jdbcType=DECIMAL},
+			</if>
+			<if test="codAmount != null">
+				cod_amount = #{codAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=BIGINT},
+			</if>
+			<if test="actualSendMember != null">
+				actual_send_member = #{actualSendMember,jdbcType=BIGINT},
+			</if>
+			<if test="parcelStatus != null">
+				parcel_status = #{parcelStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="tackingStatus != null">
+				tacking_status = #{tackingStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="parcelEndMark != null">
+				parcel_end_mark = #{parcelEndMark,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP}
+			</if>
+			
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 通过运单号和网络id查询包裹id -->
+	<select id="getParcelId" parameterType="java.util.HashMap"
+		resultType="java.lang.Long">
+		select a.id as parcelId from par_parcelinfo a where
+		a.exp_waybill_num=#{expWayBillNum} and a.net_id=#{netId} 
+	</select>
+	<!-- 通过发件人手机号查询包裹id -->
+	<select id="getParcelIdByMobile" parameterType="java.util.HashMap"
+		resultType="java.lang.Long">
+		select a.id as parcelId from par_parceladdress a where
+		a.addressee_mobile=#{addresseeMobile}
+	</select>
+</mapper>

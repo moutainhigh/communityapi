@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasCompimageMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasCompimage" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="image_use" property="imageUse" jdbcType="VARCHAR" />
+    <result column="image_type" property="imageType" jdbcType="SMALLINT" />
+    <result column="image_seque_num" property="imageSequeNum" jdbcType="SMALLINT" />
+    <result column="image_synopsis" property="imageSynopsis" jdbcType="VARCHAR" />
+    <result column="image_detail" property="imageDetail" jdbcType="VARCHAR" />
+    <result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, comp_id, image_use, image_type, image_seque_num, image_synopsis, image_detail, 
+    image_url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_compimage
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByCompId" parameterType="java.lang.Long" >
+    delete from bas_compimage
+    where comp_id = #{compId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.BasCompimage" >
+    insert into bas_compimage (id, comp_id, image_use, 
+      image_type, image_seque_num, image_synopsis, 
+      image_detail, image_url)
+    values (#{id,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{imageUse,jdbcType=VARCHAR}, 
+      #{imageType,jdbcType=SMALLINT}, #{imageSequeNum,jdbcType=SMALLINT}, #{imageSynopsis,jdbcType=VARCHAR}, 
+      #{imageDetail,jdbcType=VARCHAR}, #{imageUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="saveCompImageBatch" parameterType="net.okdi.api.entity.BasCompimage" >
+    insert into bas_compimage (id, comp_id, image_use, 
+      image_type, image_seque_num, image_synopsis, 
+      image_detail, image_url)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.id,jdbcType=BIGINT}, #{item.compId,jdbcType=BIGINT}, #{item.imageUse,jdbcType=VARCHAR}, 
+      #{item.imageType,jdbcType=SMALLINT}, #{item.imageSequeNum,jdbcType=SMALLINT}, #{item.imageSynopsis,jdbcType=VARCHAR}, 
+      #{item.imageDetail,jdbcType=VARCHAR}, #{item.imageUrl,jdbcType=VARCHAR}) 
+    </foreach>  
+  </insert>
+  <select id="queryCompimage" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_compimage
+    where comp_id = #{compId,jdbcType=BIGINT}
+  </select>
+</mapper>

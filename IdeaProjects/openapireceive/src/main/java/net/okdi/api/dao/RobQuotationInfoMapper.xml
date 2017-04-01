@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.RobQuotationInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.RobQuotationInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="rob_id" property="robId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="rob_status" property="robStatus" jdbcType="SMALLINT" />
+    <result column="success_flag" property="successFlag" jdbcType="SMALLINT" />
+    <result column="quotation_amt" property="quotationAmt" jdbcType="DECIMAL" />
+    <result column="quotation_type" property="quotationType" jdbcType="SMALLINT" />
+    <result column="is_new" property="isNew" jdbcType="SMALLINT" />
+    <result column="distance" property="distance" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, rob_id, comp_id, member_id, rob_status, success_flag, quotation_amt, quotation_type, 
+    is_new, create_time,distance
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="net.okdi.api.entity.RobQuotationInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rob_quotation_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from rob_quotation_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from rob_quotation_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.okdi.api.entity.RobQuotationInfoExample" >
+    delete from rob_quotation_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.RobQuotationInfo" >
+    insert into rob_quotation_info (id, rob_id, comp_id, 
+      member_id, rob_status, success_flag, 
+      quotation_amt, quotation_type, is_new, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{robId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{memberId,jdbcType=BIGINT}, #{robStatus,jdbcType=SMALLINT}, #{successFlag,jdbcType=SMALLINT}, 
+      #{quotationAmt,jdbcType=DECIMAL}, #{quotationType,jdbcType=SMALLINT}, #{isNew,jdbcType=SMALLINT}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.RobQuotationInfo" >
+    insert into rob_quotation_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="robId != null" >
+        rob_id,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="memberId != null" >
+        member_id,
+      </if>
+      <if test="robStatus != null" >
+        rob_status,
+      </if>
+      <if test="successFlag != null" >
+        success_flag,
+      </if>
+      <if test="quotationAmt != null" >
+        quotation_amt,
+      </if>
+      <if test="quotationType != null" >
+        quotation_type,
+      </if>
+      <if test="isNew != null" >
+        is_new,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="robId != null" >
+        #{robId,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="robStatus != null" >
+        #{robStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="successFlag != null" >
+        #{successFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="quotationAmt != null" >
+        #{quotationAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="quotationType != null" >
+        #{quotationType,jdbcType=SMALLINT},
+      </if>
+      <if test="isNew != null" >
+        #{isNew,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.okdi.api.entity.RobQuotationInfoExample" resultType="java.lang.Integer" >
+    select count(*) from rob_quotation_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update rob_quotation_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.robId != null" >
+        rob_id = #{record.robId,jdbcType=BIGINT},
+      </if>
+      <if test="record.compId != null" >
+        comp_id = #{record.compId,jdbcType=BIGINT},
+      </if>
+      <if test="record.memberId != null" >
+        member_id = #{record.memberId,jdbcType=BIGINT},
+      </if>
+      <if test="record.robStatus != null" >
+        rob_status = #{record.robStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.successFlag != null" >
+        success_flag = #{record.successFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="record.quotationAmt != null" >
+        quotation_amt = #{record.quotationAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="record.quotationType != null" >
+        quotation_type = #{record.quotationType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.isNew != null" >
+        is_new = #{record.isNew,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update rob_quotation_info
+    set id = #{record.id,jdbcType=BIGINT},
+      rob_id = #{record.robId,jdbcType=BIGINT},
+      comp_id = #{record.compId,jdbcType=BIGINT},
+      member_id = #{record.memberId,jdbcType=BIGINT},
+      rob_status = #{record.robStatus,jdbcType=SMALLINT},
+      success_flag = #{record.successFlag,jdbcType=SMALLINT},
+      quotation_amt = #{record.quotationAmt,jdbcType=DECIMAL},
+      quotation_type = #{record.quotationType,jdbcType=SMALLINT},
+      is_new = #{record.isNew,jdbcType=SMALLINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.RobQuotationInfo" >
+    update rob_quotation_info
+    <set >
+      <if test="robId != null" >
+        rob_id = #{robId,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="memberId != null" >
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="robStatus != null" >
+        rob_status = #{robStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="successFlag != null" >
+        success_flag = #{successFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="quotationAmt != null" >
+        quotation_amt = #{quotationAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="quotationType != null" >
+        quotation_type = #{quotationType,jdbcType=SMALLINT},
+      </if>
+      <if test="isNew != null" >
+        is_new = #{isNew,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.RobQuotationInfo" >
+    update rob_quotation_info
+    set rob_id = #{robId,jdbcType=BIGINT},
+      comp_id = #{compId,jdbcType=BIGINT},
+      member_id = #{memberId,jdbcType=BIGINT},
+      rob_status = #{robStatus,jdbcType=SMALLINT},
+      success_flag = #{successFlag,jdbcType=SMALLINT},
+      quotation_amt = #{quotationAmt,jdbcType=DECIMAL},
+      quotation_type = #{quotationType,jdbcType=SMALLINT},
+      is_new = #{isNew,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByRobId" resultType="java.lang.Long" parameterType="java.lang.Long">
+  	select r.id from rob_quotation_info r 
+  	where r.rob_id = #{robId} 
+  	order by r.quotation_amt, create_time
+  </select>
+  
+  <select id="selectByNewQuotate" resultType="java.lang.Long" parameterType="java.lang.Long">
+  	select r.id from rob_quotation_info r 
+  	where r.rob_id = #{robId} and r.is_new = 0
+  </select>
+  
+  <update id="updateReadStatusByPrimaryKey" parameterType="map">
+  	update rob_quotation_info set is_new = #{isNew} where id = #{id}
+  </update>
+  
+  <select id = "queryRobQuotationInfoByCompId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  select 
+      <include refid="Base_Column_List" />
+  from rob_quotation_info q where q.comp_id=#{compId} and q.quotation_type=1 and (q.success_flag<![CDATA[<>]]>1 or q.success_flag is null)
+  order by q.rob_status desc,q.create_time desc	
+  </select>
+  
+    <select id = "queryRobQuotationInfoByMemberId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  select 
+      <include refid="Base_Column_List" />
+  from rob_quotation_info q where q.member_id=#{memberId} and q.quotation_type=2 and (q.success_flag<![CDATA[<>]]>1 or q.success_flag is null)
+  order by q.rob_status desc,q.create_time desc
+  </select>
+ <!-- 批量添加广播报价信息 -->
+  <insert id="addbatchRobQuotationInfo" parameterType="java.util.List">
+      insert into rob_quotation_info (
+      id, 
+      rob_id,
+      comp_id, 
+      member_id,
+      rob_status,
+      success_flag, 
+      quotation_amt,
+      quotation_type,
+      is_new, 
+      create_time,
+      distance
+       )
+    values 
+     <foreach collection="list" item="item" index="index" separator="," >    
+      (
+      #{item.id,jdbcType=BIGINT},
+       #{item.robId,jdbcType=BIGINT},
+        #{item.compId,jdbcType=BIGINT}, 
+      #{item.memberId,jdbcType=BIGINT},
+       #{item.robStatus,jdbcType=SMALLINT}, 
+       #{item.successFlag,jdbcType=SMALLINT}, 
+      #{item.quotationAmt,jdbcType=DECIMAL}, 
+      #{item.quotationType,jdbcType=SMALLINT}, 
+      #{item.isNew,jdbcType=SMALLINT}, 
+      #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.distance,jdbcType=DECIMAL} 
+      )
+      </foreach>  
+  </insert>
+  
+  <update id = "robExpress" parameterType="net.okdi.api.entity.RobQuotationInfo">
+  	update rob_quotation_info set 
+   	member_id = #{memberId},rob_status =1,quotation_amt = #{quotationAmt},is_new =0
+   	where id = #{id}
+<!--   <if test = "quotationType==1"> -->
+<!--   	where comp_id = #{compId} and rob_id=#{robId} and quotation_type = 1 -->
+<!--   </if> -->
+<!--    <if test = "quotationType==2"> -->
+<!--   	where member_id = #{memberId} and rob_id=#{robId} and quotation_type = 2 -->
+<!--   </if> -->
+  </update>
+  <select id="getRobQuotationInfoByBroadcastId" resultType="java.util.Map">
+  SELECT
+  id,
+	member_id as memberId
+FROM
+	rob_quotation_info
+WHERE
+	quotation_type = 2
+AND rob_id = #{broadcastId}
+and rob_status = 1
+  </select>
+</mapper>

@@ -1,0 +1,66 @@
+1、首页(缓存） www.okdi.net
+2、网点大全分页（DB）http://192.168.35.38:8080/network/list_11_all_all_all_N_300_pc.html
+3、网点查询 DB+缓存 http://192.168.35.38:8080/openapi/compInfo/getExpSites?latitude=39.938716&longitude=116.221542
+5、网点详情（DB+缓存） http://192.168.35.38:8080/openapi/compInfo/getSiteDetail?compId=14383352632049664
+
+最新加盟站点：http://192.168.35.38:8080/openapi/compInfo/getNewComp?total=12
+<!-----------------------------------------------------------张梦楠------------------------------------------------------------------------------------>
+6.查询附近站点收派员 （sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/Courier/queryNearComp?lng=116.221542&lat=39.938716&recProvince=11&sendProvince=11&weight=1.2&netId=&sendTownId=11000206&streetId=310193189
+7新闻页缓存
+http://192.168.35.38:8080/okdi/news/1.html（结果集缓存）（任意路径）
+8新闻详情
+http://192.168.35.38:8080/okdi/news/news_258.html（结果集缓存）（任意路径）
+<!-----------------------------------------------------------张梦楠------------------------------------------------------------------------------------>
+<!-------------------------------------------------------------张东---------------------------------------------------------------------------------------->
+（sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/logisticSearch/list?channelId=2021400835739011&expType=0
+<!-------------------------------------------------------------张东---------------------------------------------------------------------------------------->
+<!-----------------------------------------------------------贺海峰---------------------------------------------------------------------------------------->
+查询管理分部（sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/memberInfo/getBranchInfo?compId=14383265874968576&pageno=1&pagesize=10
+
+查询手机端的人员列表（sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/memberInfo/loadMemberInfo?compId=14365879010852864
+
+查询站点人员列表(按compId缓存结果集)
+（先访问再测试）
+http://192.168.35.38:8080/openapi/memberInfo/queryMemberInfo?compId=14365879010852864
+
+查询人员履历（按memberId缓存结果集）
+http://192.168.35.38:8080/openapi/memberInfo/queryMemberResume?memberId=14435968307698688
+
+站点下的营业分部+人员 （按compId缓存结果集）
+（先访问再测试）
+http://192.168.35.38:8080/openapi/memberInfo/getMemberInfoByCompId?parentId=14365879010852864
+
+查询所有网络（缓存）
+
+http://192.168.35.38:8080/openapi/netInfo/getNetFirstLetter
+
+查询网点基础信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompBasicInfo?loginCompId=14365879010852864
+
+查询网点认证信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompVerifyInfo?loginCompId=14365879010852864
+
+查询网点信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompInfo?loginCompId=14365879010852864
+<!-----------------------------------------------------------贺海峰---------------------------------------------------------------------------------------->
+站点任务查询
+http://192.168.35.38:8080/openapi/task/query/taketask?operatorCompId=14383352632049664&currentPage=1&pageSize=10
+
+
+站点任务详情查询
+http://192.168.35.38:8080/openapi/task/query/taskdetail?id=14454251076984832
+
+
+好递网发件记录查询
+http://192.168.35.38:8080/openapi/task/query/okditask?memberId=14383305572220928&currentPage=1&pageSize=10
+
+
+好递网发件记录详情
+http://192.168.35.38:8080/openapi/task/okdiTaskDetail?taskId=14454251075674112

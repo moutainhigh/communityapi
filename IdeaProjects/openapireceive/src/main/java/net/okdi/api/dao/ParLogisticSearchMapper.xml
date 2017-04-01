@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ParLogisticSearchMapper">
+
+ <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParLogisticSearch" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="channel_no" property="channelNo" jdbcType="VARCHAR" />
+    <result column="channel_id" property="channelId" jdbcType="BIGINT" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="net_code" property="netCode" jdbcType="VARCHAR" />
+    <result column="exp_waybill_num" property="expWaybillNum" jdbcType="VARCHAR" />
+    <result column="exp_type" property="expType" jdbcType="CHAR" />
+    <result column="trace_detail" property="traceDetail" jdbcType="LONGVARCHAR" />
+    <result column="trace_status" property="traceStatus" jdbcType="CHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+    <result column="appoint_id" property="appointId" jdbcType="BIGINT" />
+    <result column="rec_mobile" property="recMobile" jdbcType="VARCHAR" />
+    <result column="system_mark" property="systemMark" jdbcType="CHAR" />
+    <result column="push_mark" property="pushMark" jdbcType="SMALLINT" />
+  </resultMap>
+
+	 <sql id="Base_Column_List" >
+   	 id, channel_no, channel_id, net_id, net_code, exp_waybill_num, exp_type, trace_status, 
+   	 created_time, modified_time, appoint_id, rec_mobile, system_mark, push_mark
+  	</sql>
+
+<insert id="insert" parameterType="net.okdi.api.entity.ParLogisticSearch">
+		insert into par_logistic_search
+		(ID,CHANNEL_NO,CHANNEL_ID,NET_ID,NET_CODE,EXP_WAYBILL_NUM,
+		EXP_TYPE,TRACE_STATUS,CREATED_TIME,MODIFIED_TIME,TRACE_DETAIL,
+		APPOINT_ID,REC_MOBILE,SYSTEM_MARK,push_mark)
+		values
+		(#{id,jdbcType=BIGINT},
+		 #{channelNo,jdbcType=VARCHAR},
+		 #{channelId,jdbcType=BIGINT},
+		 #{netId,jdbcType=BIGINT},
+		 #{netCode,jdbcType=VARCHAR},
+		 #{expWaybillNum,jdbcType=VARCHAR},
+		 #{expType,jdbcType=VARCHAR},
+		 #{traceStatus,jdbcType=VARCHAR},
+		 #{createdTime,jdbcType=TIMESTAMP},
+		 #{modifiedTime,jdbcType=TIMESTAMP},
+		 #{traceDetail,jdbcType=VARCHAR},
+		 #{appointId,jdbcType=BIGINT},
+		 #{recMobile,jdbcType=VARCHAR},
+		 #{systemMark,jdbcType=VARCHAR},
+		 #{pushMark}
+		 	)
+  	</insert>
+  	<select id="decideGoods" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		select count(ID) from par_logistic_search
+		WHERE CHANNEL_ID=#{channelId} and EXP_WAYBILL_NUM=#{expWaybillNum} and NET_ID=#{netId}
+	</select>
+	<select id="findCodeByNetId" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select CODE from bas_netinfo
+		WHERE NET_ID=#{netId}
+	</select>
+	<!-- 查询记录的条数 -->
+	<select id="getLogisticSearchByChannelId_Count" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		select count(id) from par_logistic_search t
+		WHERE t.channel_id=#{channelId}
+    	and t.exp_type=#{expType}
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="getLogisticSearchByChannelId" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		id AS id,
+		CHANNEL_NO AS channelNo,
+		CHANNEL_ID AS channelId,
+		NET_ID AS netId,
+		NET_CODE AS netCode,
+		EXP_WAYBILL_NUM AS expWaybillNum,
+		EXP_TYPE AS expType,
+		TRACE_STATUS AS traceStatus,
+		CREATED_TIME AS createdTime,
+		MODIFIED_TIME AS modifiedTime,
+		TRACE_DETAIL AS traceDetail,
+		APPOINT_ID AS appointId,
+		REC_MOBILE AS recMobile,
+		SYSTEM_MARK AS systemMark,
+		push_mark as pushMark
+		FROM
+		par_logistic_search t
+		WHERE t.CHANNEL_ID=#{channelId}
+    	and t.EXP_TYPE=#{expType}
+		ORDER BY MODIFIED_TIME DESC limit #{page.offset} , #{page.pageSize}
+	</select>
+	<!-- 不分页查询 -->
+	<select id="findList" parameterType="java.util.Map" resultType="net.okdi.api.entity.ParLogisticSearch">
+    SELECT  
+		id AS id,
+		CHANNEL_NO AS channelNo,
+		CHANNEL_ID AS channelId,
+		NET_ID AS netId,
+		NET_CODE AS netCode,
+		EXP_WAYBILL_NUM AS expWaybillNum,
+		EXP_TYPE AS expType,
+		TRACE_STATUS AS traceStatus,
+		CREATED_TIME AS createdTime,
+		MODIFIED_TIME AS modifiedTime,
+		TRACE_DETAIL AS traceDetail,
+		APPOINT_ID AS appointId,
+		REC_MOBILE AS recMobile,
+		SYSTEM_MARK AS systemMark,
+		push_mark as pushMark
+		FROM
+		par_logistic_search t
+    	WHERE t.CHANNEL_ID=#{channelId} 
+    	and t.EXP_TYPE=#{expType}
+    	order by MODIFIED_TIME desc
+    </select>
+    <!-- 删除 -->
+    <delete id="deleteById" parameterType="java.util.Map">
+    	delete from par_logistic_search where id=#{id} and CHANNEL_ID=#{channelId}
+    	and NET_ID=#{netId} and EXP_TYPE=#{expType}
+    </delete>
+    <!-- 更新 -->
+	<update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ParLogisticSearch">
+		update par_logistic_search
+		<set>
+			<if test="traceStatus != null">
+				TRACE_STATUS = #{traceStatus,jdbcType=CHAR},
+      		</if>
+			<if test="traceDetail != null">
+				TRACE_DETAIL = #{traceDetail,jdbcType=VARCHAR},
+      		</if>
+			<if test="modifiedTime != null">
+				MODIFIED_TIME = #{modifiedTime,jdbcType=TIMESTAMP},
+     		</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+			<if test="systemMark != null">
+				and system_mark = systemMark
+			</if>
+	</update>
+	
+	<select id="findIdListPerFourHour" resultType="java.lang.Long">
+	 	SELECT
+		id
+		FROM
+		par_logistic_search t
+    	where t.trace_status <![CDATA[<>]]> 3 and system_mark <![CDATA[<>]]> '1'
+    	order by MODIFIED_TIME desc
+	</select>
+	<select id="findParLogistic" parameterType="java.util.List" resultType="net.okdi.api.entity.ParLogisticSearch">
+	 	SELECT  
+		id AS id,
+		CHANNEL_NO AS channelNo,
+		CHANNEL_ID AS channelId,
+		NET_ID AS netId,
+		NET_CODE AS netCode,
+		EXP_WAYBILL_NUM AS expWaybillNum,
+		EXP_TYPE AS expType,
+		TRACE_STATUS AS traceStatus,
+		CREATED_TIME AS createdTime,
+		MODIFIED_TIME AS modifiedTime,
+		TRACE_DETAIL AS traceDetail,
+		APPOINT_ID AS appointId,
+		REC_MOBILE AS recMobile,
+		SYSTEM_MARK AS systemMark,
+		push_mark as pushMark
+		FROM
+		par_logistic_search t
+    	where t.id in
+    	
+    	<foreach collection="list" item="tag" open="("
+    		separator="," close=")">
+   			#{tag}
+  		</foreach>
+	</select>
+	
+	<update id="batchUpdate" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+			update par_logistic_search
+			<set>
+				<if test="item.traceStatus != null">
+					TRACE_STATUS = #{item.traceStatus,jdbcType=CHAR},
+	      		</if>
+				<if test="item.traceDetail != null">
+					TRACE_DETAIL = #{item.traceDetail,jdbcType=VARCHAR},
+	      		</if>
+				<if test="item.modifiedTime != null">
+					MODIFIED_TIME = #{item.modifiedTime,jdbcType=TIMESTAMP},
+	     		</if>
+	     		push_mark = '0'
+			</set>
+			where id = ${item.id}
+		</foreach>
+	</update>
+	
+	<select id="findByMemberIdNetBill" parameterType="net.okdi.api.entity.ParLogisticSearch" resultMap="BaseResultMap">
+		select  <include refid="Base_Column_List" />
+		from par_logistic_search
+		where channel_id = #{channelId} and net_id = #{netId}
+		and exp_waybill_num = #{expWaybillNum} and exp_type = '1'
+	</select>
+	
+	<update id="updateByMemberNetBill" parameterType="net.okdi.api.entity.ParLogisticSearch">
+		update par_logistic_search 
+		<set>
+			
+			<if test="pushMark != null">
+				push_mark = #{pushMark,jdbcType=CHAR},
+	      	</if>
+			<if test="systemMark != null">
+				system_mark = #{systemMark,jdbcType=CHAR},
+	      	</if>
+			<if test="traceStatus != null">
+				TRACE_STATUS = #{traceStatus,jdbcType=CHAR},
+	      	</if>
+			<if test="traceDetail != null">
+				TRACE_DETAIL = #{traceDetail,jdbcType=VARCHAR},
+	      	</if>
+			<if test="modifiedTime != null">
+				MODIFIED_TIME = #{modifiedTime,jdbcType=TIMESTAMP},
+	     	</if>
+		</set>
+		where channel_id = #{channelId} and net_id = #{netId}
+		and exp_waybill_num = #{expWaybillNum} and exp_type = '1'
+	</update>
+	
+	<select id="findUnPushed" resultType="net.okdi.api.entity.ParLogisticSearch">
+		select 
+		id AS id,
+		CHANNEL_ID AS channelId,
+		NET_ID AS netId,
+		NET_CODE AS netCode,
+		EXP_WAYBILL_NUM AS expWaybillNum
+		from par_logistic_search
+		where push_mark = '1' limit 0,1000
+	</select>
+	
+	<update id="updatePushData"  parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+			update par_logistic_search
+			<set>
+				push_mark = '0',
+				<if test="item.now != null">
+					MODIFIED_TIME = #{item.now,jdbcType=TIMESTAMP},
+	     		</if>
+			</set>
+			where id = ${item.id}
+		</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.EnterpriseCooperationSiteMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.EnterpriseCooperationSite" >
+    <id column="enterprise_shop_id" property="enterpriseShopId" jdbcType="BIGINT" />
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="detailed_addresss_id" property="detailedAddresssId" jdbcType="BIGINT" />
+    <result column="site_id" property="siteId" jdbcType="BIGINT" />
+    <result column="exp_member_id_1" property="expMemberId1" jdbcType="BIGINT" />
+    <result column="exp_member_id_2" property="expMemberId2" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    enterprise_shop_id, id, enterprise_id, detailed_addresss_id, site_id, exp_member_id_1, 
+    exp_member_id_2
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from enterprise_cooperation_site
+    where enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from enterprise_cooperation_site
+    where enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.EnterpriseCooperationSite" >
+    insert into enterprise_cooperation_site (enterprise_shop_id, id, enterprise_id, 
+      detailed_addresss_id, site_id, exp_member_id_1, 
+      exp_member_id_2)
+    values (#{enterpriseShopId,jdbcType=BIGINT}, #{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, 
+      #{detailedAddresssId,jdbcType=BIGINT}, #{siteId,jdbcType=BIGINT}, #{expMemberId1,jdbcType=BIGINT}, 
+      #{expMemberId2,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.EnterpriseCooperationSite" >
+    insert into enterprise_cooperation_site
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseShopId != null" >
+        enterprise_shop_id,
+      </if>
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="detailedAddresssId != null" >
+        detailed_addresss_id,
+      </if>
+      <if test="siteId != null" >
+        site_id,
+      </if>
+      <if test="expMemberId1 != null" >
+        exp_member_id_1,
+      </if>
+      <if test="expMemberId2 != null" >
+        exp_member_id_2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseShopId != null" >
+        #{enterpriseShopId,jdbcType=BIGINT},
+      </if>
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresssId != null" >
+        #{detailedAddresssId,jdbcType=BIGINT},
+      </if>
+      <if test="siteId != null" >
+        #{siteId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId1 != null" >
+        #{expMemberId1,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId2 != null" >
+        #{expMemberId2,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.EnterpriseCooperationSite" >
+    update enterprise_cooperation_site
+    <set >
+      <if test="id != null" >
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresssId != null" >
+        detailed_addresss_id = #{detailedAddresssId,jdbcType=BIGINT},
+      </if>
+      <if test="siteId != null" >
+        site_id = #{siteId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId1 != null" >
+        exp_member_id_1 = #{expMemberId1,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId2 != null" >
+        exp_member_id_2 = #{expMemberId2,jdbcType=BIGINT},
+      </if>
+    </set>
+    where enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.EnterpriseCooperationSite" >
+    update enterprise_cooperation_site
+    set id = #{id,jdbcType=BIGINT},
+      enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      detailed_addresss_id = #{detailedAddresssId,jdbcType=BIGINT},
+      site_id = #{siteId,jdbcType=BIGINT},
+      exp_member_id_1 = #{expMemberId1,jdbcType=BIGINT},
+      exp_member_id_2 = #{expMemberId2,jdbcType=BIGINT}
+    where enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT}
+  </update>
+</mapper>

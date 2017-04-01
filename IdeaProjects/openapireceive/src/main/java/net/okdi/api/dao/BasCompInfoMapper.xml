@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasCompInfoMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.BasCompInfo">
+		<id column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="comp_num" property="compNum" jdbcType="VARCHAR" />
+		<result column="comp_short" property="compShort" jdbcType="VARCHAR" />
+		<result column="comp_name" property="compName" jdbcType="VARCHAR" />
+		<result column="first_letter" property="firstLetter" jdbcType="CHAR" />
+		<result column="regist_flag" property="registFlag" jdbcType="SMALLINT" />
+		<result column="comp_type_num" property="compTypeNum" jdbcType="CHAR" />
+		<result column="comp_address_id" property="compAddressId"
+			jdbcType="BIGINT" />
+		<result column="comp_address" property="compAddress" jdbcType="VARCHAR" />
+		<result column="longitude" property="longitude" jdbcType="DECIMAL" />
+		<result column="latitude" property="latitude" jdbcType="DECIMAL" />
+		<result column="comp_url" property="compUrl" jdbcType="VARCHAR" />
+		<result column="taobao_url" property="taobaoUrl" jdbcType="VARCHAR" />
+		<result column="comp_status" property="compStatus" jdbcType="SMALLINT" />
+		<result column="comp_regist_way" property="compRegistWay"
+			jdbcType="SMALLINT" />
+		<result column="belong_to_net_id" property="belongToNetId"
+			jdbcType="BIGINT" />
+		<result column="belong_to_comp_id" property="belongToCompId"
+			jdbcType="BIGINT" />
+		<result column="relation_comp_id" property="relationCompId"
+			jdbcType="BIGINT" />
+		<result column="write_send_status" property="writeSendStatus"
+			jdbcType="SMALLINT" />
+		<result column="goods_payment_status" property="goodsPaymentStatus"
+			jdbcType="SMALLINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="modifiy_time" property="modifiyTime" jdbcType="TIMESTAMP" />
+		<result column="league_time" property="leagueTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="BIGINT" />
+		<result column="internal_user_last_time" property="internalUserLastTime"
+			jdbcType="TIMESTAMP" />
+		<result column="tao_goods_payment_status" property="taoGoodsPaymentStatus"
+			jdbcType="SMALLINT" />
+		<result column="last_audit_id" property="lastAuditId" jdbcType="BIGINT" />
+		<result column="comp_telephone" property="compTelephone"
+			jdbcType="VARCHAR" />
+		<result column="comp_email" property="compEmail" jdbcType="VARCHAR" />
+		<result column="comp_mobile" property="compMobile" jdbcType="VARCHAR" />
+		<result column="login_flag" property="loginFlag" jdbcType="SMALLINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		comp_id, comp_num, comp_short, comp_name, first_letter,
+		regist_flag,
+		comp_type_num,
+		comp_address_id, comp_address, longitude,
+		latitude, comp_url, taobao_url, comp_status,
+		comp_regist_way,
+		belong_to_net_id, belong_to_comp_id,
+		relation_comp_id,
+		write_send_status,
+		goods_payment_status, create_time, modifiy_time,
+		league_time, create_user,
+		internal_user_last_time,
+		tao_goods_payment_status, last_audit_id, comp_telephone, comp_email,
+		comp_mobile,
+		login_flag
+  </sql>
+	<sql id="comp_name_column">
+		comp_id as compId,
+		comp_name as compName,
+		first_letter as firstLetter
+  </sql>
+	<select id="getPromptComp" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select
+		<include refid="comp_name_column" />
+		from bas_compinfo left join dic_addressaid on comp_address_id=address_id 
+		where belong_to_net_id=#{netId} and comp_name like
+		CONCAT('%',#{compName},'%')
+		<if test="addressId != null and addressId!=''">
+		and (town_id=#{addressId} or county_id=#{addressId} or city_id=#{addressId} or province_id=#{addressId})
+		</if>
+		<if test="compTypeNum==1006">
+			and ((comp_type_num='1003' and comp_status =1 and
+			relation_comp_id=-1) or (comp_type_num='1006' and regist_flag=0))
+		</if>
+		<if test="compTypeNum==1050">
+			and comp_type_num='1050' and regist_flag=0 
+		</if>
+		limit 0,10
+	</select>
+		<select id="getPromptCompForMobile" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select
+		<include refid="comp_name_column" />
+		from bas_compinfo left join dic_addressaid on comp_address_id=address_id 
+		where belong_to_net_id=#{netId}
+		<if test="addressId != null and addressId!=''">
+		and (town_id=#{addressId} or county_id=#{addressId} or city_id=#{addressId} or province_id=#{addressId})
+		</if>
+		<if test="(roleId==-2 or roleId==1) and compTypeNum==1006">
+			and ((comp_type_num='1003' and comp_status =1 and
+			relation_comp_id=-1) or (comp_type_num='1006' and regist_flag=0))
+		</if>
+		<if test="(roleId==-2 or roleId==1) and compTypeNum==1050">
+			and comp_type_num='1050' and regist_flag=0
+		</if>
+		<if test="(roleId==-1 or roleId==0)  and compTypeNum==1006">
+			and ((comp_type_num='1003' and comp_status =1 and
+			relation_comp_id=-1) or comp_type_num='1006')
+		</if>
+		<if test="(roleId==-1 or roleId==0)  and compTypeNum==1050">
+			and comp_type_num='1050'
+		</if>
+	</select>
+	<select id="getSameCompName" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select
+		<include refid="comp_name_column" />
+		from bas_compinfo where belong_to_net_id=#{netId} and
+		comp_name=#{compName}
+		and ((regist_flag=1 and (comp_type_num='1006' or
+		comp_type_num='1050'))
+		<if test="compTypeNum==1050 || flag==1">
+			or (comp_type_num='1003' and comp_status =1 and
+			relation_comp_id=-1) 
+		</if>
+		)
+		<if test="compId!=null and compId!=''">
+			and comp_id <![CDATA[<>]]>
+			#{compId}
+		</if>
+	</select>
+	<select id="getSameCompNameForMobile" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select
+		<include refid="comp_name_column" />
+		from bas_compinfo where belong_to_net_id=#{netId} and
+		comp_name=#{compName}
+	</select>
+	<select id="findById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from bas_compinfo
+		where comp_id = #{compId,jdbcType=BIGINT}
+	</select>
+	<select id="getUseCompInfo" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select
+		<include refid="comp_name_column" />
+		from bas_compinfo where belong_to_net_id=#{netId} and
+		comp_name=#{compName}
+		<if test="compTypeNum==1006">
+			and ((comp_type_num='1003' and comp_status =1 and
+			relation_comp_id=-1) or (comp_type_num='1006' and regist_flag=0))
+		</if>
+		<if test="compTypeNum==1050">
+			and comp_type_num='1050' and regist_flag=0 
+		</if>
+	</select>
+	<insert id="insert" parameterType="net.okdi.api.entity.BasCompInfo">
+		insert into bas_compinfo
+		(comp_id, comp_num, comp_short,
+		comp_name, first_letter, regist_flag,
+		comp_type_num, comp_address_id, comp_address,
+		longitude, latitude,
+		comp_url,
+		taobao_url, comp_status, comp_regist_way,
+		belong_to_net_id,
+		belong_to_comp_id, relation_comp_id,
+		write_send_status,
+		goods_payment_status,
+		create_time, modifiy_time, league_time,
+		create_user, internal_user_last_time, tao_goods_payment_status,
+		last_audit_id, comp_telephone, comp_email,
+		comp_mobile, login_flag)
+		SELECT #{compId,jdbcType=BIGINT}, #{compNum,jdbcType=VARCHAR},
+		#{compShort,jdbcType=VARCHAR},
+		#{compName,jdbcType=VARCHAR},
+		#{firstLetter,jdbcType=CHAR}, #{registFlag,jdbcType=SMALLINT},
+		#{compTypeNum,jdbcType=CHAR}, #{compAddressId,jdbcType=BIGINT},
+		#{compAddress,jdbcType=VARCHAR},
+		#{longitude,jdbcType=DECIMAL},
+		#{latitude,jdbcType=DECIMAL}, #{compUrl,jdbcType=VARCHAR},
+		#{taobaoUrl,jdbcType=VARCHAR}, #{compStatus,jdbcType=SMALLINT},
+		#{compRegistWay,jdbcType=SMALLINT},
+		#{belongToNetId,jdbcType=BIGINT},
+		#{belongToCompId,jdbcType=BIGINT}, #{relationCompId,jdbcType=BIGINT},
+		#{writeSendStatus,jdbcType=SMALLINT},
+		#{goodsPaymentStatus,jdbcType=SMALLINT},
+		#{createTime,jdbcType=TIMESTAMP}, #{modifiyTime,jdbcType=TIMESTAMP},
+		#{leagueTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{internalUserLastTime,jdbcType=TIMESTAMP},
+		#{taoGoodsPaymentStatus,jdbcType=SMALLINT},
+		#{lastAuditId,jdbcType=BIGINT}, #{compTelephone,jdbcType=VARCHAR},
+		#{compEmail,jdbcType=VARCHAR},
+		#{compMobile,jdbcType=VARCHAR},
+		#{loginFlag,jdbcType=SMALLINT} FROM DUAL WHERE not exists (select 1 from bas_compinfo where belong_to_net_id=#{belongToNetId} and
+		comp_name=#{compName} and (comp_type_num='1006' or comp_type_num='1050'))
+  </insert>
+	<update id="update" parameterType="net.okdi.api.entity.BasCompInfo">
+		update bas_compinfo
+		set
+		comp_num = #{compNum,jdbcType=VARCHAR},
+		comp_short =
+		#{compShort,jdbcType=VARCHAR},
+		comp_name =
+		#{compName,jdbcType=VARCHAR},
+		first_letter =
+		#{firstLetter,jdbcType=CHAR},
+		regist_flag =
+		#{registFlag,jdbcType=SMALLINT},
+		comp_type_num =
+		#{compTypeNum,jdbcType=CHAR},
+		comp_address_id =
+		#{compAddressId,jdbcType=BIGINT},
+		comp_address =
+		#{compAddress,jdbcType=VARCHAR},
+		longitude =
+		#{longitude,jdbcType=DECIMAL},
+		latitude = #{latitude,jdbcType=DECIMAL},
+		comp_url = #{compUrl,jdbcType=VARCHAR},
+		taobao_url =
+		#{taobaoUrl,jdbcType=VARCHAR},
+		comp_status =
+		#{compStatus,jdbcType=SMALLINT},
+		comp_regist_way =
+		#{compRegistWay,jdbcType=SMALLINT},
+		belong_to_net_id =
+		#{belongToNetId,jdbcType=BIGINT},
+		belong_to_comp_id =
+		#{belongToCompId,jdbcType=BIGINT},
+		relation_comp_id =
+		#{relationCompId,jdbcType=BIGINT},
+		write_send_status =
+		#{writeSendStatus,jdbcType=SMALLINT},
+		goods_payment_status =
+		#{goodsPaymentStatus,jdbcType=SMALLINT},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		modifiy_time =
+		#{modifiyTime,jdbcType=TIMESTAMP},
+		league_time =
+		#{leagueTime,jdbcType=TIMESTAMP},
+		create_user =
+		#{createUser,jdbcType=BIGINT},
+		internal_user_last_time =
+		#{internalUserLastTime,jdbcType=TIMESTAMP},
+		tao_goods_payment_status =
+		#{taoGoodsPaymentStatus,jdbcType=SMALLINT},
+		last_audit_id =
+		#{lastAuditId,jdbcType=BIGINT},
+		comp_telephone =
+		#{compTelephone,jdbcType=VARCHAR},
+		comp_email =
+		#{compEmail,jdbcType=VARCHAR},
+		comp_mobile =
+		#{compMobile,jdbcType=VARCHAR},
+		login_flag =
+		#{loginFlag,jdbcType=SMALLINT}
+		where comp_id =
+		#{compId,jdbcType=BIGINT}
+  </update>
+	<update id="updateRelationCompId" parameterType="java.util.Map">
+		update
+		bas_compinfo
+		set relation_comp_id = #{relationCompId}
+		where comp_id =
+		#{compId}
+  </update>
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from bas_compinfo
+		where
+		comp_id = #{compId,jdbcType=BIGINT}
+  </delete>
+	<update id="updateCompStatus" parameterType="java.util.Map">
+		update bas_compinfo
+		set comp_status = #{compStatus}
+		<if test="auditId != null">
+			,last_audit_id=#{auditId}
+		</if>
+		<if test="auditDate != null">
+			,league_time=#{auditDate}
+		</if>
+		where comp_id = #{compId}
+	</update>
+	<select id="queryCompAuditDesc" resultType="java.lang.String"
+		parameterType="java.lang.Long">
+		select audit_desc auditDesc
+		from bas_compinfo left join
+		Bas_Compaudit on id=last_audit_id
+		where bas_compinfo.comp_id =
+		#{compId,jdbcType=BIGINT}
+  </select>
+
+	<select id="getCompList" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		bas_compinfo
+	</select>
+	
+	<select id="getTotalNum" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select
+		count(*)
+		from bas_compinfo
+		where comp_type_num = '1006' OR comp_type_num = '1050'
+	</select>
+	
+	<select id="getCurrentMonthNum" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select
+		count(*)
+		from bas_compinfo
+		WHERE
+		DATE_FORMAT(create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+		and comp_type_num = '1006' OR comp_type_num = '1050'
+	</select>
+	
+	<select id="getMonthOfDaysNum" parameterType="java.lang.Integer" resultType="java.util.Map">
+		SELECT
+			COUNT(*) AS total,
+			DAYOFMONTH(create_time) days
+		FROM
+			bas_compinfo
+		WHERE
+		create_time > DATE_SUB(
+			CURDATE(),
+			INTERVAL DAY (CURDATE()) - 1 DAY
+		)
+		and comp_type_num = '1006' OR comp_type_num = '1050'
+		GROUP BY
+			days
+	</select>
+
+	<select id="countCompNumList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') AS everyday, COUNT(comp_id) as countNum 
+		FROM
+		bas_compinfo WHERE 1=1 
+		<if test="start != null">
+			and DATE_FORMAT(CREATE_TIME,'%Y-%m-%d') <![CDATA[>=]]> #{start} 
+		</if>
+		<if test="end != null">
+			and DATE_FORMAT(CREATE_TIME,'%Y-%m-%d') <![CDATA[<]]> #{end} 
+		</if>
+		GROUP BY DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') 
+		ORDER BY DATE_FORMAT(CREATE_TIME, '%Y-%m-%d')
+	</select>
+	
+	<select id="queryAllCompInfo" resultType="map" parameterType="map">
+	select c.comp_id as compId, c.comp_address as compAddress, m.member_phone as loginId,n.net_name as netName,c.comp_name as compName,c.comp_type_num as compType,c.create_time as createTime,c.relation_comp_id as createType,c.comp_status as compStatus
+	from bas_compinfo c
+	LEFT JOIN member_info m on c.create_user =m.member_id
+	LEFT JOIN bas_netinfo n on n.net_id = c.belong_to_net_id
+	LEFT JOIN dic_address d on c.comp_address_id=d.address_id
+	where 1=1 
+	AND c.REGIST_FLAG = 1 
+	
+	<if test="netId !=null and netId !=''">
+		and n.net_id=#{netId}
+	</if>
+	<if test="provinceId !=null and provinceId !=''">
+		and d.parent_id like CONCAT(#{provinceId} ,'%')
+	</if>
+	<if test="compName !=null and compName !=''">
+		and c.comp_name like CONCAT('%',#{compName} ,'%') 
+	</if>
+	<if test="memberPhone !=null and memberPhone !=''">
+		and m.member_phone like CONCAT('%',#{memberPhone} ,'%')  
+	</if>
+	
+	<if test="beginTime !=null and beginTime !=''">
+		and c.create_time >= #{beginTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	 <![CDATA[and	c.create_time <= #{endTime}   ]]>
+	</if>
+	<if test="compType !=null and compType !=''">
+	 	 and c.comp_type_num=#{compType}
+	</if>
+	<if test="compType ==null and compType ==''">
+	 	 and c.comp_type_num in ('1006','1050')
+	</if>
+	
+	<if test="createType==1">
+		and c.relation_comp_id=-1
+	</if>
+	<if test="createType==2">
+		and c.relation_comp_id !=-1
+	</if>
+	<if test="status==0">
+		and c.comp_status in (0,4)
+	</if>
+	<if test="status==1">
+		and c.comp_status =1
+	</if>
+	<if test="status==2">
+		and c.comp_status =2
+	</if>
+	<if test="status==3">
+		and c.comp_status in (0,1,2,4)
+	</if>
+	order by c.create_time desc
+	 limit #{pageNum},#{pageSize} 
+	
+	</select>
+	<select id="getTotalNum2"  resultType="java.lang.Integer" parameterType="map"  >
+	select count(c.comp_id)
+	from bas_compinfo c
+	LEFT JOIN member_info m on c.create_user =m.member_id
+	LEFT JOIN bas_netinfo n on n.net_id = c.belong_to_net_id
+	LEFT JOIN dic_address d on c.comp_address_id=d.address_id
+	where 1=1 
+	AND c.REGIST_FLAG = 1 
+	<if test="netId !=null and netId !=''">
+		and n.net_id=#{netId}
+	</if>
+	<if test="provinceId !=null and provinceId !=''">
+		and d.parent_id like CONCAT(#{provinceId} ,'%')
+	</if>
+	<if test="compName !=null and compName !=''">
+		and c.comp_name like CONCAT('%',#{compName} ,'%') 
+	</if>
+	<if test="memberPhone !=null and memberPhone !=''">
+		and m.member_phone like CONCAT('%',#{memberPhone} ,'%')  
+	</if>
+	
+	<if test="beginTime !=null and beginTime !=''">
+		and c.create_time >= #{beginTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	 <![CDATA[ and	c.create_time <= #{endTime}   ]]>
+	</if>
+	<if test="compType !=null and compType !=''">
+	 	 and c.comp_type_num=#{compType}
+	</if>
+	<if test="compType ==null and compType ==''">
+	 	 and c.comp_type_num in ('1006','1050')
+	</if>
+	
+	<if test="createType==1">
+		and c.relation_comp_id=-1
+	</if>
+	<if test="createType==2">
+		and c.relation_comp_id !=-1
+	</if>
+	<if test="status==0">
+		and c.comp_status in (0,4)
+	</if>
+	<if test="status==1">
+		and c.comp_status =1
+	</if>
+	<if test="status==2">
+		and c.comp_status =2
+	</if>
+	<if test="status==3">
+		and c.comp_status in (0,1,2,4)
+	</if>
+	
+	</select>
+	
+	
+	<select id="getNum" resultType="map" parameterType="map">
+		SELECT
+		SUM(
+			CASE
+			WHEN bc.comp_status IN (0, 4) THEN
+				1
+			ELSE
+				0
+			END
+		) AS pendingNum,
+		SUM(
+			CASE
+			WHEN bc.comp_status = 1 THEN
+				1
+			ELSE
+				0
+			END
+		) AS passNum,
+		SUM(
+			CASE
+			WHEN bc.comp_status = 2 THEN
+				1
+			ELSE
+				0
+			END
+		) AS unpassNum
+		FROM
+			BAS_COMPINFO AS bc
+		WHERE
+			bc.regist_flag = 1
+		AND bc.comp_type_num IN (1006, 1050)
+		ORDER BY
+			bc.CREATE_TIME DESC
+	</select>
+	<select id="queryMemberByCompId" parameterType="java.lang.Long" resultType="map">
+	SELECT
+		m.member_phone AS memberPhone,
+		b.comp_telephone AS compTelePhone
+	FROM
+		bas_compinfo b
+	LEFT JOIN bas_employee_relation e ON b.comp_id = e.comp_id
+	LEFT JOIN member_info m ON e.member_id = m.member_id
+	WHERE b.comp_id=#{compId} and e.role_id=1
+	
+	
+	</select>
+	
+ <select id="expBasCompInfoList" resultType="map" parameterType="map">
+	select c.comp_id as compId, c.comp_address as compAddress, m.member_phone as loginId,n.net_name as netName,
+	       c.comp_name as compName,c.comp_type_num as compType,c.create_time as createTime,c.relation_comp_id as createType,
+	       e.member_id as memberId
+	from bas_compinfo c
+	LEFT JOIN member_info m on c.create_user =m.member_id
+	LEFT JOIN bas_netinfo n on n.net_id = c.belong_to_net_id
+	left JOIN bas_employee_relation e on e.comp_id=c.comp_id and e.role_id='1'
+	LEFT JOIN dic_address d on c.comp_address_id=d.address_id
+	where 1=1 
+	AND c.REGIST_FLAG = 1 
+		
+		<if test="netId !=null and netId !=''">
+			and n.net_id=#{netId}
+		</if>
+		<if test="provinceId !=null and provinceId !=''">
+			and d.parent_id like CONCAT(#{provinceId} ,'%')
+		</if>
+		<if test="compName !=null and compName !=''">
+			and c.comp_name like CONCAT('%',#{compName} ,'%') 
+		</if>
+		<if test="memberPhone !=null and memberPhone !=''">
+			and m.member_phone like CONCAT('%',#{memberPhone} ,'%')
+		</if>
+		
+		<if test="beginTime !=null and beginTime !=''">
+			and c.create_time >= #{beginTime}
+		</if>
+		<if test="endTime !=null and endTime !=''">
+		 <![CDATA[and	c.create_time <= #{endTime}   ]]>
+		</if>
+		<if test="compType !=null and compType !=''">
+	 	 and c.comp_type_num=#{compType}
+	   </if>
+	   <if test="compType ==null and compType ==''">
+			 and c.comp_type_num in ('1006','1050')
+		</if>
+		<if test="createType==1">
+			and c.relation_comp_id=-1
+		</if>
+		<if test="createType==2">
+			and c.relation_comp_id !=-1
+		</if>
+		<if test="status==0">
+			and c.comp_status in (0,4)
+		</if>
+		<if test="status==1">
+			and c.comp_status =1
+		</if>
+		<if test="status==2">
+			and c.comp_status =2
+		</if>
+	
+	
+	</select>
+	
+	<select id="isVirtualuser" resultMap="BaseResultMap">
+		SELECT
+			bc.comp_regist_way
+		FROM
+			bas_employeeaudit be
+		LEFT JOIN bas_compinfo bc ON be.audit_comp = bc.comp_id
+		LEFT JOIN member_info mi ON be.member_id = mi.member_id
+		WHERE
+			be.member_id = #{memberId}
+		AND be.audit_item = 2
+		GROUP BY
+		be.member_id;
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

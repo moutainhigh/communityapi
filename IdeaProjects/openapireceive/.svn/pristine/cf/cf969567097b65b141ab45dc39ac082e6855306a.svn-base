@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasNetInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasNetInfo" >
+    <id column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="net_name" property="netName" jdbcType="VARCHAR" />
+    <result column="net_type" property="netType" jdbcType="SMALLINT" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bound_comp_id" property="boundCompId" jdbcType="BIGINT" />
+    <result column="net_num" property="netNum" jdbcType="VARCHAR" />
+    <result column="delete_mark" property="deleteMark" jdbcType="SMALLINT" />
+    <result column="net_status" property="netStatus" jdbcType="SMALLINT" />
+    <result column="net_regist_way" property="netRegistWay" jdbcType="SMALLINT" />
+    <result column="first_letter" property="firstLetter" jdbcType="CHAR" />
+    <result column="verify_code_flag" property="verifyCodeFlag" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="is_partners" property="isPartners" jdbcType="SMALLINT" />
+    <result column="auth_status" property="authStatus" jdbcType="SMALLINT" />
+    <result column="api_auth_flag" property="apiAuthFlag" jdbcType="SMALLINT" />
+    <result column="api_order_query_flag" property="apiOrderQueryFlag" jdbcType="SMALLINT" />
+    <result column="api_order_upload_flag" property="apiOrderUploadFlag" jdbcType="SMALLINT" />
+    <result column="api_parcel_query_flag" property="apiParcelQueryFlag" jdbcType="SMALLINT" />
+    <result column="api_parcel_upload_flag" property="apiParcelUploadFlag" jdbcType="SMALLINT" />
+    <result column="api_parcel_conn_flag" property="apiParcelConnFlag" jdbcType="SMALLINT" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    net_id,                
+    net_name,
+    net_type,
+    description, 
+    bound_comp_id, 
+    net_num, 
+    delete_mark, 
+    net_status, 
+    net_regist_way, 
+    first_letter, 
+    verify_code_flag, 
+    url, 
+    telephone, 
+    modified_time, 
+    code,
+    is_partners
+  </sql>
+  <select id="queryNetInfo" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from bas_netinfo where delete_mark=1 and net_status=1 and code is not null
+  </select>
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_netinfo
+    where net_id = #{netId,jdbcType=BIGINT}
+  </select>
+    <select id="queryNetInfoAll" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from bas_netinfo ORDER BY modified_time desc
+  </select>
+  <update id="updateNetInfo"  parameterType="java.util.Map">
+  update bas_netinfo
+  <set> 	
+  		<if test="netName != null">
+			net_name=#{netName},
+		</if>
+		<if test="netType != null">
+			net_type=#{netType},
+		</if>
+		<if test="description != null">
+			description=#{description},
+		</if>
+		<if test="netNum != null">
+			net_num=#{netNum},
+		</if>
+		<if test="url != null">
+			url=#{url},
+		</if>
+		<if test="telephone != null">
+			telephone=#{telephone},
+		</if>
+		<if test="code != null">
+			code=#{code},
+		</if>		
+		<if test="firstLetter != null">
+			first_letter=#{firstLetter},
+		</if>		
+		<if test="verifyCodeFlag != null">
+			verify_code_flag=#{verifyCodeFlag},
+		</if>	
+	</set>	
+		where net_id = #{netId}
+  </update>
+  <insert id="insert" parameterType="net.okdi.api.entity.BasNetInfo">
+  insert into bas_netinfo(
+  						net_id,
+  						net_name,
+  						net_type,
+  						description,
+  						bound_comp_id,
+  						net_num,
+  						delete_mark,
+  						net_status,
+  						net_regist_way,
+  						first_letter,
+  						verify_code_flag,
+  						url,
+  						telephone,
+  						modified_time,
+  						code
+  						)values(
+  						#{netId},
+  						#{netName},
+  						#{netType},
+  						#{description},
+  						#{boundCompId},
+  						#{netNum},
+  						#{deleteMark},
+  						#{netStatus},
+  						#{netRegistWay},
+  						#{firstLetter},
+  						#{verifyCodeFlag},
+  						#{url},
+  						#{telephone},
+  						#{modifiedTime},
+  						#{code}
+  						)
+  
+  </insert>
+  <update id="makeBaseNetInfo">
+  update bas_netinfo set delete_mark=#{deleteMark} where net_id=#{netId}
+  </update>
+  <select id="ifHasNetInfo" parameterType="java.lang.String" resultType="java.lang.Long">
+  select net_id from bas_netinfo where net_name=#{netName}
+  </select>
+   <select id="queryNetInfoById" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from bas_netinfo where net_id=#{netId} group by net_id
+  </select>
+  <select id="queryNetName" resultType="java.lang.Integer">
+  select count(1) from bas_netinfo where net_name=#{netName}
+  </select>
+ <update id="updatePartners" >
+  update bas_netinfo
+  <set> 	
+  		<if test="isPartners != null">
+			is_partners=#{isPartners},
+		</if>
+	</set>	
+		where net_id = #{netId}
+  </update>
+  
+  <select id="queryNetAuthByNetId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+          net_id,
+          net_name,
+          auth_status,
+          api_auth_flag,
+          api_order_query_flag,
+          api_order_upload_flag,
+          api_parcel_query_flag,
+          api_parcel_upload_flag,
+          api_parcel_conn_flag,
+          apiParcelIsFromOrderFlag
+        FROM bas_netinfo
+        WHERE net_id = #{value} and delete_mark = 1 and net_status = 1
+    </select>
+</mapper>

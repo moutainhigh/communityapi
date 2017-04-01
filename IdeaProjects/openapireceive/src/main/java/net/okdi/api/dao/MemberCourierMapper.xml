@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberCourierMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberCourier" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+    <result column="courier_name" property="courierName" jdbcType="VARCHAR" />
+    <result column="courier_phone" property="courierPhone" jdbcType="VARCHAR" />
+    <result column="courier_address_id" property="courierAddressId" jdbcType="BIGINT" />
+    <result column="courier_detaile_display" property="courierDetaileDisplay" jdbcType="VARCHAR" />
+    <result column="courier_detailed_address" property="courierDetailedAddress" jdbcType="VARCHAR" />
+    <result column="net_id" property="netId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="cas_member_id" property="casMemberId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, create_user_id, courier_name, courier_phone, courier_address_id, courier_detaile_display, 
+    courier_detailed_address, net_id, create_time, comp_id, remark, cas_member_id
+  </sql>
+  <insert id="insert" parameterType="net.okdi.api.entity.MemberCourier" >
+    insert into member_courier (id, create_user_id, courier_name, 
+      courier_phone, courier_address_id, courier_detaile_display, 
+      courier_detailed_address, net_id, create_time, 
+      comp_id, remark, cas_member_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{createUserId,jdbcType=BIGINT}, #{courierName,jdbcType=VARCHAR}, 
+      #{courierPhone,jdbcType=VARCHAR}, #{courierAddressId,jdbcType=BIGINT}, #{courierDetaileDisplay,jdbcType=VARCHAR}, 
+      #{courierDetailedAddress,jdbcType=VARCHAR}, #{netId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{compId,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, #{casMemberId,jdbcType=BIGINT}
+      )
+  </insert>
+ 
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.MemberCourier" >
+    update member_courier
+    <set >
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="courierName != null" >
+        courier_name = #{courierName,jdbcType=VARCHAR},
+      </if>
+      <if test="courierPhone != null" >
+        courier_phone = #{courierPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="courierAddressId != null" >
+        courier_address_id = #{courierAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="courierDetaileDisplay != null" >
+        courier_detaile_display = #{courierDetaileDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="courierDetailedAddress != null" >
+        courier_detailed_address = #{courierDetailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="netId != null" >
+        net_id = #{netId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="casMemberId != null" >
+        cas_member_id = #{casMemberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

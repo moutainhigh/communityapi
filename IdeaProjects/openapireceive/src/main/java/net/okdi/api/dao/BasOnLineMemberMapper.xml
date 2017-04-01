@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasOnLineMemberMapper">
+	<insert id="insert" parameterType="java.util.Map">
+		insert into bas_online_member (
+		ID,
+		NET_ID,
+		NET_NAME,
+		COMP_ID,
+		COMP_NAME,
+		MEMBER_ID,
+		MEMBER_NAME,
+		MEMBER_MOBILE,
+		LONGITUDE,
+		LATITUDE,
+		MODIFY_TIME,
+		CREATE_TIME,
+		MEMO
+		)values(
+		#{id},
+		#{netId},
+		#{netName},
+		#{compId},
+		#{compName},
+		#{memberId},
+		#{memberName},
+		#{memberMobile},
+		#{lng},
+		#{lat},
+		#{modifyTime},
+		#{createTime},
+		#{memo}
+		)
+   </insert>
+	<select id="selectLngLat" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select LONGITUDE,LATITUDE from bas_online_member where CREATE_TIME = (select
+		MAX(CREATE_TIME) from bas_online_member 
+		where MEMBER_ID =#{memberId})  AND MEMBER_ID =#{memberId}
+	</select>
+</mapper>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCustomerContactsInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCustomerContactsInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+    <result column="contacts_name" property="contactsName" jdbcType="VARCHAR" />
+    <result column="contacts_name_spell" property="contactsNameSpell" jdbcType="VARCHAR" />
+    <result column="contacts_phone" property="contactsPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, customer_id, contacts_name, contacts_name_spell, contacts_phone
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from exp_customer_contacts_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="getContactsCount" resultType="java.lang.Integer" parameterType="java.lang.Long" >
+    select count(id)
+    from exp_customer_contacts_info
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectContactsByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from exp_customer_contacts_info
+    where customer_id = #{customerId}
+  </select>
+  
+  <select id="selectCustomers" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+    select t.id as id, t.customer_id as customer_id, customer_name,contacts_name,contacts_phone,t.contacts_name_spell
+   	from exp_customer_contacts_info t LEFT JOIN exp_customer_info a on a.id = t.customer_id
+    where t. customer_id in(
+	SELECT id from exp_customer_info b where b.comp_id = #{compId} 
+	<if test = "customerName != null">
+	and b.customer_name like CONCAT('%',#{customerName},'%')
+	</if>
+	) 
+	<if test = "contactsName != null">
+		and t.contacts_name like CONCAT('%',#{contactsName},'%')
+	</if>
+	
+	<if test = "contactsPhone != null">
+		and t.contacts_Phone like CONCAT('%',#{contactsPhone},'%')
+	</if>
+		order by t.contacts_name_spell
+		limit #{page.offset},#{page.pageSize}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="java.util.HashMap" >
+    select count(t.id)
+   	from exp_customer_contacts_info t LEFT JOIN exp_customer_info a on a.id = t.customer_id
+    where t. customer_id in(
+	SELECT id from exp_customer_info b where b.comp_id = #{compId} 
+	<if test = "customerName != null">
+	and b.customer_name like CONCAT('%',#{customerName},'%')
+	</if>
+	) 
+	<if test = "contactsName != null">
+		and t.contacts_name like CONCAT('%',#{contactsName},'%')
+	</if>
+	
+	<if test = "contactsPhone != null">
+		and t.contacts_Phone like CONCAT('%',#{contactsPhone},'%')
+	</if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from exp_customer_contacts_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByCustomerId" parameterType="java.lang.Long" >
+    delete from exp_customer_contacts_info
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpCustomerContactsInfo" >
+    insert into exp_customer_contacts_info (id, customer_id, contacts_name, 
+      contacts_name_spell, contacts_phone)
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{contactsName,jdbcType=VARCHAR}, 
+      #{contactsNameSpell,jdbcType=VARCHAR}, #{contactsPhone,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertContactsList" parameterType="java.util.List" >
+    insert into exp_customer_contacts_info (id, customer_id, contacts_name, 
+      contacts_name_spell, contacts_phone)  values 
+      <foreach collection="list" item="item" index="index" separator="," >  
+   	(#{item.id,jdbcType=BIGINT}, #{item.customerId,jdbcType=BIGINT}, #{item.contactsName,jdbcType=VARCHAR}, 
+      #{item.contactsNameSpell,jdbcType=VARCHAR}, #{item.contactsPhone,jdbcType=VARCHAR})
+      </foreach>  
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.ExpCustomerContactsInfo" >
+    insert into exp_customer_contacts_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="contactsName != null" >
+        contacts_name,
+      </if>
+      <if test="contactsNameSpell != null" >
+        contacts_name_spell,
+      </if>
+      <if test="contactsPhone != null" >
+        contacts_phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="contactsName != null" >
+        #{contactsName,jdbcType=VARCHAR},
+      </if>
+      <if test="contactsNameSpell != null" >
+        #{contactsNameSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="contactsPhone != null" >
+        #{contactsPhone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ExpCustomerContactsInfo" >
+    update exp_customer_contacts_info
+    <set >
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="contactsName != null" >
+        contacts_name = #{contactsName,jdbcType=VARCHAR},
+      </if>
+      <if test="contactsNameSpell != null" >
+        contacts_name_spell = #{contactsNameSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="contactsPhone != null" >
+        contacts_phone = #{contactsPhone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ExpCustomerContactsInfo" >
+    update exp_customer_contacts_info
+    set 
+      contacts_name = #{contactsName,jdbcType=VARCHAR},
+      contacts_name_spell = #{contactsNameSpell,jdbcType=VARCHAR},
+      contacts_phone = #{contactsPhone,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

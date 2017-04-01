@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.SendTaskMapper">
+    <insert id="addSendTaskInfo" parameterType="java.util.Map" >
+     insert into par_task_info (task_id, task_type, coop_comp_id,
+        coop_net_id, par_estimate_count, par_estimate_weight,
+        appoint_time, appoint_desc, task_source,
+        task_status, task_is_end, task_end_time,
+        actor_member_id, actor_phone, contact_name,
+        contact_mobile, contact_tel, contact_address_id,
+        contact_address, customer_id, contact_cas_user_id,
+        contact_comp_id, create_time, create_user_id,
+        task_flag, modify_time, contact_addr_longitude,
+        contact_addr_latitude)
+        values (#{taskId,jdbcType=BIGINT}, #{taskType,jdbcType=TINYINT}, #{coopCompId,jdbcType=BIGINT},
+        #{coopNetId,jdbcType=BIGINT}, #{parEstimateCount,jdbcType=TINYINT}, #{parEstimateWeight,jdbcType=DECIMAL},
+        #{appointTime,jdbcType=TIMESTAMP}, #{appointDesc,jdbcType=VARCHAR}, #{taskSource,jdbcType=TINYINT},
+        #{taskStatus,jdbcType=TINYINT}, #{taskIsEnd,jdbcType=TINYINT}, #{taskEndTime,jdbcType=TIMESTAMP},
+        #{actorMemberId,jdbcType=BIGINT}, #{actorPhone,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR},
+        #{contactMobile,jdbcType=VARCHAR}, #{contactTel,jdbcType=VARCHAR}, #{contactAddressId,jdbcType=BIGINT},
+        #{contactAddress,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{contactCasUserId,jdbcType=BIGINT},
+        #{contactCompId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=BIGINT},
+        #{taskFlag,jdbcType=TINYINT}, #{modifyTime,jdbcType=TIMESTAMP}, #{contactAddrLongitude,jdbcType=DECIMAL},
+        #{contactAddrLatitude,jdbcType=DECIMAL})
+    </insert>
+    
+     <update id="updateByPrimaryKeySelective" parameterType="java.util.Map" >
+    update par_task_info
+    <set >
+      <if test="taskType != null" >
+        task_type = #{taskType,jdbcType=TINYINT},
+      </if>
+      <if test="coopCompId != null" >
+        coop_comp_id = #{coopCompId,jdbcType=BIGINT},
+      </if>
+      <if test="coopNetId != null" >
+        coop_net_id = #{coopNetId,jdbcType=BIGINT},
+      </if>
+      <if test="parEstimateCount != null" >
+        par_estimate_count = #{parEstimateCount,jdbcType=TINYINT},
+      </if>
+      <if test="parEstimateWeight != null" >
+        par_estimate_weight = #{parEstimateWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="appointTime != null" >
+        appoint_time = #{appointTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appointDesc != null" >
+        appoint_desc = #{appointDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="taskSource != null" >
+        task_source = #{taskSource,jdbcType=TINYINT},
+      </if>
+      <if test="taskStatus != null" >
+        task_status = #{taskStatus,jdbcType=TINYINT},
+      </if>
+      <if test="taskIsEnd != null" >
+        task_is_end = #{taskIsEnd,jdbcType=TINYINT},
+      </if>
+      <if test="taskEndTime != null" >
+        task_end_time = #{taskEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="actorMemberId != null" >
+        actor_member_id = #{actorMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="actorPhone != null" >
+        actor_phone = #{actorPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="contactName != null" >
+        contact_name = #{contactName,jdbcType=VARCHAR},
+      </if>
+      <if test="contactMobile != null" >
+        contact_mobile = #{contactMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="contactTel != null" >
+        contact_tel = #{contactTel,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddressId != null" >
+        contact_address_id = #{contactAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="contactAddress != null" >
+        contact_address = #{contactAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="contactCasUserId != null" >
+        contact_cas_user_id = #{contactCasUserId,jdbcType=BIGINT},
+      </if>
+      <if test="contactCompId != null" >
+        contact_comp_id = #{contactCompId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="taskFlag != null" >
+        task_flag = #{taskFlag,jdbcType=TINYINT},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="contactAddrLongitude != null" >
+        contact_addr_longitude = #{contactAddrLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="contactAddrLatitude != null" >
+        contact_addr_latitude = #{contactAddrLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="parEstimatePrice != null" >
+        par_estimate_price = #{parEstimatePrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where task_id = #{taskId,jdbcType=BIGINT}
+  </update>
+    
+    
+    
+    <update id="changSendPerson" parameterType="java.util.Map">
+    update par_parcelinfo set actual_send_member = #{memberId},error_message=null where 1=1  and  id in 
+    <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+    #{item}  
+    </foreach>
+    </update>
+    <select id="ifHasPickUp" parameterType="java.lang.Long" resultType="java.util.Map">
+    select send_task_id as sendTaskId ,take_task_id as takeTaskId,actual_send_member as actualSendMember from par_parcelinfo 
+    where net_id = #{netId} and exp_waybill_num=#{expWayBillNum}
+    </select>
+     <select id="ifParcelSign" parameterType="java.lang.Long" resultType="java.util.Map">
+          select tacking_status as tackingStatus ,parcel_end_mark as parcelEndMark  
+           from par_parcelinfo where net_id = #{netId} and exp_waybill_num=#{expWayBillNum}
+    </select>
+    
+    
+    <select id="ifHasPickUpByParcelId" parameterType="java.util.List" resultType="java.lang.Long">
+        select send_task_id from par_parcelinfo where id in 
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+	    #{item}  
+	 </foreach>
+    </select>
+    
+     <select id="ifHasPickUpByParcelIdAndMemberId" parameterType="java.util.Map" resultType="java.lang.Long">
+        select send_task_id from par_parcelinfo where 1=1 and actual_send_member != #{memberId}  and id in 
+    <foreach   collection="parList"  index="index" item="item"  open="(" separator="," close=")">  
+	    #{item}  
+	 </foreach>
+    </select>
+    
+    <select id="ifHasTakePickUp" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select take_task_id from par_parcelinfo where net_id = #{netId} and exp_waybill_num=#{expWayBillNum}
+    </select>
+    
+    <select id="ifParcelExist" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select id from par_parcelinfo where net_id = #{netId} and exp_waybill_num=#{expWayBillNum}  and actual_take_member is not null
+    </select>
+    
+    <update id="updateParcel" >
+    update par_parcelinfo set send_task_id = #{taskId},parcel_status=11,tacking_status=0,error_message=null,actual_send_member = #{createUserId} where id = #{parcelId}
+    </update>
+    <update id="updateTaskStatus" >
+    update par_task_info set TASK_IS_END = 1   where task_id = #{taskId}
+    </update>
+    <select id="querySendTaskList" parameterType="java.lang.Long" resultType="java.util.Map">
+		SELECT
+		a.task_id as taskId,
+		a.task_type as taskType,
+		a.contact_address as contactAddress,
+		a.contact_address_id as contactAddressId,
+		a.contact_tel as contactTel,
+		a.contact_mobile as contactMobile,
+		unix_timestamp(a.create_time) * 1000 as createTime,
+		a.task_flag as taskFlag,
+		a.contact_name as contactName, 
+		a.par_estimate_count as parEstimateCount,
+		b.exp_waybill_num as expWayBillNum,
+		b.cod_amount as codAmount,
+		b.freight as freight,
+		b.id as parcelId,
+		'' as id 
+		FROM
+		par_task_info a left join par_parcelinfo b on a.task_id = b.send_task_id
+		WHERE
+		a.task_type = 1
+		AND a.actor_member_id =#{memberId}
+		AND a.task_flag = 0
+		AND a.task_is_end = 0
+		 ORDER BY a.create_time DESC
+    </select>
+    <update id="finishSendTask" parameterType="java.lang.Long">
+        update par_task_info SET task_is_end = 1 where task_id = #{taskId}
+    </update>
+</mapper>

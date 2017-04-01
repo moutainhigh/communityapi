@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.ExpCompFenceCenterMapper">
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCompFenceCenter">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="net_id" jdbcType="BIGINT" property="netId" />
+    <result column="comp_id" jdbcType="BIGINT" property="compId" />
+    <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+    <result column="latitude" jdbcType="DECIMAL" property="latitude" />
+    <result column="map_level" jdbcType="TINYINT" property="mapLevel" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, net_id, comp_id, longitude, latitude, map_level
+  </sql>
+  <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exp_comp_fence_center
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from exp_comp_fence_center
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpCompFenceCenter">
+    insert into exp_comp_fence_center (id, net_id, comp_id, 
+      longitude, latitude, map_level
+      )
+    values (#{id,jdbcType=BIGINT}, #{netId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, #{mapLevel,jdbcType=TINYINT}
+      )
+  </insert>
+  <update id="update" parameterType="net.okdi.api.entity.ExpCompFenceCenter">
+    update exp_comp_fence_center
+    set net_id = #{netId,jdbcType=BIGINT},
+      comp_id = #{compId,jdbcType=BIGINT},
+      longitude = #{longitude,jdbcType=DECIMAL},
+      latitude = #{latitude,jdbcType=DECIMAL},
+      map_level = #{mapLevel,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+   <select id="queryCompMapCenter" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exp_comp_fence_center
+    where comp_id = #{compId,jdbcType=BIGINT}
+  </select>
+</mapper>

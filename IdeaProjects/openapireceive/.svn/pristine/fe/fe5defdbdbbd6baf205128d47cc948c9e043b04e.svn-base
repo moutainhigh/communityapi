@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.ParLogisticSearchMapperV4">
+
+ <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParLogisticSearch" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="channel_no" property="channelNo" jdbcType="VARCHAR" />
+    <result column="channel_id" property="channelId" jdbcType="BIGINT" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="net_code" property="netCode" jdbcType="VARCHAR" />
+    <result column="exp_waybill_num" property="expWaybillNum" jdbcType="VARCHAR" />
+    <result column="exp_type" property="expType" jdbcType="CHAR" />
+    <result column="trace_detail" property="traceDetail" jdbcType="LONGVARCHAR" />
+    <result column="trace_status" property="traceStatus" jdbcType="CHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+    <result column="appoint_id" property="appointId" jdbcType="BIGINT" />
+    <result column="rec_mobile" property="recMobile" jdbcType="VARCHAR" />
+    <result column="system_mark" property="systemMark" jdbcType="CHAR" />
+    <result column="push_mark" property="pushMark" jdbcType="SMALLINT" />
+  </resultMap>
+
+	 <sql id="Base_Column_List" >
+   	 id, channel_no, channel_id, net_id, net_code, exp_waybill_num, exp_type, trace_status, 
+   	 created_time, modified_time, appoint_id, rec_mobile, system_mark, push_mark
+  	</sql>
+
+</mapper>

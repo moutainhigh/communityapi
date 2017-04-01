@@ -1,0 +1,6 @@
+<ehcache updateCheck="false" name="public_api" >
+	<diskStore path="/data/cache" />
+	<defaultCache maxElementsInMemory="100" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="300" overflowToDisk="false" />
+</ehcache>
+

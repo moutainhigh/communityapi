@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="net.okdi.api.dao.DispatchParMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.vo.VO_DispatchPar">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="exp_waybill_num" jdbcType="VARCHAR" property="expWaybillNum" />
+		<result column="actual_send_member" jdbcType="BIGINT" property="actualSendMember" />
+		<result column="freight" jdbcType="DECIMAL" property="freight" />
+		<result column="cod_amount" jdbcType="DECIMAL" property="codAmount" />
+		<!-- <result column="sign_member" jdbcType="VARCHAR" property="signMember" /> -->
+		
+		<result column="addressee_name" jdbcType="VARCHAR" property="addresseeName" />
+		<result column="addressee_address" jdbcType="VARCHAR" property="addresseeAddress" />
+		<result column="addressee_mobile" jdbcType="VARCHAR" property="addresseeMobile" />
+
+		<result column="parcel_status" jdbcType="SMALLINT" property="parcelStatus" />
+		<result column="send_task_id" jdbcType="BIGINT" property="sendTaskId" />
+		<result column="tacking_status" jdbcType="SMALLINT" property="tackingStatus" />
+		
+		<result column="error_message" jdbcType="VARCHAR" property="errorMessage" />
+		<result column="create_time" jdbcType="DATE" property="createTime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		a.id,
+		exp_waybill_num ,
+		actual_send_member ,
+		freight ,
+		cod_amount ,
+		addressee_Name ,
+		addressee_address ,
+		addressee_mobile ,
+		parcel_status,
+		send_task_id,
+		tacking_status,
+		error_message,
+		create_time
+	</sql>
+
+	<select id="findCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(a.id)
+		from par_parcelinfo a left join par_parceladdress b
+		on a.id = b.id
+		where comp_id = #{compId}
+		<if test="actualSendMember!=null">
+			and a.actual_send_member = #{actualSendMember}
+		</if>
+		<if test="addresseeName!=null">
+			and b.addressee_name like CONCAT('%',#{addresseeName},'%')
+		</if>
+		<if test="addresseeMobile!=null">
+			and b.addressee_mobile = #{addresseeMobile}
+		</if>
+		<if test="addresseeAddress!=null">
+			and b.addressee_address = #{addresseeAddress}
+		</if>
+		<if test="parcelStatus!=null">
+			and a.parcel_status = #{parcelStatus}
+		</if>
+		<if test="expWaybillNum!=null">
+			and a.exp_waybill_num = #{expWaybillNum}
+		</if>
+		<if test="startDate!=null">
+			and create_time <![CDATA[>=]]> #{startDate}
+		</if>
+		<if test="endDate!=null">
+			and create_time <![CDATA[<=]]> #{endDate}
+		</if>
+		<if test="tackingStatus!=null">
+			and tacking_status = #{tackingStatus}
+		</if>
+		<if test="tackingStatus==null and statusTacking!=null">
+			and tacking_status is null
+		</if>
+		and parcel_Status <![CDATA[ > ]]> 1
+	</select>
+
+	<select id="findDispatches" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"></include>
+		from par_parcelinfo a left join par_parceladdress b
+		on a.id = b.id
+		where comp_id = #{compId}
+		<if test="actualSendMember!=null">
+			and a.actual_send_member = #{actualSendMember}
+		</if>
+		<if test="addresseeName!=null">
+			and b.addressee_name like CONCAT('%',#{addresseeName},'%')
+		</if>
+		<if test="addresseeMobile!=null">
+			and b.addressee_mobile = #{addresseeMobile}
+		</if>
+		<if test="addresseeAddress!=null">
+			and b.addressee_address = #{addresseeAddress}
+		</if>
+		<if test="parcelStatus!=null">
+			and a.parcel_status = #{parcelStatus}
+		</if>
+		<if test="expWaybillNum!=null">
+			and a.exp_waybill_num = #{expWaybillNum}
+		</if>
+		<if test="startDate!=null">
+    	<![CDATA[ and create_time >= #{startDate} ]]>
+		</if>
+		<if test="endDate!=null">
+    	<![CDATA[ and create_time <= #{endDate}	]]>
+		</if>
+		<if test="tackingStatus!=null">
+			and tacking_status = #{tackingStatus}
+		</if>
+		<if test="tackingStatus==null and statusTacking!=null">
+			and tacking_status is null
+		</if>
+		and parcel_Status <![CDATA[ > ]]> 1
+		<if test="page!=null">
+			limit #{page.offset},#{page.pageSize}
+		</if>
+	</select>
+	
+	<!-- ******************************************************* -->
+	
+	<!-- 查询单个的列表信息 -->
+	<resultMap id="BaseDispatchMap" type="net.okdi.api.vo.VO_DispatchSingleParInfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="actual_send_member" jdbcType="BIGINT" property="actualSendMember" />
+		<result column="exp_waybill_num" jdbcType="VARCHAR" property="expWaybillNum" />
+		<result column="cod_amount" jdbcType="DECIMAL" property="codAmount" />
+
+		<result column="addressee_address_id" jdbcType="BIGINT" property="addresseeAddressId" />
+		<result column="addressee_address" jdbcType="VARCHAR" property="addresseeAddress" />
+		<result column="addressee_mobile" jdbcType="VARCHAR" property="addresseeMobile" />
+		<result column="addressee_name" jdbcType="VARCHAR" property="addresseeName" />
+
+		<result column="send_address_id" jdbcType="BIGINT" property="sendAddressId" />
+		<result column="send_address" jdbcType="VARCHAR" property="sendAddress" />
+		<result column="send_mobile" jdbcType="VARCHAR" property="sendMobile" />
+		<result column="send_name" jdbcType="VARCHAR" property="sendName" />
+
+		<result column="freight_payment_method" jdbcType="SMALLINT" property="freightPaymentMethod" />
+		<result column="freight" jdbcType="DECIMAL" property="freight" />
+		<result column="packing_charges" jdbcType="DECIMAL" property="packingCharges" />
+		<result column="chare_weight_forsender" jdbcType="DECIMAL" property="chareWeightForsender" />
+		<result column="insure_amount" jdbcType="DECIMAL" property="insureAmount" />
+		<result column="price_premium" jdbcType="DECIMAL" property="pricePremium" />
+		<result column="parcel_remark" jdbcType="VARCHAR" property="parcelRemark" />
+	</resultMap>
+
+	<sql id="Base_Dispatch_List">
+		a.id ,
+		actual_send_member ,
+		exp_waybill_num ,
+		cod_amount ,
+		
+		addressee_address_id ,
+		addressee_address ,
+		addressee_mobile ,
+		addressee_name ,
+
+		send_address_id ,
+		send_address ,
+		send_mobile ,
+		send_name ,
+
+		freight_payment_method ,
+		freight ,
+		packing_charges ,
+		chare_weight_Forsender ,
+		insure_amount ,
+		price_premium ,
+		parcel_remark
+	</sql>
+	<select id="findParById" parameterType="java.util.Map" resultMap="BaseDispatchMap">
+		select
+		<include refid="Base_Dispatch_List"></include>
+		from par_parcelinfo a left join par_parceladdress b
+		on a.id = b.id
+		where a.id = #{id}
+	</select>
+	
+	<select id="findParByExpWaybill" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"></include>
+		from par_parcelinfo a left join par_parceladdress b
+		on a.id = b.id
+		where exp_waybill_num = #{expWaybillNum} and net_id = #{netId}
+	</select>
+	
+	<insert id="insertPar" parameterType="java.util.Map">
+		insert into par_parcelinfo
+		(	
+			id , actual_send_member , exp_waybill_num , cod_amount,
+			freight_payment_method , freight , packing_charges , chare_weight_forsender ,
+			insure_amount , price_premium , parcel_remark,
+			create_user_id,comp_id,create_time,parcel_status,net_id
+		)
+		values
+		(
+			#{id},#{actualSendMember},#{expWaybillNum},#{codAmount},
+			#{freightPaymentMethod},#{freight},#{packingCharges},#{chareWeightForsender},
+			#{insureAmount},#{pricePremium},#{parcelRemark},
+			#{createUserId},#{compId},#{createTime},#{parcelStatus},#{netId}
+		)
+	</insert>
+	<insert id="insertParAddress" parameterType="java.util.Map">
+		insert into par_parceladdress
+		(	
+			id,addressee_address_id,addressee_address,addressee_mobile,addressee_name,
+			send_address_id , send_address , send_mobile , send_name
+		)
+		values
+		(
+			#{id},#{addresseeAddressId},#{addresseeAddress},#{addresseeMobile},#{addresseeName},
+			#{sendAddressId},#{sendAddress},#{sendMobile},#{sendName}
+		)
+	</insert>
+	
+	<update id="updatePar" parameterType="java.util.Map">
+		update par_parcelinfo set 
+		<!-- 
+		id , actual_send_member , exp_waybill_num , cod_amount,
+		freight_payment_method , freight , packing_charges , chare_weight_fortransit ,
+		insure_amount , price_premium , parcel_remark,
+		create_user_id,comp_id,create_time,parcel_status,net_id
+		
+		id,actualSendMember,memberName,expWaybillNum,codAmount,
+		freightPaymentMethod,freight,packingCharges,chareWeightForsender,
+		insureAmount,pricePremium,parcelRemark,
+		createUserId,compId,createTime,parcelStatus,netId
+		-->
+		<trim suffix="" suffixOverrides=",">
+			<if test ="actualSendMember!=null">
+				actual_send_member=#{actualSendMember},
+			</if>
+			<if test ="expWaybillNum!=null">
+				exp_waybill_num = #{expWaybillNum},
+			</if>
+				cod_amount=#{codAmount},
+				freight_payment_method=#{freightPaymentMethod},
+				freight=#{freight},
+				packing_charges=#{packingCharges},
+				chare_weight_forsender=#{chareWeightForsender},
+				insure_amount=#{insureAmount},
+				price_premium=#{pricePremium},
+				parcel_remark=#{parcelRemark},
+		</trim>
+		where id = #{id}
+	</update>
+	
+	
+	<update id="updateParAddress" parameterType="java.util.Map">
+		update par_parceladdress set 
+		<trim suffix="" suffixOverrides=",">
+			<!-- 
+				id,addressee_address_id,addressee_address,addressee_mobile,addressee_name,
+				send_address_id , send_address , send_mobile , send_name
+				
+				id,addresseeAddressId,addresseeAddress,addresseeMobile,addresseeName,
+				sendAddressId,sendAddress,sendMobile,sendName
+			 -->
+				addressee_address_id=#{addresseeAddressId},
+				addressee_address=#{addresseeAddress},
+				addressee_mobile=#{addresseeMobile},
+				addressee_name=#{addresseeName},
+				send_address_id=#{sendAddressId},
+				send_address=#{sendAddress},
+				send_mobile=#{sendMobile},
+				send_name=#{sendName}
+		</trim>
+		where id = #{id}
+	</update>
+</mapper>

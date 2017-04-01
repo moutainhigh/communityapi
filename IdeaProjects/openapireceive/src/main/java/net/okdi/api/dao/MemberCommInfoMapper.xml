@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberCommInfoMapper" >
+   <resultMap id="MemberCommInfoMap" type="net.okdi.api.entity.MemberCommInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="associated_number" property="associatedNumber" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="verif_flag" property="verifFlag" jdbcType="SMALLINT" />
+    <result column="preferred_comm" property="preferredComm" jdbcType="SMALLINT" />
+    <result column="del_mark" property="delMark" jdbcType="SMALLINT" />
+    <result column="data_type" property="dataType" jdbcType="SMALLINT" />
+    <result column="comp_id" property="compid" jdbcType="SMALLINT" />
+    <result column="comm_tag_id" property="commTagId" jdbcType="BIGINT" />
+  </resultMap>
+  <insert id="insertMemberComInfo" parameterType="java.util.HashMap">
+  	insert into member_comm_info(
+  								id,
+  								member_id,
+  								comm_tag_id,
+  								associated_number,
+  								create_time)
+  						        values(#{id},#{memberId},#{commTagId},#{associatedNumber},#{createTime})
+  </insert>
+  <select id = "checkTel" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  	select count(*) from member_info m where 1=1 and m.member_phone=#{associatedNumber}
+  </select>
+  <select id = "checkTelInfo" parameterType="java.util.HashMap" resultMap="MemberCommInfoMap">
+  select a.comp_id as compid, m.member_id from member_info m LEFT JOIN bas_employee_relation a on m.member_id=a.member_id 
+  where 1=1 and  m.member_phone=#{associatedNumber} GROUP BY m.member_phone
+  </select>
+  <select id = "checkMemberPhone" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+select count(*) from bas_employee_relation a LEFT JOIN member_info m on a.member_id=m.member_id
+where m.member_phone=#{associatedNumber};
+  </select>
+  
+  <!-- 插入人员联系表电话 -->
+  <insert id = "doAddComm" parameterType="java.util.HashMap">
+  	insert into member_comm_info(id,
+  								member_id,
+  								associated_number,
+  								comm_tag_id)
+  								values(#{memberId},
+  								#{memberId},
+  								#{memberPhone},
+  								#{tagId}
+  								)
+  </insert>
+</mapper>

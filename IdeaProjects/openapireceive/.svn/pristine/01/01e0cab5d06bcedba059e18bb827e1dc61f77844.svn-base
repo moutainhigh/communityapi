@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.PromoAppDownLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.PromoAppDownLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="promo_reg_member_Id" property="promoRegMemberId" jdbcType="BIGINT" />
+    <result column="product_type" property="productType" jdbcType="SMALLINT" />
+    <result column="user_agent" property="userAgent" jdbcType="VARCHAR" />
+    <result column="app_type" property="appType" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, promo_reg_member_Id, product_type, user_agent, app_type, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from promo_app_down_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.PromoAppDownLog" >
+    insert into promo_app_down_log (id, promo_reg_member_Id, product_type, 
+      user_agent, app_type, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{promoRegMemberId,jdbcType=BIGINT}, #{productType,jdbcType=SMALLINT}, 
+      #{userAgent,jdbcType=VARCHAR}, #{appType,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+</mapper>

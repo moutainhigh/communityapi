@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCustomerMemberRelationMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    <id column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <id column="exp_member_id" property="expMemberId" jdbcType="BIGINT" />
+    <id column="comp_id" property="compId" jdbcType="BIGINT" />
+    <id column="sort" property="sort" jdbcType="SMALLINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    customer_id, exp_member_id, comp_id, sort
+  </sql>
+  <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" /> ,member_name as expMemberName
+    from exp_customer_member_relation a left join member_info b on a.exp_member_id = b.member_id 
+    where a.customer_id = #{customerId,jdbcType=BIGINT}
+    order by a.sort
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    delete from exp_customer_member_relation
+    where customer_id = #{customerId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByMemberId" parameterType="java.lang.Long" >
+    delete from exp_customer_member_relation
+    where exp_member_id = #{memberId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    insert into exp_customer_member_relation (customer_id, exp_member_id, comp_id, 
+      sort)
+    values (#{customerId,jdbcType=BIGINT}, #{expMemberId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{sort,jdbcType=SMALLINT})
+  </insert>
+  
+  <insert id="insertExpList" parameterType="java.util.List" >
+    insert into exp_customer_member_relation (customer_id, exp_member_id, comp_id, sort)
+    values 
+     <foreach collection="list" item="item" index="index" separator="," >  
+    	(#{item.customerId,jdbcType=BIGINT}, #{item.expMemberId,jdbcType=BIGINT}, #{item.compId,jdbcType=BIGINT},  #{item.sort,jdbcType=SMALLINT} )
+     </foreach>  
+  </insert>
+  
+  
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    insert into exp_customer_member_relation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="expMemberId != null" >
+        exp_member_id,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId != null" >
+        #{expMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    update exp_customer_member_relation
+    <set >
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where customer_id = #{customerId,jdbcType=BIGINT}
+      and exp_member_id = #{expMemberId,jdbcType=BIGINT}
+      and comp_id = #{compId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ExpCustomerMemberRelation" >
+    update exp_customer_member_relation
+    set sort = #{sort,jdbcType=SMALLINT}
+    where customer_id = #{customerId,jdbcType=BIGINT}
+      and exp_member_id = #{expMemberId,jdbcType=BIGINT}
+      and comp_id = #{compId,jdbcType=BIGINT}
+  </update>
+</mapper>

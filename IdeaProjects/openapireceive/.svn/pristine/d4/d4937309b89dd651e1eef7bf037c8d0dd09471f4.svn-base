@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.VisitDsAppDownLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.VisitDsAppDownLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="short_url" property="shortUrl" jdbcType="VARCHAR" />
+    <result column="product_type" property="productType" jdbcType="SMALLINT" />
+    <result column="user_agent" property="userAgent" jdbcType="VARCHAR" />
+    <result column="app_type" property="appType" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,short_url, product_type, user_agent, app_type, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from visit_ds_app_down_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.VisitDsAppDownLog" >
+    insert into visit_ds_app_down_log (id, short_url,product_type, user_agent, 
+      app_type, create_time)
+    values (#{id,jdbcType=BIGINT}, #{shortUrl,jdbcType=VARCHAR},#{productType,jdbcType=SMALLINT}, #{userAgent,jdbcType=VARCHAR}, 
+      #{appType,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.VisitDsAppDownLog" >
+    update visit_ds_app_down_log
+    set product_type = #{productType,jdbcType=SMALLINT},
+      user_agent = #{userAgent,jdbcType=VARCHAR},
+      app_type = #{appType,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

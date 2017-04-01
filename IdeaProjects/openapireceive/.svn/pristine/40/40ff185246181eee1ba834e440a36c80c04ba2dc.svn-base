@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.BasCompAuditMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasCompAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="audit_opinion" property="auditOpinion" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="audit_comp" property="auditComp" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, comp_id, audit_opinion, audit_desc, audit_user, audit_time, audit_comp
+  </sql>
+  
+  
+ 
+ <insert id="insertbasCompAudit">
+		      INSERT INTO bas_employeeaudit 
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			member_id,
+			audit_comp,
+			application_role_type,
+			application_time,
+			audit_item,
+			audit_opinion,
+			audit_desc
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{map.id},
+				#{map.member_id},
+				#{map.audit_comp},
+				#{map.application_role_type},
+				#{map.application_time},
+				#{map.audit_item},
+				#{map.audit_opinion},
+				#{map.audit_desc}
+		</trim>
+ 
+ </insert>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.ExpAreaElectronicFenceMapper">
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpAreaElectronicFence">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="net_id" jdbcType="BIGINT" property="netId" />
+    <result column="comp_id" jdbcType="BIGINT" property="compId" />
+    <result column="branch_comp_id" jdbcType="BIGINT" property="branchCompId" />
+    <result column="min_longitude" jdbcType="DECIMAL" property="minLongitude" />
+    <result column="max_longitude" jdbcType="DECIMAL" property="maxLongitude" />
+    <result column="min_latitude" jdbcType="DECIMAL" property="minLatitude" />
+    <result column="max_latitude" jdbcType="DECIMAL" property="maxLatitude" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="label_longitude" jdbcType="DECIMAL" property="labelLongitude" />
+    <result column="label_latitude" jdbcType="DECIMAL" property="labelLatitude" />
+    <result column="longitude_str" jdbcType="LONGVARCHAR" property="longitudeStr" />
+    <result column="latitude_str" jdbcType="LONGVARCHAR" property="latitudeStr" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, net_id, comp_id, branch_comp_id, min_longitude, max_longitude, min_latitude, 
+    max_latitude, member_id, label_longitude, label_latitude ,longitude_str, latitude_str
+  </sql>
+  <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from exp_area_electronic_fence
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from exp_area_electronic_fence
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpAreaElectronicFence">
+    insert into exp_area_electronic_fence (id, net_id, comp_id, 
+      branch_comp_id, min_longitude, max_longitude, 
+      min_latitude, max_latitude, member_id, 
+      label_longitude, label_latitude, longitude_str, 
+      latitude_str)
+    values (#{id,jdbcType=BIGINT}, #{netId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, 
+      #{branchCompId,jdbcType=BIGINT}, #{minLongitude,jdbcType=DECIMAL}, #{maxLongitude,jdbcType=DECIMAL}, 
+      #{minLatitude,jdbcType=DECIMAL}, #{maxLatitude,jdbcType=DECIMAL}, #{memberId,jdbcType=BIGINT}, 
+      #{labelLongitude,jdbcType=DECIMAL}, #{labelLatitude,jdbcType=DECIMAL}, #{longitudeStr,jdbcType=LONGVARCHAR}, 
+      #{latitudeStr,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="update" parameterType="net.okdi.api.entity.ExpAreaElectronicFence">
+    update exp_area_electronic_fence
+    set net_id = #{netId,jdbcType=BIGINT},
+      comp_id = #{compId,jdbcType=BIGINT},
+      branch_comp_id = #{branchCompId,jdbcType=BIGINT},
+      min_longitude = #{minLongitude,jdbcType=DECIMAL},
+      max_longitude = #{maxLongitude,jdbcType=DECIMAL},
+      min_latitude = #{minLatitude,jdbcType=DECIMAL},
+      max_latitude = #{maxLatitude,jdbcType=DECIMAL},
+      longitude_str = #{longitudeStr,jdbcType=LONGVARCHAR},
+      latitude_str = #{latitudeStr,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="queryMemberAreaFence" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+	select e.id,e.member_id memberId,e.label_longitude labelLongitude,
+	e.label_latitude labelLatitude,'#808080' color,e.longitude_str,e.latitude_str,'0' typeNum from exp_area_electronic_fence e
+	where e.comp_id=#{compId}  and  e.branch_comp_id is null
+  </select>
+  <select id="queryBranchAreaFence" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select e.id,e.branch_comp_id memberId,e.label_longitude labelLongitude,
+		e.label_latitude labelLatitude,ifnull(r.area_color,'#808080') color,e.longitude_str,e.latitude_str,'1050' typeNum from exp_area_electronic_fence e
+		left join exp_comp_relation r on r.comp_id=e.branch_comp_id and r.parent_comp_id=e.comp_id 
+		where e.comp_id=#{compId} and  e.branch_comp_id is not null 
+  </select>
+  <!--
+  <select id="queryMemberAreaFence" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+	select e.id,e.member_id memberId,m.member_name memberName,e.label_longitude labelLongitude,
+	e.label_latitude labelLatitude,ifnull(b.area_color,'#808080') color,e.longitude_str,e.latitude_str,'0' typeNum from exp_area_electronic_fence e
+	left join member_info m on e.member_id=m.member_id 
+	left join bas_employee_relation b on b.member_id=e.member_id and b.comp_id=e.comp_id 
+	where e.comp_id=#{compId}  and  e.branch_comp_id is null
+  </select>
+  <select id="queryBranchAreaFence" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select e.id,e.branch_comp_id memberId,c.comp_name memberName,e.label_longitude labelLongitude,
+		e.label_latitude labelLatitude,ifnull(r.area_color,'#808080') color,e.longitude_str,e.latitude_str,'1050' typeNum from exp_area_electronic_fence e
+		left join bas_compinfo c on e.branch_comp_id=c.comp_id  
+		left join exp_comp_relation r on r.comp_id=e.branch_comp_id and r.parent_comp_id=e.comp_id 
+		where e.comp_id=#{compId} and  e.branch_comp_id is not null 
+  </select>
+    -->
+  <update id="updateAreaBranch" parameterType="java.util.Map">
+    update exp_area_electronic_fence
+    set branch_comp_id = null
+    where comp_id=#{compId} 
+    and branch_comp_id = #{branchCompId}
+  </update>
+  <update id="updateAreaMember" parameterType="java.util.Map">
+    update exp_area_electronic_fence
+     set branch_comp_id = #{branchCompId},
+      member_id = #{memberId},
+      label_longitude = #{labelLongitude},
+      label_latitude = #{labelLatitude}
+    where id = #{areaFenceId}
+  </update>
+  <update id="removeAreaMember" parameterType="java.util.Map">
+    update exp_area_electronic_fence
+    set member_id =null
+    where comp_id = #{compId} 
+    and member_id = #{memberId} 
+  </update>
+  
+  <select id="queryMemberFence" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from exp_area_electronic_fence 
+	where comp_id = #{compId} and
+	maxLongitude <![CDATA[>=]]> #{addrLongitude} 
+	and minLongitude <![CDATA[<=]]> #{addrLongitude} 
+	and maxLatitude <![CDATA[>=]]> #{addrLatitude} 
+	and minLatitude <![CDATA[<=]]> #{addrLatitude} 
+	and member_id != null and branch_comp_id = null
+  </select>
+  
+  <select id="queryCompFence" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from exp_area_electronic_fence 
+	where comp_id = #{compId} and
+	maxLongitude <![CDATA[>=]]> #{addrLongitude} 
+	and minLongitude <![CDATA[<=]]> #{addrLongitude} 
+	and maxLatitude <![CDATA[>=]]> #{addrLatitude} 
+	and minLatitude <![CDATA[<=]]> #{addrLatitude} 
+	and member_id = null and  branch_comp_id != null
+  </select>
+</mapper>

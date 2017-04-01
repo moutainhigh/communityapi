@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.AccSrecpayvouchersMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.AccSrecpayvouchers" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="payment_way" property="paymentWay" jdbcType="SMALLINT" />
+    <result column="voucher_flag" property="voucherFlag" jdbcType="SMALLINT" />
+    <result column="object_id" property="objectId" jdbcType="BIGINT" />
+    <result column="object_cas_id" property="objectCasId" jdbcType="BIGINT" />
+    <result column="object_comp_id" property="objectCompId" jdbcType="BIGINT" />
+    <result column="object_comp_type" property="objectCompType" jdbcType="SMALLINT" />
+    <result column="bill_quantity" property="billQuantity" jdbcType="INTEGER" />
+    <result column="rece_people_id" property="recePeopleId" jdbcType="BIGINT" />
+    <result column="rece_people_name" property="recePeopleName" jdbcType="VARCHAR" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="total_cod_amount" property="totalCodAmount" jdbcType="DECIMAL" />
+    <result column="total_freight" property="totalFreight" jdbcType="DECIMAL" />
+    <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="actual_amount" property="actualAmount" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="voucher_status" property="voucherStatus" jdbcType="SMALLINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, payment_way, voucher_flag, object_id, object_cas_id, object_comp_id, object_comp_type, 
+    bill_quantity, rece_people_id, rece_people_name, comp_id, create_user_id, create_time, 
+    total_cod_amount, total_freight, total_amount, actual_amount, balance, voucher_status, 
+    remark
+  </sql>
+  <insert id="insert" parameterType="net.okdi.api.entity.AccSrecpayvouchers" >
+    insert into acc_srecpayvouchers (id, payment_way, voucher_flag, 
+      object_id, object_cas_id, object_comp_id, 
+      object_comp_type, bill_quantity, rece_people_id, 
+      rece_people_name, comp_id, create_user_id, 
+      create_time, total_cod_amount, total_freight, 
+      total_amount, actual_amount, balance, 
+      voucher_status, remark)
+    values (#{id,jdbcType=BIGINT}, #{paymentWay,jdbcType=SMALLINT}, #{voucherFlag,jdbcType=SMALLINT}, 
+      #{objectId,jdbcType=BIGINT}, #{objectCasId,jdbcType=BIGINT}, #{objectCompId,jdbcType=BIGINT}, 
+      #{objectCompType,jdbcType=SMALLINT}, #{billQuantity,jdbcType=INTEGER}, #{recePeopleId,jdbcType=BIGINT}, 
+      #{recePeopleName,jdbcType=VARCHAR}, #{compId,jdbcType=BIGINT}, #{createUserId,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{totalCodAmount,jdbcType=DECIMAL}, #{totalFreight,jdbcType=DECIMAL}, 
+      #{totalAmount,jdbcType=DECIMAL}, #{actualAmount,jdbcType=DECIMAL}, #{balance,jdbcType=DECIMAL}, 
+      #{voucherStatus,jdbcType=SMALLINT}, #{remark,jdbcType=VARCHAR})
+  </insert>
+</mapper>

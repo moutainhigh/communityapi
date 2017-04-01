@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.OauthAccessKeyMapper">
+	<sql id="base_column">
+		id,member_id as memberId,username,public_key as publicKey,
+		private_key as privateKey,status as status,create_time
+		as createTime
+	</sql>
+	<resultMap id="resultMap" type="net.okdi.api.entity.OauthAccessKey">
+		<result property="id" column="id" />
+		<result property="memberId" column="member_id" />
+		<result property="username" column="username" />
+		<result property="publicKey" column="public_key" />
+		<result property="privateKey" column="private_key" />
+		<result property="status" column="status" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+
+	<select id="getEntityByKey" parameterType="java.lang.String" resultType="net.okdi.api.entity.OauthAccessKey">
+		select
+		<include refid="base_column" />
+		from oauth_access_key where public_key=#{publicKey}
+	</select>
+
+	<insert id="insert" parameterType="net.okdi.api.entity.OauthAccessKey"
+		useGeneratedKeys="true" keyProperty="id">
+		insert oauth_access_key
+		(id,member_id,username,public_key,private_key,status,create_time)
+		values(#{id},#{memberId},#{username},#{publicKey},#{privateKey},#{status},#{createTime})
+	</insert>
+</mapper> 

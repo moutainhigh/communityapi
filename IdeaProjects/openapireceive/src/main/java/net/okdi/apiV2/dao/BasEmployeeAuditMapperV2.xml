@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.BasEmployeeAuditMapperV2" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="audit_comp" property="auditComp" jdbcType="BIGINT" />
+    <result column="application_role_type" property="applicationRoleType" jdbcType="SMALLINT" />
+    <result column="application_desc" property="applicationDesc" jdbcType="VARCHAR" />
+    <result column="application_time" property="applicationTime" jdbcType="TIMESTAMP" />
+    <result column="audit_item" property="auditItem" jdbcType="SMALLINT" />
+    <result column="audit_opinion" property="auditOpinion" jdbcType="SMALLINT" />
+    <result column="audit_reject_reason" property="auditRejectReason" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, member_id, audit_comp, application_role_type, application_desc, application_time, 
+    audit_item, audit_opinion, audit_reject_reason, audit_desc, audit_user, audit_time
+  </sql>
+  
+  <!-- 通过memberId查询实名认证状态信息 -->
+  <select id="queryRealNameStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	member_id,
+	audit_item,
+	audit_opinion,
+	application_role_type
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 1
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+ 
+  <!-- 通过memberId查询快递员认证状态信息 -->
+  <select id="queryExpressStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	member_id,
+	audit_item,
+	audit_opinion,
+	application_desc,
+	audit_comp,
+	application_role_type
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 3
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+  <insert id="insertAuditInfo" parameterType="net.okdi.api.entity.BasEmployeeAudit" >  
+       INSERT INTO bas_employeeaudit (  
+           id,   
+           member_id,   
+           audit_item,   
+           audit_opinion,
+           audit_comp,
+           application_role_type
+           )   
+       VALUES (  
+           #{id},   
+           #{memberId},   
+           #{auditItem},   
+           #{auditOpinion},
+           #{auditComp},
+           #{applicationRoleType}
+           )  
+  </insert> 
+  
+   <!-- aijun.Han add -->
+   <!-- 通过memberId查询快递员审核所属公司id -->
+   <select id="queryAuditComp" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		SELECT
+	audit_comp
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 2
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+   <!-- aijun.Han end -->
+   <!-- 查询此站点待审核和通过人数，排除站长 -->
+   <select id="queryCountInCompInfo" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	   	SELECT
+		COUNT(*)
+		FROM
+			bas_employeeaudit
+		WHERE
+			application_role_type IN (- 1, 0)
+		AND audit_item = 2
+		AND audit_opinion IN (0,1)
+		AND audit_comp = #{compId};
+   </select>
+   <!-- 查询此代收点待审核和通过人数，排除店长 -->
+   <select id="queryCountInShop" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	   	SELECT
+		COUNT(*)
+		FROM
+			bas_employeeaudit
+		WHERE
+			application_role_type IN (3)
+		AND audit_item = 2
+		AND audit_opinion IN (0,1)
+		AND audit_comp = #{compId};
+   </select>
+   <!-- 查询此代收点待审核和通过人数，排除店长 -->
+   <select id="queryLeaderCountInComp" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	   	SELECT
+		COUNT(*)
+		FROM
+			bas_employeeaudit
+		WHERE
+			audit_item = 2
+		AND application_role_type = 1
+		AND audit_comp = #{compId};
+   </select>
+   <select id="ifCourie" parameterType="java.lang.String" resultType="java.lang.Integer">
+   select count(id) from bas_employeeaudit where member_id = #{memberId} and audit_item = 4 and audit_opinion =1
+   </select>
+   <select id="ifOwnershipAudit" parameterType="java.lang.String" resultType="java.lang.Integer">
+   select count(id) from bas_employeeaudit where member_id = #{memberId} and audit_item = 2
+   </select>
+    <select id="ifIsAssistantOrManager" parameterType="java.lang.String" resultType="java.lang.Integer">
+   select application_role_type from bas_employeeaudit where member_id = #{memberId} and audit_item = 2
+   </select>
+   <!-- 查询站点认证信息 -->
+   <select id="querySiteInfoByMemberId" resultType="java.util.HashMap" parameterType="java.lang.String">
+   		SELECT
+			bcs.responsible AS responsible,
+			bcs.responsible_telephone AS responsibleTel,
+			bcs.responsible_id_num AS responsibleIdNum,
+			bcs.business_license_num AS businessLicenseNum,
+			bc.comp_status AS compStatus,
+			be.audit_comp as compId
+		FROM
+			bas_employeeaudit be
+		LEFT JOIN bas_compbusiness bcs ON be.audit_comp = bcs.comp_id
+		LEFT JOIN bas_compinfo bc ON be.audit_comp = bc.comp_id
+		WHERE
+			be.member_id = #{memberId}
+		AND be.audit_item = 2
+   </select>
+   
+   <select id="queryCompIdByMemberId" resultType="java.util.Map">
+   	select e,application_role_type, b.comp_type_num, b.comp_address
+   	from bas_employeeaudit e, bas_compinfo b
+   	where e.audit_comp = b.comp_id
+   	and e.member_id = #{memberId}
+   	and audit_item = 2
+   </select>
+   
+   <!-- 通过memberId查询归属认证状态信息 -->
+  <select id="queryGsAuditInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT
+	 *
+	FROM
+		bas_employeeaudit
+	WHERE
+		audit_item = 2
+	AND member_id = #{memberId}
+	GROUP BY member_id
+  </select>
+   <!-- 修改归属认证信息的站点compId和申请角色 -->
+	<update id="updateGSAuditInfo" parameterType="java.lang.String">
+		UPDATE bas_employeeaudit
+		SET audit_comp = #{compId},  
+		     application_role_type=#{roleId},
+		     application_desc = null,
+		     application_time = #{date},
+		     audit_opinion = #{status},
+		     audit_reject_reason = null,
+		     audit_desc = null,
+		     audit_user = null,
+		     audit_time = null
+		WHERE
+			member_id = #{memberId}
+		AND audit_item = 2
+	</update>
+	<!-- 删除站长或者店长的人员关系信息 -->
+   <update id="updateEmployeeRelation" parameterType="java.lang.String">
+   	  UPDATE bas_employee_relation SET comp_id = #{compId},role_id = #{roleId} WHERE member_id = #{memberId};
+   </update>
+	<!-- 删除快递认证信息 -->
+   <delete id="deleteKdAuditInfo" parameterType="java.lang.String">
+   	 DELETE FROM bas_employeeaudit WHERE audit_item = 3 AND member_id = #{memberId};
+   </delete>
+   
+   
+   
+</mapper>

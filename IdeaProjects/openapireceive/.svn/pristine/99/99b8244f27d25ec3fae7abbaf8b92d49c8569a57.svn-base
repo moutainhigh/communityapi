@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.ParTaskInfoMapper">
+    <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParTaskInfo">
+        <id column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="task_type" property="taskType" jdbcType="TINYINT"/>
+        <result column="coop_comp_id" property="coopCompId" jdbcType="BIGINT"/>
+        <result column="coop_net_id" property="coopNetId" jdbcType="BIGINT"/>
+        <result column="par_estimate_count" property="parEstimateCount" jdbcType="TINYINT"/>
+        <result column="par_estimate_weight" property="parEstimateWeight" jdbcType="DECIMAL"/>
+        <result column="appoint_time" property="appointTime" jdbcType="TIMESTAMP"/>
+        <result column="appoint_desc" property="appointDesc" jdbcType="VARCHAR"/>
+        <result column="task_source" property="taskSource" jdbcType="TINYINT"/>
+        <result column="task_status" property="taskStatus" jdbcType="TINYINT"/>
+        <result column="task_is_end" property="taskIsEnd" jdbcType="TINYINT"/>
+        <result column="task_end_time" property="taskEndTime" jdbcType="TIMESTAMP"/>
+        <result column="actor_member_id" property="actorMemberId" jdbcType="BIGINT"/>
+        <result column="actor_phone" property="actorPhone" jdbcType="VARCHAR"/>
+        <result column="contact_name" property="contactName" jdbcType="VARCHAR"/>
+        <result column="contact_mobile" property="contactMobile" jdbcType="VARCHAR"/>
+        <result column="contact_tel" property="contactTel" jdbcType="VARCHAR"/>
+        <result column="contact_address_id" property="contactAddressId" jdbcType="BIGINT"/>
+        <result column="contact_address" property="contactAddress" jdbcType="VARCHAR"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="contact_cas_user_id" property="contactCasUserId" jdbcType="BIGINT"/>
+        <result column="contact_comp_id" property="contactCompId" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="create_user_id" property="createUserId" jdbcType="BIGINT"/>
+        <result column="task_flag" property="taskFlag" jdbcType="TINYINT"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+        <result column="contact_addr_longitude" property="contactAddrLongitude" jdbcType="DECIMAL"/>
+        <result column="contact_addr_latitude" property="contactAddrLatitude" jdbcType="DECIMAL"/>
+        <result column="par_estimate_price" property="parEstimatePrice" jdbcType="DECIMAL"/>
+        <result column="third_id" property="thirdId" jdbcType="VARCHAR"/>
+        <result column="task_remark" property="taskRemark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        task_id, task_type, coop_comp_id, coop_net_id, par_estimate_count, par_estimate_weight,
+        appoint_time, appoint_desc, task_source, task_status, task_is_end, task_end_time,
+        actor_member_id, actor_phone, contact_name, contact_mobile, contact_tel, contact_address_id,
+        contact_address, customer_id, contact_cas_user_id, contact_comp_id, create_time,
+        create_user_id, task_flag, modify_time, contact_addr_longitude, contact_addr_latitude, par_estimate_price
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from par_task_info
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </select>
+	
+	<select id="queryTaskCountByCreateUserId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select count(p.task_id) from par_task_info p where p.create_user_id = #{createUserId} and p.task_source = 1 and p.task_status != 10 
+	</select>
+	<select id="queryWeTaskCountByMemberId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select count(p.task_id) from par_task_info p where p.create_user_id = #{memberId} and p.task_source = 6 and p.task_status != 10 
+	</select>
+    
+    <!-- <select id="queryTaskByCreateUserId" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+    	select p.task_id as taskId, cast(p.create_time as char) as createTime, 
+    	p.task_status as taskStatus, p.contact_name as contactName, 
+    	p.contact_mobile as contactMobile, p.contact_address as contactAddress, 
+    	mi.member_name as memberName, p.coop_comp_id as compId
+    	
+    	from par_task_info p LEFT JOIN member_info mi ON p.actor_member_id = mi.member_id  
+    	where p.create_user_id = #{createUserId} and p.task_source = #{takeSource} 
+    	order by p.create_time limit #{page.offset},#{page.pageSize} 
+    </select> -->
+    
+    <!-- 缓存查询发件记录 -->
+    <select id="queryTaskByCreateUserId" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+    	select p.task_id as taskId 
+    	from par_task_info p 
+    	where p.create_user_id = #{createUserId} and p.task_source = #{takeSource} and p.task_status != 10 
+    	order by p.create_time desc, p.task_status limit #{page.offset},#{page.pageSize} 
+    </select>
+     <!-- 缓存查询微信端发件记录 -->
+    <select id="queryWechatTaskByMemberId" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+    	
+    	select n.net_id as netId
+    	, n.net_name as netName
+    	, n.code as netCode
+    	, p.task_status as taskStatus
+    	, p.actor_phone as courierPhone
+    	, m.member_name as courierName
+    	,p.task_id as taskId
+    	,FROM_UNIXTIME(UNIX_TIMESTAMP(p.create_time),'%Y-%m-%d %h:%i:%s') as createTime
+    	
+    	from par_task_info p 
+    	left join bas_netinfo n on p.coop_net_id = n.net_id 
+    	left join member_info m on p.actor_member_id = m.member_id
+    	
+    	
+    	where p.create_user_id = #{memberId} and p.task_source = #{takeSource} and p.task_status != 10 
+    	<if test="netName!=null">
+    		and n.net_name like '%${netName}%'
+    		<!-- and coop_net_id in(select net_id from  bas_netinfo where net_name like '%${netName}%') -->
+    	</if>
+    	<if test="actorMemberName!=null">
+    		and m.member_name like '%${actorMemberName}%'
+    		<!--and actor_member_id in(select member_id from  member_info where member_name like '%${actorMemberName}%') -->
+    	</if>
+    	<if test="actorPhone!=null">
+    		and actor_phone like '%${actorPhone}%'
+    	</if>
+    	order by p.create_time desc, p.task_status limit #{page.offset},#{page.pageSize} 
+    	
+    </select>
+    
+    <select id="querySystemExistMember" resultType="java.lang.String" parameterType="java.lang.Long">
+    	select n.id as id 
+    	from erp_noreg_exp_member_info n  
+    	where n.exp_member_phone = #{memberPhone} limit 0 ,1
+    </select>
+    
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from par_task_info
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="net.okdi.api.vo.TaskVo" keyProperty="taskId">
+        insert into par_task_info (task_id, task_type, coop_comp_id,
+        coop_net_id, par_estimate_count, par_estimate_weight,
+        appoint_time, appoint_desc, task_source,
+        task_status, task_is_end, task_end_time,
+        actor_member_id, actor_phone, contact_name,
+        contact_mobile, contact_tel, contact_address_id,
+        contact_address, customer_id, contact_cas_user_id,
+        contact_comp_id, create_time, create_user_id,
+        task_flag, modify_time, contact_addr_longitude,
+        contact_addr_latitude, par_estimate_price)
+        values (#{taskId,jdbcType=BIGINT}, #{taskType,jdbcType=TINYINT}, #{coopCompId,jdbcType=BIGINT},
+        #{coopNetId,jdbcType=BIGINT}, #{parEstimateCount,jdbcType=TINYINT}, #{parEstimateWeight,jdbcType=DECIMAL},
+        #{appointTime,jdbcType=TIMESTAMP}, #{appointDesc,jdbcType=VARCHAR}, #{taskSource,jdbcType=TINYINT},
+        #{taskStatus,jdbcType=TINYINT}, #{taskIsEnd,jdbcType=TINYINT}, #{taskEndTime,jdbcType=TIMESTAMP},
+        #{actorMemberId,jdbcType=BIGINT}, #{actorPhone,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR},
+        #{contactMobile,jdbcType=VARCHAR}, #{contactTel,jdbcType=VARCHAR}, #{contactAddressId,jdbcType=BIGINT},
+        #{contactAddress,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{contactCasUserId,jdbcType=BIGINT},
+        #{contactCompId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=BIGINT},
+        #{taskFlag,jdbcType=TINYINT}, #{modifyTime,jdbcType=TIMESTAMP}, #{contactAddrLongitude,jdbcType=DECIMAL},
+        #{contactAddrLatitude,jdbcType=DECIMAL}, #{parEstimatePrice, jdbcType=DECIMAL})
+    </insert>
+    <insert id="insertSelective" parameterType="net.okdi.api.vo.TaskVo">
+        insert into par_task_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="taskType != null">
+                task_type,
+            </if>
+            <if test="coopCompId != null">
+                coop_comp_id,
+            </if>
+            <if test="coopNetId != null">
+                coop_net_id,
+            </if>
+            <if test="parEstimateCount != null">
+                par_estimate_count,
+            </if>
+            <if test="parEstimateWeight != null">
+                par_estimate_weight,
+            </if>
+            <if test="appointTime != null">
+                appoint_time,
+            </if>
+            <if test="appointDesc != null">
+                appoint_desc,
+            </if>
+            <if test="taskSource != null">
+                task_source,
+            </if>
+            <if test="taskStatus != null">
+                task_status,
+            </if>
+            <if test="taskIsEnd != null">
+                task_is_end,
+            </if>
+            <if test="taskEndTime != null">
+                task_end_time,
+            </if>
+            <if test="actorMemberId != null">
+                actor_member_id,
+            </if>
+            <if test="actorPhone != null">
+                actor_phone,
+            </if>
+            <if test="contactName != null">
+                contact_name,
+            </if>
+            <if test="contactMobile != null">
+                contact_mobile,
+            </if>
+            <if test="contactTel != null">
+                contact_tel,
+            </if>
+            <if test="contactAddressId != null">
+                contact_address_id,
+            </if>
+            <if test="contactAddress != null">
+                contact_address,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="contactCasUserId != null">
+                contact_cas_user_id,
+            </if>
+            <if test="contactCompId != null">
+                contact_comp_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="taskFlag != null">
+                task_flag,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+            <if test="contactAddrLongitude != null">
+                contact_addr_longitude,
+            </if>
+            <if test="contactAddrLatitude != null">
+                contact_addr_latitude,
+            </if>
+            <if test="parEstimatePrice != null">
+                par_estimate_price,
+            </if>
+            <if test="thirdId != null">
+                third_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">
+                #{taskId,jdbcType=BIGINT},
+            </if>
+            <if test="taskType != null">
+                #{taskType,jdbcType=TINYINT},
+            </if>
+            <if test="coopCompId != null">
+                #{coopCompId,jdbcType=BIGINT},
+            </if>
+            <if test="coopNetId != null">
+                #{coopNetId,jdbcType=BIGINT},
+            </if>
+            <if test="parEstimateCount != null">
+                #{parEstimateCount,jdbcType=TINYINT},
+            </if>
+            <if test="parEstimateWeight != null">
+                #{parEstimateWeight,jdbcType=DECIMAL},
+            </if>
+            <if test="appointTime != null">
+                #{appointTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="appointDesc != null">
+                #{appointDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="taskSource != null">
+                #{taskSource,jdbcType=TINYINT},
+            </if>
+            <if test="taskStatus != null">
+                #{taskStatus,jdbcType=TINYINT},
+            </if>
+            <if test="taskIsEnd != null">
+                #{taskIsEnd,jdbcType=TINYINT},
+            </if>
+            <if test="taskEndTime != null">
+                #{taskEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actorMemberId != null">
+                #{actorMemberId,jdbcType=BIGINT},
+            </if>
+            <if test="actorPhone != null">
+                #{actorPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactName != null">
+                #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="contactMobile != null">
+                #{contactMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="contactTel != null">
+                #{contactTel,jdbcType=VARCHAR},
+            </if>
+            <if test="contactAddressId != null">
+                #{contactAddressId,jdbcType=BIGINT},
+            </if>
+            <if test="contactAddress != null">
+                #{contactAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCasUserId != null">
+                #{contactCasUserId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCompId != null">
+                #{contactCompId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="taskFlag != null">
+                #{taskFlag,jdbcType=TINYINT},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contactAddrLongitude != null">
+                #{contactAddrLongitude,jdbcType=DECIMAL},
+            </if>
+            <if test="contactAddrLatitude != null">
+                #{contactAddrLatitude,jdbcType=DECIMAL},
+            </if>
+            <if test="parEstimatePrice != null">
+                #{parEstimatePrice, jdbcType=DECIMAL},
+            </if>
+            <if test="thirdId != null">
+                #{thirdId, jdbcType=DECIMAL},
+            </if>
+        </trim>
+    </insert>
+     <insert id="insertExpressTask" parameterType="java.util.HashMap">
+        insert into erp_noreg_exp_member_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="memberPhone != null">
+                exp_member_phone,
+            </if>
+            <if test="memberName != null">
+                exp_member_name,
+            </if>
+            <if test="compName != null">
+                comp_name,
+            </if>
+            <if test="netId != null">
+                net_id,
+            </if>
+            <if test="erpCompId != null">
+                erp_comp_id,
+            </if>
+            <if test="erpMemberId != null">
+                erp_member_id,
+            </if>
+            <if test="compId != null">
+                comp_id,
+            </if>
+            <if test="netName != null">
+                net_name,
+            </if>
+            <if test="createDate != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="memberPhone != null">
+                  #{memberPhone},
+            </if>
+            <if test="memberName != null">
+                 #{memberName},
+            </if>
+            <if test="compName != null">
+                 #{compName},
+            </if>
+            <if test="netId != null">
+                #{netId},
+            </if>
+            <if test="erpCompId != null">
+                  #{erpCompId},
+            </if>
+            <if test="erpMemberId != null">
+                 #{erpMemberId},
+            </if>
+            <if test="compId != null">
+                 #{compId},
+            </if>
+            <if test="netName != null">
+                 #{netName},
+            </if>
+            <if test="createDate != null">
+                 #{createDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="updateParTaskInfoBySelective" parameterType="net.okdi.api.entity.ParTaskInfo">
+    	update par_task_info
+    	<set>
+    		actor_member_id = #{actorMemberId,jdbcType=BIGINT},
+            <if test="taskType != null">
+                task_type = #{taskType,jdbcType=TINYINT},
+            </if>
+            <if test="coopCompId != null">
+                coop_comp_id = #{coopCompId,jdbcType=BIGINT},
+            </if>
+            <if test="coopNetId != null">
+                coop_net_id = #{coopNetId,jdbcType=BIGINT},
+            </if>
+            <if test="parEstimateCount != null">
+                par_estimate_count = #{parEstimateCount,jdbcType=TINYINT},
+            </if>
+            <if test="parEstimateWeight != null">
+                par_estimate_weight = #{parEstimateWeight,jdbcType=DECIMAL},
+            </if>
+            <if test="appointTime != null">
+                appoint_time = #{appointTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="appointDesc != null">
+                appoint_desc = #{appointDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="taskSource != null">
+                task_source = #{taskSource,jdbcType=TINYINT},
+            </if>
+            <if test="taskStatus != null">
+                task_status = #{taskStatus,jdbcType=TINYINT},
+            </if>
+            <if test="taskIsEnd != null">
+                task_is_end = #{taskIsEnd,jdbcType=TINYINT},
+            </if>
+            <if test="taskEndTime != null">
+                task_end_time = #{taskEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actorPhone != null">
+                actor_phone = #{actorPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactName != null">
+                contact_name = #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="contactMobile != null">
+                contact_mobile = #{contactMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="contactTel != null">
+                contact_tel = #{contactTel,jdbcType=VARCHAR},
+            </if>
+            <if test="contactAddressId != null">
+                contact_address_id = #{contactAddressId,jdbcType=BIGINT},
+            </if>
+            <if test="contactAddress != null">
+                contact_address = #{contactAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCasUserId != null">
+                contact_cas_user_id = #{contactCasUserId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCompId != null">
+                contact_comp_id = #{contactCompId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="taskFlag != null">
+                task_flag = #{taskFlag,jdbcType=TINYINT},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contactAddrLongitude != null">
+                contact_addr_longitude = #{contactAddrLongitude,jdbcType=DECIMAL},
+            </if>
+            <if test="contactAddrLatitude != null">
+                contact_addr_latitude = #{contactAddrLatitude,jdbcType=DECIMAL},
+            </if>
+            <if test="parEstimatePrice != null">
+                par_estimate_price = #{parEstimatePrice, jdbcType=DECIMAL},
+            </if>
+        </set>
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </update>
+    <update id="updateTakeTask" parameterType="net.okdi.api.entity.ParTaskInfo">
+    	update par_task_info set  
+    	 <if test="contactName != null">
+                contact_name = #{contactName,jdbcType=VARCHAR}
+         </if>
+         <if test="contactMobile != null">
+                ,contact_mobile = #{contactMobile,jdbcType=VARCHAR}
+         </if>
+         <if test="contactAddressId != null">
+                ,contact_address_id = #{contactAddressId,jdbcType=BIGINT}
+         </if>
+         <if test="contactAddress != null">
+                ,contact_address = #{contactAddress,jdbcType=VARCHAR}
+         </if>
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </update>
+    
+    <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ParTaskInfo">
+        update par_task_info
+        <set>
+            <if test="taskType != null">
+                task_type = #{taskType,jdbcType=TINYINT},
+            </if>
+            <if test="coopCompId != null">
+                coop_comp_id = #{coopCompId,jdbcType=BIGINT},
+            </if>
+            <if test="coopNetId != null">
+                coop_net_id = #{coopNetId,jdbcType=BIGINT},
+            </if>
+            <if test="parEstimateCount != null">
+                par_estimate_count = #{parEstimateCount,jdbcType=TINYINT},
+            </if>
+            <if test="parEstimateWeight != null">
+                par_estimate_weight = #{parEstimateWeight,jdbcType=DECIMAL},
+            </if>
+            <if test="appointTime != null">
+                appoint_time = #{appointTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="appointDesc != null">
+                appoint_desc = #{appointDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="taskSource != null">
+                task_source = #{taskSource,jdbcType=TINYINT},
+            </if>
+            <if test="taskStatus != null">
+                task_status = #{taskStatus,jdbcType=TINYINT},
+            </if>
+            <if test="taskIsEnd != null">
+                task_is_end = #{taskIsEnd,jdbcType=TINYINT},
+            </if>
+            <if test="taskEndTime != null">
+                task_end_time = #{taskEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actorMemberId != null">
+                actor_member_id = #{actorMemberId,jdbcType=BIGINT},
+            </if>
+            <if test="actorPhone != null">
+                actor_phone = #{actorPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="contactName != null">
+                contact_name = #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="contactMobile != null">
+                contact_mobile = #{contactMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="contactTel != null">
+                contact_tel = #{contactTel,jdbcType=VARCHAR},
+            </if>
+            <if test="contactAddressId != null">
+                contact_address_id = #{contactAddressId,jdbcType=BIGINT},
+            </if>
+            <if test="contactAddress != null">
+                contact_address = #{contactAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCasUserId != null">
+                contact_cas_user_id = #{contactCasUserId,jdbcType=BIGINT},
+            </if>
+            <if test="contactCompId != null">
+                contact_comp_id = #{contactCompId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=BIGINT},
+            </if>
+            <if test="taskFlag != null">
+                task_flag = #{taskFlag,jdbcType=TINYINT},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="contactAddrLongitude != null">
+                contact_addr_longitude = #{contactAddrLongitude,jdbcType=DECIMAL},
+            </if>
+            <if test="contactAddrLatitude != null">
+                contact_addr_latitude = #{contactAddrLatitude,jdbcType=DECIMAL},
+            </if>
+            <if test="parEstimatePrice != null">
+                par_estimate_price = #{parEstimatePrice, jdbcType=DECIMAL},
+            </if>
+        </set>
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ParTaskInfo">
+        update par_task_info
+        set task_type = #{taskType,jdbcType=TINYINT},
+        coop_comp_id = #{coopCompId,jdbcType=BIGINT},
+        coop_net_id = #{coopNetId,jdbcType=BIGINT},
+        par_estimate_count = #{parEstimateCount,jdbcType=TINYINT},
+        par_estimate_weight = #{parEstimateWeight,jdbcType=DECIMAL},
+        appoint_time = #{appointTime,jdbcType=TIMESTAMP},
+        appoint_desc = #{appointDesc,jdbcType=VARCHAR},
+        task_source = #{taskSource,jdbcType=TINYINT},
+        task_status = #{taskStatus,jdbcType=TINYINT},
+        task_is_end = #{taskIsEnd,jdbcType=TINYINT},
+        task_end_time = #{taskEndTime,jdbcType=TIMESTAMP},
+        actor_member_id = #{actorMemberId,jdbcType=BIGINT},
+        actor_phone = #{actorPhone,jdbcType=VARCHAR},
+        contact_name = #{contactName,jdbcType=VARCHAR},
+        contact_mobile = #{contactMobile,jdbcType=VARCHAR},
+        contact_tel = #{contactTel,jdbcType=VARCHAR},
+        contact_address_id = #{contactAddressId,jdbcType=BIGINT},
+        contact_address = #{contactAddress,jdbcType=VARCHAR},
+        customer_id = #{customerId,jdbcType=BIGINT},
+        contact_cas_user_id = #{contactCasUserId,jdbcType=BIGINT},
+        contact_comp_id = #{contactCompId,jdbcType=BIGINT},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+        task_flag = #{taskFlag,jdbcType=TINYINT},
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+        contact_addr_longitude = #{contactAddrLongitude,jdbcType=DECIMAL},
+        contact_addr_latitude = #{contactAddrLatitude,jdbcType=DECIMAL},
+        par_estimate_price = #{parEstimatePrice, jdbcType=DECIMAL}
+        where task_id = #{taskId,jdbcType=BIGINT}
+    </update>
+    <select id = "takeTaskRecordList" resultType="java.util.HashMap">
+			SELECT
+			task_id as taskId,
+		  task_status taskStatus,
+		  contact_address contactAddress,
+		  contact_tel as contactTel,
+		  contact_mobile as contactMobile
+		FROM
+			par_task_info
+		WHERE
+			actor_member_id = #{memberId}
+		 AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{date}
+		 AND (task_status = 2 or task_status = 3)
+		ORDER BY create_time DESC
+	</select>
+	
+	<select id="queryTakeTaskById" resultType="java.util.HashMap">
+	  SELECT
+		  task_id as taskId,
+		  task_status taskStatus,
+		  ifnull(contact_address,'') contactAddress,
+		  contact_tel as contactTel,
+		  contact_mobile as contactMobile,
+		  ifnull(contact_name,'') as contactName,
+		  ifnull(appoint_desc,'') as appointDesc
+		  
+		FROM
+			par_task_info
+		WHERE
+			task_id = #{taskId}
+	</select>
+	<select id="queryTakeById" resultType="java.util.HashMap">
+	  SELECT
+		  task_id as taskId,
+		  task_status taskStatus,
+		  ifnull(contact_address,'') contactAddress,
+		  contact_tel as contactTel,
+		  contact_mobile as contactMobile,
+		  third_id as thirdid,
+		  ifnull(contact_name,'') as contactName,
+		  ifnull(appoint_desc,'') as appointDesc
+		  
+		FROM
+			par_task_info
+		WHERE
+			task_id = #{taskId}
+	</select>
+	
+	<select id="queryParcelsByTaskId" resultType="java.util.HashMap">
+	SELECT
+	ifnull(a.chare_weight_forsender,0) as weight,
+    ifnull(b.addressee_address,'')as address
+    FROM
+	par_parcelinfo a
+    LEFT JOIN par_parceladdress b ON a.id = b.id
+    WHERE
+	a.take_task_id = #{taskId} 
+	</select>
+	
+	<update id="updateStatusByTaskId">
+	update par_task_info set task_status=#{taskStatus} 
+    WHERE
+	task_id = #{taskId} 
+	</update>
+	
+	
+	<!-- 根据memberId和netId查询对应名称 -->
+	<select id="getMemberName" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select member_name as memberName from member_info  where
+		member_id=#{actorMemberId}
+	</select>
+	<select id="getNetName" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select net_name as netName from bas_netinfo  where
+		net_id=#{coopNetId}
+	</select>
+</mapper>

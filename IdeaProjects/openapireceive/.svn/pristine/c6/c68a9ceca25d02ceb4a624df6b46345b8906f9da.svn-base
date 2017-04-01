@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.BasEmployeeAuditMapperV4" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="audit_comp" property="auditComp" jdbcType="BIGINT" />
+    <result column="application_role_type" property="applicationRoleType" jdbcType="SMALLINT" />
+    <result column="application_desc" property="applicationDesc" jdbcType="VARCHAR" />
+    <result column="application_time" property="applicationTime" jdbcType="TIMESTAMP" />
+    <result column="audit_item" property="auditItem" jdbcType="SMALLINT" />
+    <result column="audit_opinion" property="auditOpinion" jdbcType="SMALLINT" />
+    <result column="audit_reject_reason" property="auditRejectReason" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+	<resultMap id="memberInfoResultMap" type="net.okdi.apiV4.entity.MemberInfoVO" >
+		<result column="member_id" property="memberId" jdbcType="VARCHAR" />
+		<result column="member_name" property="memberName" jdbcType="VARCHAR" />
+		<result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+		<result column="application_role_type" property="roleId" jdbcType="VARCHAR" />
+		<result column="net_id" property="netId" jdbcType="VARCHAR" />
+		<result column="net_name" property="netName" jdbcType="VARCHAR" />
+		<result column="audit_comp" property="compId" jdbcType="VARCHAR" />
+		<result column="comp_name" property="compName" jdbcType="VARCHAR" />
+		<result column="comp_address" property="compAddress" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, member_id, audit_comp, application_role_type, application_desc, application_time, 
+    audit_item, audit_opinion, audit_reject_reason, audit_desc, audit_user, audit_time
+  </sql>
+  <!-- 查询快递员基本信息 -->
+  <select id = "queryMemberInfoByZhaohu" resultMap="memberInfoResultMap">
+    SELECT
+		mi.member_id,
+		mi.member_name,
+		mi.member_phone,
+		be.application_role_type,
+		bn.net_id,
+		bn.net_name,
+		be.audit_comp,
+		bc.comp_name,
+		bc.comp_address
+	FROM
+		bas_employeeaudit be
+	LEFT JOIN member_info mi ON be.member_id = mi.member_id
+	LEFT JOIN bas_compinfo bc ON bc.comp_id = be.audit_comp
+	LEFT JOIN bas_netinfo bn ON bn.net_id = bc.belong_to_net_id
+	WHERE
+		be.audit_item = 2
+	AND be.member_id = #{memberId}
+	LIMIT 0,1;
+  </select>
+   <!-- 查询代理点基本信息 -->
+  <select id = "getDaiByCompId" resultType="net.okdi.apiV4.entity.BasCompInfo">
+    SELECT
+	 comp_name,
+	 comp_telephone
+	 FROM bas_compinfo WHERE comp_id = #{compId}
+  </select>
+   <!-- 查询国通人员信息 -->
+  <select id = "querystatusfrombasnet" resultType="net.okdi.api.entity.BasNetInfo">
+    SELECT
+	 auth_status,
+	 apiOrderDeliveryFlag,
+	 apiParcelIsFromOrderFlag
+	 FROM bas_netinfo WHERE net_id = #{netId} and delete_mark = 1 and net_status = 1
+  </select>
+ 
+ 
+ <select id="queryAllNetNameAndNetId" resultType="java.util.Map">
+ 	select net_id as netId, net_name as netName from bas_netinfo
+ </select>
+ <!-- 通过memberid查询provinceid -->
+ <select id="queryProvinceId" parameterType="java.lang.Long" resultType="java.util.HashMap">
+	 SELECT
+		com.comp_id,
+		com.provinceId
+	FROM
+		bas_employeeaudit em
+	LEFT JOIN bas_compinfo com ON em.audit_comp = com.comp_id
+	WHERE
+		em.member_id = #{memberId}
+	AND em.audit_item = 2;
+ </select>
+ 
+</mapper>

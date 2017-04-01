@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.BasPlaintInfoMapperV2" >
+  <resultMap id="BaseResultMap" type="net.okdi.apiV2.entity.PlaintInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="comp_name" property="compName" jdbcType="VARCHAR" />
+    <result column="comp_type" property="compType" jdbcType="SMALLINT" />
+    <result column="plaint_phone" property="plaintPhone" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="responsible" property="responsible" jdbcType="VARCHAR" />
+    <result column="responsible_id_num" property="idNum" jdbcType="VARCHAR" />
+    <result column="audit_reject_reason" property="rejectReason" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="business" property="business" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    member_id, comp_id, comp_name, comp_type, plaint_phone, status, create_time, 
+    responsible, responsible_id_num, audit_reject_reason, audit_desc
+  </sql>
+	
+	
+	<insert id="savePlaintSiteInfo" parameterType="java.util.Map">
+		insert into 
+			 bas_plaintinfo
+			   (id,
+				member_id,
+				comp_id,
+				comp_name,
+				comp_type,
+				plaint_phone,
+				status,
+				create_time,
+				responsible,
+				responsible_id_num,
+				business,
+				head_phone
+				)
+			 values(#{map.id},
+				#{map.memberId},
+				#{map.compId},
+				#{map.compName},
+				#{map.compType},
+				#{map.plaintPhone},
+				#{map.status},
+				#{map.createTime},
+				#{map.responsible},
+				#{map.idNum},
+				#{map.business},
+				#{map.headPhone}
+				)
+	</insert>
+	
+	<!-- 查询为标记站点 -->
+	<select id="queryVirtualSite" resultType="java.util.Map">
+		select comp_id 
+		from 
+		bas_compinfo info 
+		where 
+		info.comp_name like '%未标记站点%'
+		and info.belong_to_net_id = #{netId}
+	</select>
+	
+	<insert id="saveBasEmployeeAudit" parameterType="java.util.Map">
+		 insert into 
+			 bas_employeeaudit
+			   (id,
+				member_id,
+				audit_comp,
+				application_role_type,
+				audit_item,
+				audit_opinion,
+				application_time)
+			 values(#{map.id},
+				#{map.memberId},
+				#{map.auditComp},
+				#{map.applicationRoleType},
+				#{map.auditItem},
+				#{map.auditOpinion},
+				#{map.applicationTime}
+				)
+	</insert>
+	
+	 <delete id="deleteImageByPlaintId">
+      delete from bas_compimage where comp_id=#{id}
+  	</delete>
+	
+	<insert id="saveCompImageBatch" parameterType="net.okdi.api.entity.BasCompimage" >
+    insert into bas_compimage (
+      id,
+       comp_id, 
+      image_type,  
+      image_detail, image_url,plaint_id, create_time,disabled)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.id,jdbcType=BIGINT}, 
+        #{item.compId,jdbcType=BIGINT}, 
+      #{item.imageType,jdbcType=SMALLINT},
+      #{item.imageDetail,jdbcType=VARCHAR},
+       #{item.imageUrl,jdbcType=VARCHAR},
+        #{item.plaintId,jdbcType=BIGINT},
+        #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.disabled,jdbcType=SMALLINT})
+    </foreach>  
+  </insert>
+  
+  <select id="queryPlaintSiteInfo" resultType="java.util.Map" parameterType="java.util.Map">
+  	SELECT
+		id, comp_name, comp_type, create_time, plaint_phone, status
+		from bas_plaintinfo
+		where 
+		1 = 1
+  	<if test="map.startTime!=null and map.startTime !=''">
+		<![CDATA[ and create_time >= #{map.startTime}]]>
+	</if>
+	<if test="map.endTime !=null and map.endTime !=''">
+		and create_time <![CDATA[<= ]]> #{map.endTime}
+	</if>
+	<if test="map.plaintPhone !=null and map.plaintPhone !=''">
+		and plaint_phone like CONCAT('%',#{map.plaintPhone},'%')
+	</if>
+	<if test="map.status !=null and map.status !=''">
+		and status = #{map.status}
+	</if>
+	order by create_time desc
+	limit #{map.page.offset},#{map.page.pageSize}
+  </select>
+  
+  <select id="queryPlaintSiteInfoCount" resultType="java.lang.Long" parameterType="java.util.Map">
+  	select count(1) from bas_plaintinfo
+  	where 1 = 1
+  	<if test="map.startTime!=null and map.startTime !=''">
+		 and create_time >= #{map.startTime}
+	</if>
+	<if test="map.endTime !=null and map.endTime !=''">
+		and create_time <![CDATA[<= ]]> #{map.endTime}
+	</if>
+	<if test="map.plaintPhone !=null and map.plaintPhone !=''">
+		and plaint_phone like CONCAT('%',#{map.plaintPhone},'%')
+	</if>
+	<if test="map.status !=null and map.status !=''">
+		and status = #{map.status}
+	</if>
+  </select>
+  
+  <select id="querySitePhoneByPlaintId" resultType="java.util.Map">
+	  SELECT
+		m.member_phone,p.plaint_phone,m.member_id as omemberId
+	FROM
+		bas_plaintinfo p
+	LEFT JOIN bas_employeeaudit e ON p.comp_id = e.audit_comp
+	AND e.application_role_type = 1 AND audit_item = 2 AND audit_opinion = 1
+	LEFT JOIN member_info m ON e.member_id = m.member_id
+	where p.id = #{id}
+  </select>
+  
+  <select id="queryPlaintSiteInfoDetail" resultType="java.util.Map">
+  	select 
+  		id,
+  		comp_id as compId,
+  		member_id as memberId,
+  		comp_name as compName, 
+  		plaint_phone as plaintPhone, 
+  		status, 
+  		create_time as createTime, 
+  		responsible, 
+  		responsible_id_num as idNum,
+  		audit_desc as auditDesc,
+  		audit_user as auditUser,
+  		audit_time as auditTime,
+  		head_phone,
+  		business
+	from 
+  		bas_plaintinfo
+  		where id = #{id}
+  </select>
+  
+  <select id="queryBasCompImageInfo" resultType="java.util.Map">
+  	select image_type, image_seque_num, image_url
+  	from bas_compimage
+  	where plaint_id = #{id}
+  </select>
+  <select id="queryMemberNameByMemberId" resultType="java.lang.String">
+  	select member_name from member_info where member_id = #{auditUser}
+  </select>
+  
+  <update id="updateBasPlaintInfoById">
+  	update bas_plaintinfo set status = #{flag},audit_desc=#{desc},audit_user=#{auditUser},audit_time=#{date}
+  	where id = #{id}
+  </update>
+  
+  <update id="updateBasEmployeeAuditByCompId">
+  	update bas_employeeaudit set application_role_type = 0
+  	where audit_comp = #{compId}
+  	and application_role_type=1
+  </update>
+  <update id="basEmployeeRelationByCompId">
+  	update bas_employee_relation set role_id = 0
+  	where comp_id = #{compId}
+  	and role_id=1
+  </update>
+  <insert id="saveEmployeeRelation" parameterType="java.util.Map">
+  	insert bas_employee_relation(id, member_id, comp_id, role_id) 
+  	values(#{map.id},#{map.memberId},#{map.compId},#{map.roleId})
+  </insert>
+  
+  <delete id="deleteBasEmployeeAuditByMemberId">
+  	delete from bas_employeeaudit 
+  	where member_id = #{memberId}
+  	and audit_comp = #{compId}
+  	and application_role_type = 0
+  	AND audit_item = 2
+  </delete>
+  <!-- 	and audit_item = 2
+  	and audit_opinion = -1 -->
+  <update id="updateBasCompimageByCompId">
+  	update bas_compimage set disabled=1 
+  	where comp_id = #{compId}
+  </update>
+  
+  <update id="updateBasCompimageById">
+  	update bas_compimage set disabled = 0,comp_id = #{compId} where plaint_id = #{plaintId}
+  </update>
+  
+  <update id="updateMemberInfoByMemberId">
+  	update member_info set id_num = #{idNum} where member_id = #{memberId}
+  </update>
+  
+  <update id="updateBasCompbusiness">
+  	update bas_compbusiness set responsible = #{responsible},responsible_telephone=#{responsibleTelephone},
+  	responsible_id_num = #{idNum}, business_license_num = #{business}
+  	where comp_id = #{compId}
+  </update>
+  
+  <select id="queryVirtualCompIdByCompId" resultType="java.lang.Long">
+  	select comp_id from bas_compinfo where  belong_to_net_id =(
+	select belong_to_net_id from bas_compinfo where comp_id = #{compId})
+	and comp_name like '%未标记站点%'
+  </select>
+  
+  <select id="queryCompNameById" resultType="java.util.Map">
+  	select comp_name,plaint_phone,comp_type from bas_plaintinfo where id = #{id}
+  </select>
+  <select id="queryIsNotHave" resultType="java.util.Map">
+  	select * from bas_employeeaudit 
+  	where member_id = #{memberId} 
+  	and audit_comp = #{virCompId}
+  	and application_role_type = 0
+  	and audit_item = 2
+  	and audit_opinion = -1
+  </select>
+<!--   
+  <select id="queryMemberIdByCompId" resultType="java.util.Map">
+  	select * from bas_employee_relation 
+  	where comp_id = #{compId}
+  	and role_id = 1
+  </select>
+  
+  <select id="queryOldMemberPhoneByCompId" resultType="java.util.Map">
+  	select * from member_info
+  	where member_id = #{oldMemberId}
+  </select> -->
+  
+  <select id="queryOldMemberIdAndMemberPhoneByCompId" resultType="java.util.Map">
+  	SELECT
+		b.member_id,
+		m.member_phone
+	FROM
+		bas_employeeaudit b
+	LEFT JOIN member_info m ON b.member_id = m.member_id
+	WHERE
+	 	b.application_role_type = 1 
+	 	and b.audit_item = 2
+		and b.audit_opinion in (0,1) 
+		and b.audit_comp = #{compId}
+  </select>
+  
+  <select id="queryIsNotBasCompBussiness" resultType="java.util.Map">
+  	select * from bas_compbusiness where comp_id = #{compId}
+  </select>
+  
+  <insert id="saveBasCompBussiness">
+  	insert into bas_compbusiness
+  		(comp_id,
+	  	responsible,
+	  	responsible_telephone,
+	  	responsible_id_num,
+	  	business_license_num)
+  	 values(
+	  	 #{compId},
+	  	 #{responsible},
+	  	 #{responsibleTelephone},
+	  	 #{idNum},
+	  	 #{business}
+  	 	)
+  </insert>
+  
+  <select id="queryWebmasterISNotDeparture" resultType="java.util.Map">
+  	select * from bas_employeeaudit where audit_comp = #{compId} and application_role_type = 1 and audit_item = 2 and audit_opinion in(0,1)
+  </select>
+  <update id="updateBasCompinfoStatusByCompId">
+  	update bas_compinfo set comp_status = 1 where comp_id = #{compId}
+  </update>
+</mapper>

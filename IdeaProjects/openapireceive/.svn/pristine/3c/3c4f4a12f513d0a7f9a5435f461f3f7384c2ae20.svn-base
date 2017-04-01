@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.ParTaskDisposalRecordMapperV4">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ParTaskDisposalRecord">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="task_id" property="taskId" jdbcType="BIGINT" />
+		<result column="disposal_type" property="disposalType"
+			jdbcType="TINYINT" />
+		<result column="member_id" property="memberId" jdbcType="BIGINT" />
+		<result column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="disposal_object" property="disposalObject"
+			jdbcType="TINYINT" />
+		<result column="show_flag" property="showFlag" jdbcType="TINYINT" />
+		<result column="task_error_flag" property="taskErrorFlag"
+			jdbcType="TINYINT" />
+		<result column="disposal_desc" property="disposalDesc"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="modified_time" property="modifiedTime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, task_id, disposal_type, member_id, comp_id, disposal_object,
+		show_flag, task_error_flag,
+		disposal_desc, create_time, modified_time
+	</sql>
+</mapper>

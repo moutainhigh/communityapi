@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberCommTypeTagInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberCommTypeTagInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="data_type" property="dataType" jdbcType="SMALLINT" />
+    <result column="custom_name" property="customName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  <insert id = "doAddTag" parameterType="java.util.HashMap">
+  insert into member_comm_type_tag_info(
+  										id,
+  										member_id,
+  										data_type,
+  										custom_name)
+									values(
+										#{tagId},
+										#{memberId},
+										0,
+										#{memberName}
+										)
+  </insert>
+  
+  <delete id ="delTag" parameterType="net.okdi.api.entity.MemberCommTypeTagInfo">
+  delete from member_comm_type_tag_info where member_id=#{memberId} and id = #{id}
+  </delete>
+  <select id="getMemberCommtypeByMemberId" parameterType="java.lang.Long" resultType="net.okdi.api.entity.MemberCommTypeTagInfo">
+  select 
+  id as id,
+  ifnull(member_id,'') as memberId,
+  data_type as dataType,
+  custom_name as customName 
+  from
+  member_comm_type_tag_info
+  where member_id = #{memberId}  or member_id is NULL and custom_name is NOT NULL
+  </select>
+   <insert id = "insert" parameterType="net.okdi.api.entity.MemberCommTypeTagInfo">
+  insert into member_comm_type_tag_info(
+  										id,
+  										member_id,
+  										data_type,
+  										custom_name,
+  										tag_type)
+									values(
+										#{id},
+										#{memberId},
+										#{dataType},
+										#{customName},
+										#{tagType}
+										)
+  </insert>
+  <update id="updateTagName" parameterType="java.util.Map" >
+   update member_comm_type_tag_info set custom_name = #{tagName} where member_id = #{memberId} and id = #{tagId}
+  </update>
+</mapper>

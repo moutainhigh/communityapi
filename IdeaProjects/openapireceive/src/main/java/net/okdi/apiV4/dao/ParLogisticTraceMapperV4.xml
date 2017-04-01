@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.ParLogisticTraceMapperV4">
+	<resultMap id="resultMap" type="net.okdi.api.entity.ParLogisticTrace">
+		<id column="ID" property="id" />
+		<result column="CAS_MEMBER_ID" property="casMemberId" />
+		<result column="NET_ID" property="netId" />
+		<result column="EXP_WAYBILL_NUM" property="expWaybillNum" />
+		<result column="PAR_ID" property="parId" />
+		<result column="TRACE_STATUS" property="traceStatus" />
+		<result column="TRACE_DETAIL" property="traceDetail" />
+		<result column="MODIFY_TIME" property="modifyTime" />
+		<result column="SEND_NOTICE_FLAG" property="sendNoticeFlag" />
+		<result column="CLIENT_TRACE_STATU" property="clientTraceStatu" />
+		<result column="CLIENT_NET_NUM" property="clientNetNum" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, CAS_MEMBER_ID,NET_ID,EXP_WAYBILL_NUM,PAR_ID,
+		TRACE_STATUS,TRACE_DETAIL,MODIFY_TIME,SEND_NOTICE_FLAG,
+		CLIENT_TRACE_STATU,CLIENT_NET_NUM
+  	</sql>
+	
+
+</mapper>

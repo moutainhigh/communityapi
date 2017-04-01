@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.CircleAllListMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.vo.VO_CircleAllList" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="comments" property="comments" jdbcType="SMALLINT" />
+    <result column="clicks" property="clicks" jdbcType="SMALLINT" />
+    <result column="tops" property="tops" jdbcType="SMALLINT" />
+    <result column="shares" property="shares" jdbcType="SMALLINT" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="addrress" property="addrress" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="total_num" property="totalNum" jdbcType="SMALLINT" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="SMALLINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+     id, title, content, comments, shares, tops, clicks, member_name, member_id, img_url, 
+    create_time, modify_time
+  </sql>
+  
+  <sql id="allArticle" >
+  	select 
+	<include refid="Base_Column_List" /> , 1 as type
+	from circle_article
+  </sql>
+  <sql id="allEmploy" >
+  	select 
+	<include refid="Base_Column_List" /> , 2 as type
+	from circle_employ
+  </sql>
+  <sql id="allVote" >
+  	select 
+	<include refid="Base_Column_List" /> , 3 as type
+	from circle_vote
+  </sql>
+  <sql id="allActivity" >
+  	select 
+	<include refid="Base_Column_List" /> , 4 as type
+	from circle_activity
+  </sql>
+  
+  <select id="findCircleAllList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  	<if test="type == null" >
+	    <include refid="allArticle" /> 
+	    union
+	    <include refid="allEmploy" /> 
+	    union
+	    <include refid="allVote" /> 
+	    union
+	    <include refid="allActivity" />
+    </if>
+    <if test="type == 1">
+    	<include refid="allArticle" /> 
+    </if>
+    <if test="type == 2">
+    	<include refid="allEmploy" /> 
+    </if>
+    <if test="type == 3">
+    	<include refid="allVote" /> 
+    </if>
+    <if test="type == 4">
+    	<include refid="allActivity" /> 
+    </if>
+    order by create_time
+    limit #{page.offset},#{page.pageSize} 
+  </select>
+  
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberContactAddrMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberContactAddr" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="contact_id" property="contactId" jdbcType="BIGINT" />
+    <result column="address_tag_id" property="addressTagId" jdbcType="BIGINT" />
+    <result column="address_id" property="addressId" jdbcType="BIGINT" />
+    <result column="detailed_address" property="detailedAddress" jdbcType="VARCHAR" />
+    <result column="detaile_display" property="detaileDisplay" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+    <result column="is_default" property="isDefault" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, contact_id, address_tag_id, address_id, detailed_address, detaile_display, longitude, 
+    latitude, zip_code, is_default, create_time
+  </sql>
+  <insert id="batchAddAddressInfo" parameterType="java.util.List">
+  insert into member_contact_addr 
+  ( id, 
+    contact_id, 
+    address_tag_id, 
+    address_id, 
+    detailed_address, 
+    detaile_display, 
+    longitude, 
+    latitude, 
+    zip_code, 
+    is_default, 
+    create_time)   
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+       (
+        #{item.id},
+        #{item.contactId},
+        #{item.addressTagId},
+        #{item.addressId},
+        #{item.detailedAddress},
+        #{item.detaileDisplay},
+        #{item.longitude},
+        #{item.latitude},
+        #{item.zipCode},
+        #{item.isDefault},
+        #{item.createTime}
+        ) 
+    </foreach>  
+  </insert>
+  <delete id="deleteAddressInfoByTagId" parameterType="java.util.Map">
+  delete from member_contact_addr where 1=1 
+   <if test="tagId!=null">
+   and address_tag_id = #{tagId} 
+   </if>
+    <if test="contactId!=null">
+     and contact_Id = #{contactId}
+    </if>
+  </delete>
+  <select id="getContactAddressInfo" parameterType="java.lang.Long" resultType="java.util.Map">
+    <!-- select
+	    id, 
+	    contact_id as contactId, 
+	    address_tag_id as addressTagId, 
+	    address_id as addressId, 
+	    detailed_address as detailedAddress, 
+	    detaile_display as detailDisplay, 
+	    longitude as lng, 
+	    latitude as lat,
+	    is_default as isDefault 
+	    from member_contact_addr
+	     where contact_id = #{contactId}
+	      -->
+	  select
+	    a.id, 
+	    a.contact_id as contactId, 
+	    a.address_tag_id as addressTagId, 
+	    a.address_id as addressId, 
+	    a.detailed_address as detailedAddress, 
+	    a.detaile_display as detailDisplay, 
+	    a.longitude as lng, 
+	    a.latitude as lat,
+	    a.is_default as isDefault,
+        b.address_type_name as addressTagName
+	    from member_contact_addr a 
+      LEFT JOIN member_address_type_tag_info b
+      on a.address_tag_id = b.id 
+       where a.contact_id = #{contactId}
+  </select>
+  
+  <update id="updateMemberContactAddressName" >
+   update member_address_type_tag_info set address_type_name = #{tagName} where id = #{tagId} and member_id = #{memberId}
+  </update>
+  
+  <update id="updateMemberContactAddressTag">
+   update member_contact_addr set address_tag_id = 14186061385696256 where address_tag_id = #{tagId}
+  </update>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasVerifyRecoredMapper">
+	<resultMap id="resultMap" type="net.okdi.api.entity.BasVerifyRecored">
+		<id column="id" property="id" />
+		<result column="member_id" property="memberId" />
+		<result column="verify_type" property="verifyType" />
+		<result column="verify_account" property="verifyAccount" />
+		<result column="verify_code" property="verifyCode" />
+		<result column="status" property="status" />
+		<result column="content" property="content" />
+		<result column="modify_time" property="modifyTime" />
+		<result column="create_time" property="createTime" />
+		<result column="busine_type" property="busineType" />
+	</resultMap>
+	<sql id="column_List">
+		id, member_id as , verify_type as verifyType,
+		verify_account as verifyAccount, verify_code as verifyCode,
+		status,
+		content,
+		modify_time as modifyTime,
+		create_time as createTime,
+		busine_type as busineType
+  	</sql>
+
+	<select id="getSmsTotalOfExp" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		select count(*) from bas_verify_recored where
+		busine_type='4' and VERIFY_ACCOUNT=#{mob}
+	</select>
+
+	<insert id="insert" parameterType="net.okdi.api.entity.BasVerifyRecored">
+		insert into bas_verify_recored
+		(id, member_id, verify_type,
+		verify_account, verify_code, status,
+		content, modify_time, create_time,
+		busine_type)
+		values (#{id},
+		#{memberId},
+		#{verifyType},
+		#{verifyAccount}, #{verifyCode}, #{status},
+		#{content}, #{modifyTime},
+		#{createTime},
+		#{busineType})
+  	</insert>
+
+	<update id="update" parameterType="net.okdi.api.entity.BasVerifyRecored">
+		update bas_verify_recored
+		<set>
+			<if test="memberId != null">
+				member_id = #{memberId},
+      		</if>
+			<if test="verifyType != null">
+				verify_type = #{verifyType},
+      		</if>
+			<if test="verifyAccount != null">
+				verify_account = #{verifyAccount},
+      		</if>
+			<if test="verifyCode != null">
+				verify_code = #{verifyCode},
+      		</if>
+			<if test="status != null">
+				status = #{status},
+      		</if>
+			<if test="content != null">
+				content = #{content},
+      		</if>
+			<if test="modifyTime != null">
+				modify_time = #{modifyTime},
+      		</if>
+			<if test="createTime != null">
+				create_time = #{createTime},
+      		</if>
+			<if test="busineType != null">
+				busine_type = #{busineType},
+      		</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper>

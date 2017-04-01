@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCompAreaAddressMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCompAreaAddress">
+		<id column="address_id" property="addressId" jdbcType="BIGINT" />
+		<id column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="net_id" property="netId" jdbcType="BIGINT" />
+		<result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		address_id, comp_id, net_id, created_time
+  </sql>
+	<select id="queryCompAreaAddress" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from exp_comparea_address
+		where comp_id = #{compId,jdbcType=BIGINT}
+	</select>
+
+	<select id="getCompareaList" resultType="java.lang.String"
+		parameterType="java.lang.Long">
+		SELECT DISTINCT
+		dic.ADDRESS_NAME
+		FROM
+		exp_comparea_address
+		exp
+		LEFT JOIN dic_addressaid dic ON exp.address_id = dic.ADDRESS_ID
+		WHERE
+		exp.comp_id =#{compId}
+		ORDER BY
+		dic.address_level DESC
+  	</select>
+
+	<delete id="deleteCompAreaAddress" parameterType="java.lang.Long">
+		delete from
+		exp_comparea_address
+		where comp_id = #{compId,jdbcType=BIGINT}
+  </delete>
+	<insert id="saveBatch" parameterType="net.okdi.api.entity.ExpCompAreaAddress">
+		insert into exp_comparea_address (address_id, comp_id, net_id,
+		created_time)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.addressId,jdbcType=BIGINT},
+			#{item.compId,jdbcType=BIGINT},
+			#{item.netId,jdbcType=BIGINT},
+			#{item.createdTime,jdbcType=TIMESTAMP})
+    </foreach>
+	</insert>
+
+	<!-- 查询附近站点 -->
+	<select id="getNearSite" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+			b.COMP_NAME AS compName,
+			b.COMP_TYPE_NUM as compTypeNum,
+			b.belong_to_net_id as belongToNetId,
+			b.COMP_MOBILE as compMob,
+			b.COMP_TELEPHONE as compTel,
+		 	REPLACE (
+				REPLACE (b.comp_address, '-', ''),
+				'|',
+				''
+			) compAddress,
+		 	d.PROVINCE_ID AS provinceId,
+		 	b.COMP_ID AS compId,
+		 	b.longitude as lng,
+ 		 	b.latitude as lat
+		FROM
+			BAS_COMPINFO b
+		LEFT JOIN DIC_ADDRESSAID d ON b.comp_address_id = d.ADDRESS_ID
+		WHERE
+			b.longitude BETWEEN #{minLng} and #{maxLng} 
+		AND b.LATITUDE BETWEEN #{minLat}  and #{maxLat}
+	</select>
+	<select id="getCoverAddress" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		 <if test="addressLevel == 1" >
+		 	SELECT DISTINCT b.PROVINCE_ID ADDRESS_ID,b.PROVINCE_NAME ADDRESS_NAME FROM dic_send_address_net a 
+				LEFT JOIN dic_addressaid b on a.address_id=b.address_id WHERE net_id=#{netId} and use_flag=1 ;
+		 </if>
+		 <if test="addressLevel == 2" >
+		 	SELECT DISTINCT b.CITY_ID ADDRESS_ID,b.CITY_NAME ADDRESS_NAME FROM dic_send_address_net a 
+				LEFT JOIN dic_addressaid b on a.address_id=b.address_id  where net_id=#{netId} and use_flag=1 AND b.PROVINCE_ID=#{addressId} ;
+		 </if>
+		 <if test="addressLevel == 3" >
+		 	SELECT DISTINCT b.county_ID ADDRESS_ID,b.county_NAME ADDRESS_NAME FROM dic_send_address_net a 
+				LEFT JOIN dic_addressaid b on a.address_id=b.address_id  where net_id=#{netId} and use_flag=1 AND b.city_ID=#{addressId};
+		 </if>
+		 <if test="addressLevel >= 4" >
+		 	SELECT address_id ADDRESS_ID,address_name ADDRESS_NAME
+ 				from dic_address WHERE parent_id=#{addressId} and use_flag=1 limit 0,3000
+		 </if>
+	</select>
+</mapper>

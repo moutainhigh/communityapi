@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasCompEmployeeResumeMapper" >
+  <resultMap id="BasCompEmployeeResumeMap" type="net.okdi.api.entity.BasCompEmployeeResume" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="comp_name" property="compName" jdbcType="VARCHAR" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="employee_user_id" property="employeeUserId" jdbcType="BIGINT" />
+    <result column="employee_user_name" property="employeeUserName" jdbcType="VARCHAR" />
+    <result column="employee_on_the_job_flag" property="employeeOnTheJobFlag" jdbcType="SMALLINT" />
+    <result column="delete_mark" property="deleteMark" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="queryMemberResume" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+  
+  select 
+	  a.id,
+	  a.comp_id as compId,
+	  a.comp_name as compName,
+	  a.net_id as netId,
+	  b.net_name as netName,
+	  employee_user_id,
+	  employee_user_name as employeeUserName,
+	  employee_on_the_job_flag as employeeOnTheJobFlag,
+	  date_format(a.create_time,'%Y-%m-%d') as createTime,
+	  c.comp_address as compAddress,
+	  c.comp_telephone as compTelephone
+FROM
+	bas_comp_employee_resume a
+	LEFT JOIN bas_compinfo c on a.comp_id=c.comp_id
+	LEFT JOIN bas_netinfo b ON c.belong_to_net_id= b.net_id
+	where 1=1
+ 	and a.employee_user_id=#{employeeUserId};
+  </select>
+   <select id="queryMemberResumeCount" parameterType="java.lang.Integer" resultType="java.lang.Long">
+  select 
+	  count(id)
+FROM
+	bas_comp_employee_resume a
+	where 1=1
+ 	and a.employee_user_id=#{memberId};
+  </select>
+  <insert id = "doAddResum" parameterType="java.util.HashMap">
+  insert into bas_comp_employee_resume(
+  									id,
+  									comp_id,
+  									comp_name,
+  									net_id,
+  									employee_user_id,
+  									employee_user_name,
+  									employee_on_the_job_flag,
+  									delete_mark,
+  									create_time
+									)values(#{resumId},
+									#{compId},
+									#{compName},
+									#{netId},
+									#{memberId},
+									#{memberName},
+									#{employeeOnTheJobFlag},
+									1,
+									#{createTime})
+  </insert>
+  
+  <delete id = "deleteRes" parameterType="java.lang.Long">
+  delete from bas_comp_employee_resume where employee_user_id=#{memberId}
+  </delete>
+  
+  
+  <update id="editCompName">
+  UPDATE bas_comp_employee_resume
+SET comp_name =#{compName}
+WHERE
+	id IN (
+		SELECT
+			b.id
+		FROM
+			(
+				SELECT
+					a.id,
+					a.employee_user_id,
+					employee_on_the_job_flag
+				FROM
+					(
+						SELECT
+							id,
+							employee_user_id,
+							employee_on_the_job_flag
+						FROM
+							bas_comp_employee_resume
+						ORDER BY
+							create_time DESC
+					) a
+				GROUP BY
+					a.employee_user_id
+			) b
+		WHERE
+			employee_on_the_job_flag = 1
+	)
+and comp_id=#{compId}
+  </update>
+</mapper>

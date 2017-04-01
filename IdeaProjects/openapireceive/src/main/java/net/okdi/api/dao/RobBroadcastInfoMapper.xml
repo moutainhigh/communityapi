@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.RobBroadcastInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.RobBroadcastInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="broadcast_type" property="broadcastType" jdbcType="SMALLINT" />
+    <result column="total_count" property="totalCount" jdbcType="INTEGER" />
+    <result column="total_weight" property="totalWeight" jdbcType="DECIMAL" />
+    <result column="broadcast_remark" property="broadcastRemark" jdbcType="VARCHAR" />
+    <result column="broadcast_status" property="broadcastStatus" jdbcType="SMALLINT" />
+    <result column="login_member_id" property="loginMemberId" jdbcType="BIGINT" />
+    <result column="sender_name" property="senderName" jdbcType="VARCHAR" />
+    <result column="sender_mobile" property="senderMobile" jdbcType="VARCHAR" />
+    <result column="sender_address_id" property="senderAddressId" jdbcType="BIGINT" />
+    <result column="sender_address_name" property="senderAddressName" jdbcType="VARCHAR" />
+    <result column="sender_detail_address_name" property="senderDetailAddressName" jdbcType="VARCHAR" />
+    <result column="sender_longitude" property="senderLongitude" jdbcType="DECIMAL" />
+    <result column="sender_latitude" property="senderLatitude" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modity_time" property="modityTime" jdbcType="TIMESTAMP" />
+    <result column="quotation_id" property="quotationId" jdbcType="BIGINT" />
+    <result column="psn_view_flag" property="psnViewFlag" jdbcType="SMALLINT" />
+    <result column="task_id" property="taskId" jdbcType="BIGINT" />
+    <result column="addressee_address" property="addresseeAddress"  />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, broadcast_type, total_count, total_weight, broadcast_remark, broadcast_status, 
+    login_member_id, sender_name, sender_mobile, sender_address_id, sender_address_name, 
+    sender_detail_address_name, sender_longitude, sender_latitude, create_time, modity_time, 
+    quotation_id, psn_view_flag, task_id,addressee_address
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="net.okdi.api.entity.RobBroadcastInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rob_broadcastinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from rob_broadcastinfo
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from rob_broadcastinfo
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.okdi.api.entity.RobBroadcastInfoExample" >
+    delete from rob_broadcastinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.RobBroadcastInfo" >
+    insert into rob_broadcastinfo (id, broadcast_type, total_count, 
+      total_weight, broadcast_remark, broadcast_status, 
+      login_member_id, sender_name, sender_mobile, 
+      sender_address_id, sender_address_name, sender_detail_address_name, 
+      sender_longitude, sender_latitude, create_time, 
+      modity_time, quotation_id, psn_view_flag, 
+      task_id,addressee_address)
+    values (#{id,jdbcType=BIGINT}, #{broadcastType,jdbcType=SMALLINT}, #{totalCount,jdbcType=INTEGER}, 
+      #{totalWeight,jdbcType=DECIMAL}, #{broadcastRemark,jdbcType=VARCHAR}, #{broadcastStatus,jdbcType=SMALLINT}, 
+      #{loginMemberId,jdbcType=BIGINT}, #{senderName,jdbcType=VARCHAR}, #{senderMobile,jdbcType=VARCHAR}, 
+      #{senderAddressId,jdbcType=BIGINT}, #{senderAddressName,jdbcType=VARCHAR}, #{senderDetailAddressName,jdbcType=VARCHAR}, 
+      #{senderLongitude,jdbcType=DECIMAL}, #{senderLatitude,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modityTime,jdbcType=TIMESTAMP}, #{quotationId,jdbcType=BIGINT}, #{psnViewFlag,jdbcType=SMALLINT}, 
+      #{taskId,jdbcType=BIGINT},#{addresseeAddress})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.RobBroadcastInfo" >
+    insert into rob_broadcastinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="broadcastType != null" >
+        broadcast_type,
+      </if>
+      <if test="totalCount != null" >
+        total_count,
+      </if>
+      <if test="totalWeight != null" >
+        total_weight,
+      </if>
+      <if test="broadcastRemark != null" >
+        broadcast_remark,
+      </if>
+      <if test="broadcastStatus != null" >
+        broadcast_status,
+      </if>
+      <if test="loginMemberId != null" >
+        login_member_id,
+      </if>
+      <if test="senderName != null" >
+        sender_name,
+      </if>
+      <if test="senderMobile != null" >
+        sender_mobile,
+      </if>
+      <if test="senderAddressId != null" >
+        sender_address_id,
+      </if>
+      <if test="senderAddressName != null" >
+        sender_address_name,
+      </if>
+      <if test="senderDetailAddressName != null" >
+        sender_detail_address_name,
+      </if>
+      <if test="senderLongitude != null" >
+        sender_longitude,
+      </if>
+      <if test="senderLatitude != null" >
+        sender_latitude,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="modityTime != null" >
+        modity_time,
+      </if>
+      <if test="quotationId != null" >
+        quotation_id,
+      </if>
+      <if test="psnViewFlag != null" >
+        psn_view_flag,
+      </if>
+      <if test="taskId != null" >
+        task_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="broadcastType != null" >
+        #{broadcastType,jdbcType=SMALLINT},
+      </if>
+      <if test="totalCount != null" >
+        #{totalCount,jdbcType=INTEGER},
+      </if>
+      <if test="totalWeight != null" >
+        #{totalWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="broadcastRemark != null" >
+        #{broadcastRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="broadcastStatus != null" >
+        #{broadcastStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="loginMemberId != null" >
+        #{loginMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="senderName != null" >
+        #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderMobile != null" >
+        #{senderMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAddressId != null" >
+        #{senderAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="senderAddressName != null" >
+        #{senderAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderDetailAddressName != null" >
+        #{senderDetailAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderLongitude != null" >
+        #{senderLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="senderLatitude != null" >
+        #{senderLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modityTime != null" >
+        #{modityTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="quotationId != null" >
+        #{quotationId,jdbcType=BIGINT},
+      </if>
+      <if test="psnViewFlag != null" >
+        #{psnViewFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="taskId != null" >
+        #{taskId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.okdi.api.entity.RobBroadcastInfoExample" resultType="java.lang.Integer" >
+    select count(*) from rob_broadcastinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update rob_broadcastinfo
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.broadcastType != null" >
+        broadcast_type = #{record.broadcastType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.totalCount != null" >
+        total_count = #{record.totalCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.totalWeight != null" >
+        total_weight = #{record.totalWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="record.broadcastRemark != null" >
+        broadcast_remark = #{record.broadcastRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.broadcastStatus != null" >
+        broadcast_status = #{record.broadcastStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.loginMemberId != null" >
+        login_member_id = #{record.loginMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="record.senderName != null" >
+        sender_name = #{record.senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderMobile != null" >
+        sender_mobile = #{record.senderMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderAddressId != null" >
+        sender_address_id = #{record.senderAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="record.senderAddressName != null" >
+        sender_address_name = #{record.senderAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderDetailAddressName != null" >
+        sender_detail_address_name = #{record.senderDetailAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderLongitude != null" >
+        sender_longitude = #{record.senderLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="record.senderLatitude != null" >
+        sender_latitude = #{record.senderLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.modityTime != null" >
+        modity_time = #{record.modityTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.quotationId != null" >
+        quotation_id = #{record.quotationId,jdbcType=BIGINT},
+      </if>
+      <if test="record.psnViewFlag != null" >
+        psn_view_flag = #{record.psnViewFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="record.taskId != null" >
+        task_id = #{record.taskId,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update rob_broadcastinfo
+    set id = #{record.id,jdbcType=BIGINT},
+      broadcast_type = #{record.broadcastType,jdbcType=SMALLINT},
+      total_count = #{record.totalCount,jdbcType=INTEGER},
+      total_weight = #{record.totalWeight,jdbcType=DECIMAL},
+      broadcast_remark = #{record.broadcastRemark,jdbcType=VARCHAR},
+      broadcast_status = #{record.broadcastStatus,jdbcType=SMALLINT},
+      login_member_id = #{record.loginMemberId,jdbcType=BIGINT},
+      sender_name = #{record.senderName,jdbcType=VARCHAR},
+      sender_mobile = #{record.senderMobile,jdbcType=VARCHAR},
+      sender_address_id = #{record.senderAddressId,jdbcType=BIGINT},
+      sender_address_name = #{record.senderAddressName,jdbcType=VARCHAR},
+      sender_detail_address_name = #{record.senderDetailAddressName,jdbcType=VARCHAR},
+      sender_longitude = #{record.senderLongitude,jdbcType=DECIMAL},
+      sender_latitude = #{record.senderLatitude,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      modity_time = #{record.modityTime,jdbcType=TIMESTAMP},
+      quotation_id = #{record.quotationId,jdbcType=BIGINT},
+      psn_view_flag = #{record.psnViewFlag,jdbcType=SMALLINT},
+      task_id = #{record.taskId,jdbcType=BIGINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.RobBroadcastInfo" >
+    update rob_broadcastinfo
+    <set >
+      <if test="broadcastType != null" >
+        broadcast_type = #{broadcastType,jdbcType=SMALLINT},
+      </if>
+      <if test="totalCount != null" >
+        total_count = #{totalCount,jdbcType=INTEGER},
+      </if>
+      <if test="totalWeight != null" >
+        total_weight = #{totalWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="broadcastRemark != null" >
+        broadcast_remark = #{broadcastRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="broadcastStatus != null" >
+        broadcast_status = #{broadcastStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="loginMemberId != null" >
+        login_member_id = #{loginMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="senderName != null" >
+        sender_name = #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderMobile != null" >
+        sender_mobile = #{senderMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAddressId != null" >
+        sender_address_id = #{senderAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="senderAddressName != null" >
+        sender_address_name = #{senderAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderDetailAddressName != null" >
+        sender_detail_address_name = #{senderDetailAddressName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderLongitude != null" >
+        sender_longitude = #{senderLongitude,jdbcType=DECIMAL},
+      </if>
+      <if test="senderLatitude != null" >
+        sender_latitude = #{senderLatitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modityTime != null" >
+        modity_time = #{modityTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="quotationId != null" >
+        quotation_id = #{quotationId,jdbcType=BIGINT},
+      </if>
+      <if test="psnViewFlag != null" >
+        psn_view_flag = #{psnViewFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="taskId != null" >
+        task_id = #{taskId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.RobBroadcastInfo" >
+    update rob_broadcastinfo
+    set broadcast_type = #{broadcastType,jdbcType=SMALLINT},
+      total_count = #{totalCount,jdbcType=INTEGER},
+      total_weight = #{totalWeight,jdbcType=DECIMAL},
+      broadcast_remark = #{broadcastRemark,jdbcType=VARCHAR},
+      broadcast_status = #{broadcastStatus,jdbcType=SMALLINT},
+      login_member_id = #{loginMemberId,jdbcType=BIGINT},
+      sender_name = #{senderName,jdbcType=VARCHAR},
+      sender_mobile = #{senderMobile,jdbcType=VARCHAR},
+      sender_address_id = #{senderAddressId,jdbcType=BIGINT},
+      sender_address_name = #{senderAddressName,jdbcType=VARCHAR},
+      sender_detail_address_name = #{senderDetailAddressName,jdbcType=VARCHAR},
+      sender_longitude = #{senderLongitude,jdbcType=DECIMAL},
+      sender_latitude = #{senderLatitude,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modity_time = #{modityTime,jdbcType=TIMESTAMP},
+      quotation_id = #{quotationId,jdbcType=BIGINT},
+      psn_view_flag = #{psnViewFlag,jdbcType=SMALLINT},
+      task_id = #{taskId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+    <!-- 从数据库中查询所有抢单广播信息 -->
+  <select id = "queryAllRobBroadcastInfo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from rob_broadcastinfo
+  </select>
+  
+  <!--  -->
+  <update id = "updateRobStatus" parameterType="java.lang.String">
+  update rob_broadcastinfo set broadcast_status = #{BROADCAST_STATUS_YCS} where broadcast_status = 1
+  </update>
+  
+  
+  
+  
+  <select id="selectByLoginMemberId" resultType="java.lang.Long" parameterType="java.lang.Long">
+   select r.id from rob_broadcastinfo r 
+   where r.LOGIN_MEMBER_ID = #{loginMemberId} and (r.BROADCAST_STATUS = 1 or r.BROADCAST_STATUS = 5) 
+   order by r.BROADCAST_STATUS, r.CREATE_TIME desc
+  </select>
+  <!-- 查询的时候发现该广播的时间超过3个小时 修改状态为已超时 -->
+  <update id = "updateStatus" parameterType="java.lang.Long">
+  update rob_broadcastinfo set broadcast_status = 5 where id = #{id} and broadcast_status = 1
+  </update>
+  
+  <update id="updateStatusCancelBroadcast" parameterType="java.util.List">
+  	update rob_broadcastinfo set broadcast_status = 5 where broadcast_status = 1 and id in ( 
+  	<foreach collection="list" item="item" index="index" separator="," >
+  		#{item.id}
+  	</foreach>
+  	)
+  </update>
+    <update id = "updateStatus2" parameterType="java.lang.Long">
+  update rob_broadcastinfo set broadcast_status = 4 where id = #{id} 
+  </update>
+  
+  <select id="getBroadcastIdByTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">
+   select id from rob_broadcastinfo where task_id = #{taskId}
+  </select>
+  
+  <update id="finishQuotation">
+   update rob_quotation_info set success_flag = 1 where id = #{qId}
+  </update>
+  <select id="getQuotationIdByBroadcastIdAndMemberId" resultType="java.lang.Long">
+  select id from rob_quotation_info where rob_id = #{broadcastId} and member_id = #{memberId} 
+  </select>
+</mapper>

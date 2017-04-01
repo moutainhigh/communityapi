@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberAddressInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberAddressInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="address_tag_id" property="addressTagId" jdbcType="BIGINT" />
+    <result column="detailed_addresss_id" property="detailedAddresssId" jdbcType="BIGINT" />
+    <result column="detailed_addresss" property="detailedAddresss" jdbcType="VARCHAR" />
+    <result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="shipping_def" property="shippingDef" jdbcType="SMALLINT" />
+    <result column="get_def" property="getDef" jdbcType="SMALLINT" />
+    <result column="return_def" property="returnDef" jdbcType="SMALLINT" />
+    <result column="invoice_def" property="invoiceDef" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="del_mark" property="delMark" jdbcType="SMALLINT" />
+  </resultMap>
+ <select id = "getMemLocal" parameterType="java.lang.Long" resultType="java.util.HashMap">
+ select 
+ 		b.member_id as memberId,
+ 		a.member_name as memberName,
+ 		m.latitude,
+ 		m.longitude  
+ 		from  member_address_info m  LEFT JOIN 
+		bas_employee_relation b
+ 		on m.member_id=b.member_id
+ 		LEFT JOIN member_info a on b.member_id=a.member_id
+ </select>
+
+</mapper>

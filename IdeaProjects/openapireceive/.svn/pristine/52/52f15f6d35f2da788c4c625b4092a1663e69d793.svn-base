@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasExpressPriceMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.BasExpressPrice">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="net_id" property="netId" jdbcType="BIGINT" />
+		<result column="take_province" property="takeProvince"
+			jdbcType="BIGINT" />
+		<result column="send_province" property="sendProvince"
+			jdbcType="BIGINT" />
+		<result column="price" property="price" jdbcType="INTEGER" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, net_id, take_province, send_province, price, remark
+	</sql>
+	<select id="findById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from bas_express_price
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="queryExpressPrice" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    	select
+    	<include refid="Base_Column_List" />
+    	from bas_express_price
+ 	</select>
+ 	<select id="queryExpressPriceByNetAndAddress" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from bas_express_price
+		where net_id = #{netId} and take_province = #{takeProvince} and send_province = #{sendProvince}
+	</select>
+	<select id="getNetQuote" resultType="net.okdi.api.vo.VO_ExpressPrice"
+		parameterType="java.util.Map">
+		SELECT
+		b.price as firstFreight,
+		cast(b.price/2 as
+		decimal(9,2)) as continueWeight,
+		d.ADDRESS_NAME AS province
+		FROM
+		bas_express_price b
+		LEFT JOIN dic_address d ON b.send_province =
+		d.ADDRESS_ID
+		WHERE
+		b.take_province = #{provinceId} and
+		b.net_id =#{netId}
+		order by
+		b.price
+  </select>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.MemberInfoMapperV4" >
+  <resultMap id="BaseResultMap" type="net.okdi.apiV4.entity.MemberInfo" >
+    <id column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="CHAR" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="id_num" property="idNum" jdbcType="VARCHAR" />
+    <result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+    <result column="member_address_id" property="memberAddressId" jdbcType="BIGINT" />
+    <result column="member_detaile_display" property="memberDetaileDisplay" jdbcType="VARCHAR" />
+    <result column="member_detailed_address" property="memberDetailedAddress" jdbcType="VARCHAR" />
+    <result column="verif_flag" property="verifFlag" jdbcType="SMALLINT" />
+    <result column="regist_flag" property="registFlag" jdbcType="SMALLINT" />
+    <result column="referrals_id" property="referralsId" jdbcType="BIGINT" />
+    <result column="member_source" property="memberSource" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="member_sort" property="memberSort" jdbcType="SMALLINT" />
+    <result column="ERP_CUSTOMER_ID" property="erpCustomerId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    member_id, member_name, gender, birthday, id_num, member_phone, member_address_id, 
+    member_detaile_display, member_detailed_address, verif_flag, regist_flag, referrals_id, 
+    member_source, create_time, member_sort, ERP_CUSTOMER_ID
+  </sql>
+	<select id="findMemberPhoneByMemberId" parameterType="java.lang.Long" resultType="java.lang.String">
+		select member_phone
+		from member_info where member_id = #{memberId}
+	</select>
+	
+	<select id="queryMomberPhoneByMemberId" resultType="java.util.Map">
+		select member_phone from member_info where member_id = #{memberId}
+	</select>
+	
+	<select id="findNetNameByNetId" resultType="java.lang.String">
+		select net_name from bas_netinfo where net_id=#{netId}
+	</select>
+	
+	<select id="findCompIdByMemberId" resultType="java.lang.Long">
+		select audit_comp from bas_employeeaudit where member_id = #{memberId} and audit_item=2
+	</select>
+	
+	<select id="findNetIdByCompId" resultType="java.lang.Long">
+		select belong_to_net_id from bas_compinfo where comp_id = #{compId}
+	</select>
+	<select id="findNetIdByComp" resultType="java.lang.Long">
+		select belong_to_net_id from bas_compinfo where comp_id = #{compId}
+	</select>
+	
+	<select id="findMemberNameByMemberId" resultType="java.lang.String">
+		select member_name from member_info where member_id = #{memberId}
+	</select>
+	
+	<select id="querySiteMemberByMemberId" resultType="java.util.Map">
+		select e.member_id as memberId, m.member_name as memberName, m.member_phone as memberPhone
+		from bas_employeeaudit e 
+		LEFT JOIN member_info m 
+		on e.member_id = m.member_id 
+		where e.audit_comp = (select audit_comp from bas_employeeaudit where member_id = #{memberId} and audit_item=2) 
+		GROUP BY e.member_id
+	</select>
+	<select id="findLongOrLatiTudeByMemberId" resultType="java.util.Map">
+		SELECT
+			c.longitude,
+			c.latitude,
+			c.comp_id
+		FROM
+			bas_employeeaudit e
+		LEFT JOIN bas_compinfo c ON e.audit_comp = c.comp_id
+		WHERE
+			member_id = #{memberId} and audit_item=2
+	</select>
+	
+	<select id="queryNearMemberByTude" resultType="java.util.Map">
+		select 
+			MEMBER_NAME as memberName, 
+			MEMBER_MOBILE as memberMobile, 
+			NET_NAME as netName, 
+			MEMBER_ID as memberId, 
+			LONGITUDE as longitude, 
+			LATITUDE as latitude,
+			max(create_time) as createTime
+		from bas_online_member 
+		where 
+		MEMBER_MOBILE > 0
+		and LONGITUDE > 0
+		and LATITUDE > 0
+		and LONGITUDE between #{leftLng} and #{rightLng} 
+		and LATITUDE between #{bottomLat} and #{topLat} 
+		GROUP BY memberMobile
+	</select>
+	
+	<select id="findMemberIdByNameAndPhone" resultType="java.lang.Long">
+		select member_id from member_info where member_phone=#{newMemberPhone}
+	</select>
+	
+	<select id="findMemberAddressByMemberId" resultType="java.lang.String">
+		SELECT
+			c.comp_address
+		FROM
+			bas_employeeaudit e
+		LEFT JOIN bas_compinfo c ON e.audit_comp = c.comp_id
+		WHERE
+			e.member_id =#{memberId} limit 0,1
+	</select>
+	
+	<select id="findNetIdByNetName" resultType="java.lang.Long">
+		select net_id as netId from bas_netinfo where net_name = #{netName}
+	</select>
+	
+	<select id="findRoleByMemberId" resultType="java.lang.String">
+		select application_role_type as roleId from bas_employeeaudit where member_id = #{memberId} and audit_item=2
+	</select>
+</mapper>

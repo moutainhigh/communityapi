@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCompAuditLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCompAuditLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="parent_comp_id" property="parentCompId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="refuse_desc" property="refuseDesc" jdbcType="VARCHAR" />
+    <result column="comp_delete_mark" property="compDeleteMark" jdbcType="TINYINT" />
+    <result column="parent_comp_delete_mark" property="parentCompDeleteMark" jdbcType="TINYINT" />
+    <result column="create_comp_id" property="createCompId" jdbcType="BIGINT" />
+    <result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    
+     <result column="COMP_NAME" property="compName" jdbcType="VARCHAR" />
+     <result column="RESPONSIBLE" property="responsible" jdbcType="VARCHAR" />
+     <result column="COMP_TELEPHONE" property="compMobile" jdbcType="VARCHAR" />
+  </resultMap>
+
+<select id = "queryCompInfo" resultType="java.util.HashMap">
+select 
+	b.comp_id AS compId,
+	b.comp_name AS compName,
+	b.comp_type_num as compTypeNum,
+	b.comp_address as compAddress
+from bas_compinfo b LEFT JOIN bas_employee_relation e on b.comp_id= e.comp_id
+LEFT JOIN member_info m on e.member_id = m.member_id 
+where b.comp_type_num = 1050 and b.comp_status = 1 	and e.role_id=1
+<if test="compName !=null and compName !=''">
+and b.comp_name = #{compName}
+</if>
+<if test="memberPhone !=null and memberPhone !=''">
+and m.member_phone= #{memberPhone}
+</if>
+ and b.belong_to_net_id = #{netId}
+and LEFT (b.comp_address, 2) = #{compAddress}
+
+</select>
+
+<select id = "getCompInfo" resultType="java.util.HashMap">
+
+select 
+	b.comp_id AS parentCompId,
+	b.comp_name AS compName,
+	b.comp_type_num as compTypeNum,
+	b.comp_address as compAddress
+from bas_compinfo b LEFT JOIN bas_employee_relation e on b.comp_id= e.comp_id
+LEFT JOIN member_info m on e.member_id = m.member_id 
+where b.comp_type_num = 1006 and b.comp_status = 1 and e.role_id=1
+<if test="compName !=null and compName !=''">
+and b.comp_name = #{compName}
+</if>
+<if test="memberPhone !=null and memberPhone !=''">
+and m.member_phone= #{memberPhone}
+</if>
+ and b.belong_to_net_id = #{netId}
+and LEFT (b.comp_address, 2) = #{compAddress}
+
+
+</select>
+   
+<select id = "queryCompRelationInfo" resultMap="BaseResultMap">
+SELECT
+	e.id as logId,
+	e.comp_id AS passiveCompId,
+	e.parent_comp_id as activeCompId,
+	e. STATUS AS STATUS,
+	e.create_user_id as userId
+FROM
+	exp_comp_audit_log e
+WHERE
+	e.parent_comp_id =#{compId}
+AND e.create_user_id =#{userId}
+order by e.create_time desc
+</select>
+
+<delete id = "deleteCompRelation">
+delete from exp_comp_audit_log where comp_id =#{compId}
+<!-- <if test="parentCompId !=null and parentCompId !=''"> -->
+<!--  and parent_comp_id =#{parentCompId} -->
+<!-- </if> -->
+<!--  and status in (0,2) -->
+</delete>
+
+<update id = "updateCompRelation" >
+update exp_comp_audit_log set status = 3 where id = #{logId}
+</update>
+ 
+<select id = "isAudit" resultMap="BaseResultMap">
+SELECT
+	id,
+	comp_id,
+	parent_comp_id,
+	STATUS,
+	refuse_desc
+FROM
+	exp_comp_audit_log
+WHERE
+(
+(
+	parent_comp_id =#{loginCompId}
+	AND comp_id =#{compId})
+OR 
+(	comp_id =#{loginCompId}
+	AND parent_comp_id =#{compId}
+)
+)
+AND status = 0
+</select> 
+
+<insert id = "doAddAuditLog" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+  insert into exp_comp_audit_log(
+  								id,
+  								comp_id,
+  								parent_comp_id,
+  								status,
+  								comp_delete_mark,
+  								parent_comp_delete_mark,
+  								create_comp_id,
+  								create_user_id,
+  								create_time)
+							values(
+								#{id},
+								#{compId},
+								#{parentCompId},
+								1,	
+								0,
+								0,
+								#{parentCompId},
+								#{createUserId},
+								#{createTime}
+							)
+</insert>
+
+<insert id = "doInsertAuditLog" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+  insert into exp_comp_audit_log(
+  								id,
+  								comp_id,
+  								parent_comp_id,
+  								status,
+  								comp_delete_mark,
+  								parent_comp_delete_mark,
+  								create_comp_id,
+  								create_user_id,
+  								create_time)
+							values(
+								#{id},
+								#{compId},
+								#{parentCompId},
+								0,	
+								0,
+								0,
+								#{parentCompId},
+								#{createUserId},
+								#{createTime}
+							)
+</insert>
+
+
+<select id = "selectLog"  parameterType="java.lang.Long" resultType="java.util.HashMap">
+   SELECT
+   a.id as logId,
+	a.comp_id AS compId,
+	a.parent_comp_id AS parentCompId,
+	a.status,
+	a.refuse_desc AS refuseDesc,
+	a.comp_delete_mark AS compDeleteMark,
+	a.parent_comp_delete_mark AS parentCompDeleteMark,
+	a.create_time AS createTime
+FROM
+	exp_comp_audit_log a
+	where 1=1 and a.status=0 and a.parent_comp_id=#{compId}
+order by a.create_time desc
+</select>
+<select id = "findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+select
+<include refid="baseColum"/>
+from exp_comp_audit_log where id = #{logId}
+</select>
+
+<sql id = "baseColum">
+id,comp_id,parent_comp_id,status,refuse_desc,comp_delete_mark,parent_comp_delete_mark,create_comp_id,create_user_id,create_time
+</sql>   
+
+<update id = "auditAgress" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+update exp_comp_audit_log set status = 1 where comp_id=#{compId} and parent_comp_id = #{parentCompId} and status = 0
+</update>
+<update id = "auditRefuse" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+update exp_comp_audit_log set status = 2,refuse_desc =#{refuseDesc} where comp_id=#{compId} and parent_comp_id = #{parentCompId} and status = 0
+</update>   
+<update id = "relieveLog" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+update exp_comp_audit_log set status = 3 where comp_id=#{compId} and parent_comp_id = #{parentCompId} and status = 1
+
+</update>
+
+<select id = "queryAuditLog" parameterType="java.lang.Long" resultMap="BaseResultMap">
+select
+<include refid="baseColum"/>
+from exp_comp_audit_log where comp_id = #{compId}
+</select>
+
+<select id = "queryAuditLogByCompId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+select
+<include refid="baseColum"/>
+from exp_comp_audit_log where 1=1 
+<if test = "parentCompId !=null and parentCompId !=''">
+and parent_comp_id = #{parentCompId}
+</if>
+<if test = "compId !=null and compId !=''">
+ and comp_id = #{compId}
+</if>
+    and (status = 0 or status =1) 
+</select>
+
+<select id = "queryStatus" resultMap="BaseResultMap">
+select
+<include refid="baseColum"/>
+from exp_comp_audit_log where comp_id = #{compId} and parent_comp_id = #{parentCompId} and status in (0,1) 
+</select>
+
+<update id = "updateAuditStatus" parameterType="net.okdi.api.entity.ExpCompAuditLog">
+update exp_comp_audit_log set status = 1 where comp_id = #{compId} and parent_comp_id = #{parentCompId}
+</update>
+
+<update id = "doUpdateAuditStatus" >
+
+update exp_comp_audit_log set status = 0 where comp_id = #{compId} and parent_comp_id = #{parentCompId}
+
+</update>
+
+
+
+
+
+
+
+
+
+
+</mapper>

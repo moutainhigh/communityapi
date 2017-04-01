@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.AttentionMapper">
+	<select id="findNameById" parameterType="java.lang.Long" resultType="java.lang.String">
+		select 
+		member_name 
+		from 
+		member_info 
+		where 
+		member_id=#{fromMemberId,jdbcType=BIGINT};
+	</select>
+	<select id="queryEmployeeByCompId" parameterType="java.lang.Long"
+		resultType="net.okdi.apiV4.entity.MemberInfo">
+		SELECT
+		b.member_id AS memberId,
+		m.member_name as memberName,
+		b.role_id as roleId,
+		m.member_phone AS memberPhone
+		FROM
+		bas_employee_relation b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		b.role_id !=1 and
+		b.comp_id =#{compId}
+		ORDER BY role_id DESC,
+		m.create_time ASC
+	</select>
+	<select id="finCompInfoByMemberId" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		SELECT
+			comp_name compName,
+			comp_address compAddress
+		FROM
+			bas_compinfo
+		WHERE
+		comp_id = (
+			SELECT
+				audit_comp
+			FROM
+				bas_employeeaudit
+			WHERE
+				audit_opinion = 1
+			AND audit_item = 2
+			AND member_id = #{memberId}
+		)
+	</select>
+</mapper>

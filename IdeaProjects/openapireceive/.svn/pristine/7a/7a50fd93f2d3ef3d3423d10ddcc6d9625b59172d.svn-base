@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.CollectionMapper">
+	<select id="getMeberInfoByMemberId" resultType="java.util.HashMap">
+			SELECT
+			         m.id_num AS idNum,
+			        e.id AS auditId,
+					m.member_name AS memberName
+			FROM
+			member_info m
+			LEFT JOIN bas_employeeaudit e ON m.member_id = e.member_id
+			WHERE
+				1 = 1
+			AND e.audit_item = 1
+			AND e.audit_opinion BETWEEN 0 AND 1
+			<if test="memberId!=null and memberId!=''">
+			AND m.member_id=#{memberId}
+			</if>
+			GROUP BY   m.id_num
+			LIMIT 1
+	</select>
+	
+	<select id="isHasCollection" resultType="java.util.HashMap">
+	    SELECT
+			b.comp_id AS compId
+		FROM
+			bas_compinfo b
+		WHERE 1=1
+		<if test="compName!=null and compName!=''">
+		AND	b.comp_name =#{compName}
+		</if>
+		<if test="compAddress!=null and compAddress!=''">
+		AND b.comp_address=#{compAddress}
+		</if>
+		GROUP BY comp_name
+        ORDER BY create_time DESC
+	</select>
+	
+	<select id="findType" resultType="java.lang.Integer">
+			SELECT
+				count(1)
+			FROM
+				bas_employeeaudit e
+			WHERE 
+			   1=1
+			AND	e.audit_comp = #{compId}
+			AND e.application_role_type = 2
+	</select>
+	
+	<update id="updateIdentityAudit">
+	 	UPDATE bas_employeeaudit
+		SET audit_comp = #{map.audit_comp},
+		    application_role_type =#{map.roleId},
+				audit_desc =#{map.audit_desc}
+		WHERE
+			id = #{map.auditId}
+	</update>
+	
+	<update id="updateIdentityAudit2">
+	 	UPDATE bas_employeeaudit
+		SET audit_opinion=#{map.audit_opinion}
+		WHERE  audit_item=2
+			and id = #{map.auditId}
+	</update>
+	<select id="findShopkeeperByCompId" resultType="java.util.HashMap">
+			SELECT
+				m.member_id AS shopkeepermemberId,
+				b.responsible_telephone AS mobile
+			FROM
+				member_info m
+			LEFT JOIN bas_employeeaudit e ON m.member_id = e.member_id
+			LEFT JOIN bas_compbusiness b ON b.comp_id = e.audit_comp
+			WHERE
+				1 = 1
+			AND e.audit_item = 2
+			AND e.audit_opinion =1
+			AND e.application_role_type = 2
+			AND e.audit_comp = #{compId}
+	</select>
+	
+	<update id="">
+		    UPDATE
+			SET audit_opinion = 1
+			WHERE
+				1 = 1
+			AND audit_item = 2
+			AND audit_opinion= 0
+			AND audit_comp =#{compId}
+	
+	</update>
+	
+	<select id="findIdentity" resultType="java.util.HashMap">
+			SELECT DISTINCT
+				m.member_id AS memberId
+			FROM
+				member_info m
+			LEFT JOIN bas_employeeaudit b ON m.member_id = b.member_id
+			WHERE
+				b.audit_item = 1
+			AND audit_opinion BETWEEN 0
+			AND 1
+			AND m.id_num = #{idNum}
+			GROUP BY
+				m.member_id
+			ORDER BY
+				m.create_time DESC
+			LIMIT 1
+	</select>
+	<select id="querySfAuditInfo" resultType="java.util.HashMap">
+		SELECT
+			a.id
+		FROM
+			bas_employeeaudit a
+		LEFT JOIN member_info b ON a.member_id = b.member_id
+		WHERE
+			a.audit_item = 1
+		AND b.member_phone = #{memberPhone} GROUP BY a.member_id
+	</select>
+	<select id="findIdentityNew" resultType="java.util.HashMap">
+			SELECT DISTINCT
+				m.member_id AS memberId
+			FROM
+				member_info m
+			LEFT JOIN bas_employeeaudit b ON m.member_id = b.member_id
+			WHERE
+				b.audit_item = 1
+			AND audit_opinion BETWEEN 0
+			AND 1
+			AND m.id_num = #{idNum} AND m.member_phone=#{memberPhone}
+			GROUP BY
+				m.member_id
+			ORDER BY
+				m.create_time DESC
+			LIMIT 1
+	</select>
+	
+	<update id="updateIdentity">
+		UPDATE 
+		    member_info
+		SET 
+		<if test="idNum != null and idNum != '' ">
+			id_num = #{idNum},
+		</if>
+		member_name=#{memberName}
+				WHERE
+			 member_id =#{memberId}
+	
+	</update>
+	
+	
+	<select id="selectPhoneByMemberId" resultType="java.lang.String">
+	  SELECT member_phone AS phone FROM member_info m where m.member_id=#{memberId}   
+	</select>
+	
+	<delete id="delAutidBymemberId">
+	 DELETE
+     FROM
+	  bas_employeeaudit
+    WHERE
+	member_id = #{memberId}
+	
+	</delete>
+	
+	
+		
+	<delete id="Delbasemployeerelation">
+		 DELETE
+    FROM
+	bas_employee_relation
+   WHERE
+	member_id = #{memberId}
+	
+	</delete>
+
+<update id="updatebasemployeerelation">
+UPDATE bas_employee_relation
+SET comp_id =#{compId},
+ role_id =#{roleId}
+WHERE
+	member_id =#{memberId}
+</update>
+<delete id="delBascompbusiness">
+DELETE FROM bas_compbusiness
+WHERE
+	 comp_id=#{compId}
+</delete>
+<select id="queryMemberInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+	SELECT * FROM member_info WHERE member_phone = #{memberPhone};
+</select>
+	
+</mapper>

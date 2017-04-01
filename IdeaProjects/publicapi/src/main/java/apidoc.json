@@ -1,0 +1,13 @@
+{
+  "name": "好递快递平台API",
+  "version": "0.2.0",
+  "description": "好递快递平台API",
+  "title": "好递快递平台API",
+  "url" : "http://publicapi.okdit.net/publicapi",
+  "sampleUrl": "http://publicapi.okdit.net/publicapi",
+
+  "template": {
+    "withCompare": true,
+    "withGenerator": true
+  }
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasClientPushJurisdictionMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasClientPushJurisdiction" >
+    <id column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="phone_client_push_switch" property="phoneClientPushSwitch" jdbcType="CHAR" />
+    <result column="pc_client_push_switch" property="pcClientPushSwitch" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    member_id, phone_client_push_switch, pc_client_push_switch
+  </sql>
+  <select id="query" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_client_push_jurisdiction
+    where member_id = #{memberId,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.BasClientPushJurisdiction" >
+    insert into bas_client_push_jurisdiction (member_id, phone_client_push_switch, pc_client_push_switch
+      )
+    values (#{memberId,jdbcType=BIGINT}, #{phoneClientPushSwitch,jdbcType=CHAR}, #{pcClientPushSwitch,jdbcType=CHAR}
+      )
+  </insert>
+  <update id="update" parameterType="net.okdi.api.entity.BasClientPushJurisdiction" >
+    update bas_client_push_jurisdiction
+    set phone_client_push_switch = #{phoneClientPushSwitch,jdbcType=CHAR},
+      pc_client_push_switch = #{pcClientPushSwitch,jdbcType=CHAR}
+    where member_id = #{memberId,jdbcType=BIGINT}
+  </update>
+</mapper>

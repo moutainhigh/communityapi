@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.WxSignLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.WxSignLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, member_id, create_time
+  </sql>
+  <select id="queryTodaySign" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Base_Column_List" />
+    from wx_sign_log
+    where datediff(create_time,#{now}) = 0
+    and member_id = #{memberId}
+  </select>
+  <insert id="insertWxSignLog" parameterType="net.okdi.api.entity.WxSignLog" >
+    insert into wx_sign_log (id, member_id, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+</mapper>

@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasEmployeeAuditMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="audit_comp" property="auditComp" jdbcType="BIGINT" />
+    <result column="application_role_type" property="applicationRoleType" jdbcType="SMALLINT" />
+    <result column="audit_opinion" property="auditOpinion" jdbcType="SMALLINT" />
+    <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="audit_item" property="auditItem" jdbcType="SMALLINT" />
+    <result column="audit_reject_reason" property="auditRejectReason" jdbcType="SMALLINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, member_id, audit_comp, application_role_type, audit_opinion, audit_desc, audit_user, 
+    audit_time, audit_item, audit_reject_reason
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="net.okdi.api.entity.BasEmployeeAuditExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from bas_employeeaudit
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_employeeaudit
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from bas_employeeaudit
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.okdi.api.entity.BasEmployeeAuditExample" >
+    delete from bas_employeeaudit
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.BasEmployeeAudit" >
+    insert into bas_employeeaudit (id, member_id, audit_comp, 
+      application_role_type, audit_opinion, audit_desc, 
+      audit_user, audit_time, audit_item, 
+      audit_reject_reason)
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{auditComp,jdbcType=BIGINT}, 
+      #{applicationRoleType,jdbcType=SMALLINT}, #{auditOpinion,jdbcType=SMALLINT}, #{auditDesc,jdbcType=VARCHAR}, 
+      #{auditUser,jdbcType=BIGINT}, #{auditTime,jdbcType=TIMESTAMP}, #{auditItem,jdbcType=SMALLINT}, 
+      #{auditRejectReason,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.BasEmployeeAudit" >
+    insert into bas_employeeaudit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="memberId != null" >
+        member_id,
+      </if>
+      <if test="auditComp != null" >
+        audit_comp,
+      </if>
+      <if test="applicationRoleType != null" >
+        application_role_type,
+      </if>
+      <if test="auditOpinion != null" >
+        audit_opinion,
+      </if>
+      <if test="auditDesc != null" >
+        audit_desc,
+      </if>
+      <if test="auditUser != null" >
+        audit_user,
+      </if>
+      <if test="auditTime != null" >
+        audit_time,
+      </if>
+      <if test="auditItem != null" >
+        audit_item,
+      </if>
+      <if test="auditRejectReason != null" >
+        audit_reject_reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="auditComp != null" >
+        #{auditComp,jdbcType=BIGINT},
+      </if>
+      <if test="applicationRoleType != null" >
+        #{applicationRoleType,jdbcType=SMALLINT},
+      </if>
+      <if test="auditOpinion != null" >
+        #{auditOpinion,jdbcType=SMALLINT},
+      </if>
+      <if test="auditDesc != null" >
+        #{auditDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="auditUser != null" >
+        #{auditUser,jdbcType=BIGINT},
+      </if>
+      <if test="auditTime != null" >
+        #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditItem != null" >
+        #{auditItem,jdbcType=SMALLINT},
+      </if>
+      <if test="auditRejectReason != null" >
+        #{auditRejectReason,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.okdi.api.entity.BasEmployeeAuditExample" resultType="java.lang.Integer" >
+    select count(*) from bas_employeeaudit
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update bas_employeeaudit
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.memberId != null" >
+        member_id = #{record.memberId,jdbcType=BIGINT},
+      </if>
+      <if test="record.auditComp != null" >
+        audit_comp = #{record.auditComp,jdbcType=BIGINT},
+      </if>
+      <if test="record.applicationRoleType != null" >
+        application_role_type = #{record.applicationRoleType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.auditOpinion != null" >
+        audit_opinion = #{record.auditOpinion,jdbcType=SMALLINT},
+      </if>
+      <if test="record.auditDesc != null" >
+        audit_desc = #{record.auditDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditUser != null" >
+        audit_user = #{record.auditUser,jdbcType=BIGINT},
+      </if>
+      <if test="record.auditTime != null" >
+        audit_time = #{record.auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.auditItem != null" >
+        audit_item = #{record.auditItem,jdbcType=SMALLINT},
+      </if>
+      <if test="record.auditRejectReason != null" >
+        audit_reject_reason = #{record.auditRejectReason,jdbcType=SMALLINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update bas_employeeaudit
+    set id = #{record.id,jdbcType=BIGINT},
+      member_id = #{record.memberId,jdbcType=BIGINT},
+      audit_comp = #{record.auditComp,jdbcType=BIGINT},
+      application_role_type = #{record.applicationRoleType,jdbcType=SMALLINT},
+      audit_opinion = #{record.auditOpinion,jdbcType=SMALLINT},
+      audit_desc = #{record.auditDesc,jdbcType=VARCHAR},
+      audit_user = #{record.auditUser,jdbcType=BIGINT},
+      audit_time = #{record.auditTime,jdbcType=TIMESTAMP},
+      audit_item = #{record.auditItem,jdbcType=SMALLINT},
+      audit_reject_reason = #{record.auditRejectReason,jdbcType=SMALLINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.BasEmployeeAudit" >
+    update bas_employeeaudit
+    <set >
+      <if test="memberId != null" >
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="auditComp != null" >
+        audit_comp = #{auditComp,jdbcType=BIGINT},
+      </if>
+      <if test="applicationRoleType != null" >
+        application_role_type = #{applicationRoleType,jdbcType=SMALLINT},
+      </if>
+      <if test="auditOpinion != null" >
+        audit_opinion = #{auditOpinion,jdbcType=SMALLINT},
+      </if>
+      <if test="auditDesc != null" >
+        audit_desc = #{auditDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="auditUser != null" >
+        audit_user = #{auditUser,jdbcType=BIGINT},
+      </if>
+      <if test="auditTime != null" >
+        audit_time = #{auditTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditItem != null" >
+        audit_item = #{auditItem,jdbcType=SMALLINT},
+      </if>
+      <if test="auditRejectReason != null" >
+        audit_reject_reason = #{auditRejectReason,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.BasEmployeeAudit" >
+    update bas_employeeaudit
+    set member_id = #{memberId,jdbcType=BIGINT},
+      audit_comp = #{auditComp,jdbcType=BIGINT},
+      application_role_type = #{applicationRoleType,jdbcType=SMALLINT},
+      audit_opinion = #{auditOpinion,jdbcType=SMALLINT},
+      audit_desc = #{auditDesc,jdbcType=VARCHAR},
+      audit_user = #{auditUser,jdbcType=BIGINT},
+      audit_time = #{auditTime,jdbcType=TIMESTAMP},
+      audit_item = #{auditItem,jdbcType=SMALLINT},
+      audit_reject_reason = #{auditRejectReason,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id = "doUpdateComp" parameterType="java.util.HashMap">
+  	update bas_employeeaudit set audit_comp=#{compIdNew} where audit_comp=#{compIdOld}
+  </update>
+<!-- 手机端 审核通过拒绝 -->
+ <update id = "updateStatus" parameterType="java.util.HashMap">
+update bas_employeeaudit set audit_opinion=#{flag},audit_user=#{userId},audit_time=#{auditTime},audit_reject_reason=1,audit_desc=#{refuseDesc}
+where id=#{logId} and audit_comp=#{compId}
+ </update>
+
+  <insert id = "doAddAudit" parameterType="java.util.HashMap">
+  insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								application_desc,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_user,
+  								audit_item,
+  								audit_opinion,
+  								audit_time)
+							values(
+								#{auditId},
+								#{memberId},
+								#{applicationDesc},
+								#{compId},
+								#{roleId},
+								#{createTime},
+								#{userId},
+								2,
+								1,
+								#{createTime}
+								)
+  </insert>
+  <insert id = "doInsertAudit" parameterType="java.util.HashMap">
+    insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								application_desc,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_user,
+  								audit_item,
+  								audit_opinion)
+							values(
+								#{auditId1},
+								#{memberId},
+								#{applicationDesc},
+								#{compId},
+								#{roleId},
+								#{createTime},
+								#{userId},
+								1,
+								<if test="memberSource==1">
+								1
+								</if>
+								<if test="memberSource==0">
+								0
+								</if>
+								
+								)
+  </insert>
+  
+  <!-- 手机端通过|拒绝操作 
+  <insert id = "saveAudit" parameterType="java.util.HashMap">
+   insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_user,
+  								audit_item,
+  								audit_opinion,
+  								audit_reject_reason,
+  								audit_desc,
+  								audit_time)
+							values(
+								#{auditId},
+								#{memberId},
+								#{compId},
+								#{roleId},
+								#{auditTime},
+								#{userId},
+								2,
+								#{flag},
+								1,
+								#{refuseDesc},
+								#{auditTime}
+								)
+								
+  </insert>
+   -->
+   <delete id ="removeMemberInfo" parameterType="java.lang.Long">
+   delete from  bas_employeeaudit where id =#{logId}
+   </delete>
+   <!-- 校验审核记录表中是否存在该memberid的归属审核记录 -->
+   <select id ="getAuditCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+   select count(*) from bas_employeeaudit a where a.audit_item=2 and   a.member_id=#{memberId} 
+   </select>
+   <!--  -->
+   <select id = "getVerifyAudit" parameterType="java.lang.Long" resultType="java.lang.Integer">
+   select count(*) from bas_employeeaudit a where a.audit_item=1  and a.member_id=#{memberId}
+   </select>
+   
+   <!--  -->
+   <update id ="doEditAudit" parameterType="java.util.HashMap">
+    update bas_employeeaudit set audit_comp=#{compId}
+    <if test ="roleId !=null and roleId !=''">
+    ,application_role_type=#{roleId}
+    </if>
+    <if test="applicationDesc !=null and applicationDesc!=''">
+    ,application_desc=#{applicationDesc}
+    </if>
+    ,application_time=#{createTime},audit_time=#{createTime}
+     where audit_item=2 and audit_opinion=0 and member_id=#{memberId}
+   </update>
+   <!--  -->
+   <update id = "doUpdatetAudit" parameterType="java.util.HashMap">
+       update bas_employeeaudit set audit_comp=#{compId}
+    <if test ="roleId !=null and roleId !=''">
+    ,application_role_type=#{roleId}
+    </if>
+    <if test="applicationDesc !=null and applicationDesc!=''">
+    ,application_desc=#{applicationDesc}
+    </if>
+    ,application_time=#{createTime}
+     where audit_item=1 and audit_opinion=0 and member_id=#{memberId}
+   </update>
+   
+   <select id = "loadMemberInfo" parameterType="java.lang.Long" resultType="java.util.HashMap">
+   select 
+	a.id as logId,
+		a.audit_comp as compId,
+		a.audit_item as auditItem,
+		a.member_id as memberId,
+		m.member_name as memberName,
+		m.member_phone as memberPhone,
+		a.application_role_type as roleId,
+		a.audit_desc as auditDesc,
+		a.audit_opinion as auditOpinion,
+		'1' as
+		employeeWorkStatusFlag,
+		'0' as memberSource,
+		max(date_format(a.application_time,'%Y-%m-%d %H:%i:%s')) as 
+		createTime
+		FROM
+		bas_employeeaudit a
+		LEFT JOIN member_info m ON a.member_id =
+		m.member_id
+		where
+		a.audit_comp =#{compId}
+		AND a.audit_item = 2
+		AND
+		audit_opinion in(0,2)
+		GROUP BY a.member_id
+   </select>
+<!--    第一步调用新增一条归属关系 -->
+   <insert id = "mobileRegisterFirstStep" parameterType="net.okdi.api.vo.VO_MemberInfo">
+     insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_item,
+  								audit_opinion,
+  								application_desc)
+							values(
+								#{id},
+								#{memberId},
+								#{compId},
+								#{roleId},
+								#{createTime},
+								2,
+								<if test="memberSourceFlag!=0">
+								-1,
+								</if>
+								<if test="memberSourceFlag==0">
+								0,
+								</if>
+								#{applicationDesc}
+								)
+   </insert>
+     <!--    第一步调用修改一条归属关系 -->
+<update id = "mobileRegisterFirstStepEdit" parameterType="net.okdi.api.vo.VO_MemberInfo">
+    update bas_employeeaudit
+    set member_id = #{memberId,jdbcType=BIGINT}
+    <if test ="compId !=null and compId !=''">
+    ,audit_comp = #{compId,jdbcType=BIGINT}
+    </if>
+    ,application_role_type = #{roleId,jdbcType=BIGINT}
+    <if test="memberSourceFlag!=0 ">
+			 ,audit_opinion = -1
+	</if>
+	<if test="memberSourceFlag==0">
+	   		,audit_opinion = 0
+	</if>
+    <if test ="applicationDesc !=null and applicationDesc !=''">
+    ,application_desc = #{applicationDesc}
+    </if>
+<!--      <if test ="createTime !=null and createTime !=''"> -->
+<!--     ,audit_time = #{createTime} -->
+<!--     </if> -->
+    where member_id = #{memberId,jdbcType=BIGINT} and audit_item = 2
+<!--      and audit_opinion !=2 -->
+</update>
+<!--    插入身份认证信息 -->
+   <insert id = "mobileRegisterSecondStep" parameterType="net.okdi.api.vo.VO_MemberInfo">
+        insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_item,
+  								audit_opinion
+  								)
+							values(
+								#{id},
+								#{memberId},
+								#{compId},
+								#{roleId},
+								#{createTime},
+								1,
+								0
+								)
+   </insert>
+<!--    修改身份认证信息 -->
+   <update id = "mobileRegisterSecondStepEdit" parameterType="net.okdi.api.vo.VO_MemberInfo">
+    update bas_employeeaudit
+    set member_id = #{memberId,jdbcType=BIGINT}
+    <if test ="compId !=null and compId !=''">
+    ,audit_comp = #{compId,jdbcType=BIGINT}
+    </if>
+    <if test ="roleId !=null and roleId !=''">
+    ,application_role_type = #{roleId,jdbcType=BIGINT}
+    </if>
+	<if test="memberSourceFlag==0">
+	   		,audit_opinion = 0
+	</if>
+<!-- 	<if test ="createTime !=null and createTime !=''"> -->
+<!--     ,audit_time = #{createTime} -->
+<!--     </if> -->
+	 where member_id = #{memberId,jdbcType=BIGINT} and audit_item = 1 
+<!-- 	 and audit_opinion !=2 -->
+</update>
+
+<update id = "editAudit" parameterType="java.util.HashMap">
+		UPDATE bas_employeeaudit
+		SET audit_opinion =#{flag},audit_time=#{auditTime} 
+		WHERE
+			member_id =#{memberId}
+		AND audit_item = 1
+		AND audit_opinion = 0
+
+</update>
+
+<update id = "editRelation" parameterType="java.util.HashMap">
+		UPDATE bas_employeeaudit
+		SET audit_opinion =#{flag},audit_time=#{createTime}
+		WHERE
+			member_id =#{memberId}
+		AND audit_comp =#{compId}
+		AND audit_item = 2
+		AND (audit_opinion = 0 or audit_opinion=-1)
+</update>
+
+<delete id ="deleteRelationLog" parameterType="java.lang.Long">
+update bas_employeeaudit  set  audit_opinion=null ,application_role_type=null     where member_id =#{memberId}  and audit_item=2
+</delete>
+<insert id ="doSaveAudit" parameterType="java.util.HashMap">
+  insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								application_desc,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_user,
+  								audit_item,
+  								audit_opinion,
+  								audit_time)
+							values(
+								#{auditVerifId},
+								#{memberId},
+								#{applicationDesc},
+								#{compId},
+								#{roleId},
+								#{createTime},
+								#{userId},
+								1,
+								-1,
+								#{createTime}
+								)
+</insert>
+
+<select id = "queryRecorde" parameterType="java.lang.String" resultMap="BaseResultMap">
+select     
+a.audit_comp as auditComp
+
+from bas_employeeaudit a LEFT JOIN member_info m  on m.member_id=a.member_id
+
+where a.audit_item=2 and a.audit_opinion=0 and m.member_phone=#{associatedNumber}
+</select>
+
+<insert id = "doAddRelation" parameterType="java.util.HashMap" >
+  insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_item,
+  								audit_opinion,
+  								audit_time)
+							values(
+								#{id},
+								#{memberId},
+								#{compId},
+								1,
+								#{createTime},
+								2,
+								1,
+								#{createTime}
+								)
+</insert>
+<update id = "editAuditInfo">
+update bas_employeeaudit  set  audit_opinion=1,application_role_type=#{roleId},audit_comp=#{compId} where member_id =#{memberId}  and audit_item=2
+</update>
+
+<delete id ="deleteRelationLogByMemberId" >
+delete from bas_employeeaudit where member_id =#{memberId}  and audit_item=2
+</delete>
+
+<update id = "updateComp" parameterType="java.lang.Long">
+update  bas_employeeaudit set audit_comp=#{compId} where member_id =#{memberId}
+</update>
+
+<select id = "findBasEmployeeAuditByMemberId" parameterType="java.lang.Long" resultType="java.lang.Long">
+select   id  from   bas_employeeaudit where member_id=#{memberId} and audit_item=2 and audit_opinion !=2   
+
+</select>
+<update id="updateAuditOpinion" parameterType="java.util.Map">
+		update bas_employeeaudit set audit_opinion=#{auditOpinion} ,audit_reject_reason=#{auditRejectReason} where member_id=#{memberId}
+</update>
+<!-- 修改身份认证信息的站点compId -->
+<update id="updateSFAuditInfo" parameterType="java.util.Map">
+	UPDATE bas_employeeaudit
+	SET audit_comp = #{compId}
+	WHERE
+		member_id = #{memberId}
+	AND audit_item = 1
+</update>
+<!-- 修改快递认证信息的站点compId -->
+<update id="updateKDAuditInfo" parameterType="java.util.Map">
+	UPDATE bas_employeeaudit
+	SET audit_comp = #{compId}
+	WHERE
+		member_id = #{memberId}
+	AND audit_item = 3
+</update>
+
+
+<select id="queryRolebyMemberId" resultType="java.lang.Integer">
+
+   select application_role_type
+    from bas_employeeaudit
+     where member_id=#{memberId} and audit_item='2'
+</select>
+
+<select id="queryComIdAndNetIdByMemberId" parameterType="java.lang.Long" resultType="java.util.Map">
+SELECT 
+e.audit_comp as compId,c.belong_to_net_id as netId 
+from bas_employeeaudit e 
+LEFT JOIN bas_compinfo c 
+on e.audit_comp=c.comp_id 
+where e.member_id=#{memberId} 
+LIMIT 0,1
+</select>
+</mapper>

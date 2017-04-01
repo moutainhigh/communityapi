@@ -1,0 +1,1216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberInfoMapper">
+	<resultMap id="memberInfoMap" type="net.okdi.api.entity.MemberInfo">
+		<id column="member_id" property="memberId" jdbcType="BIGINT" />
+		<result column="member_name" property="memberName" jdbcType="VARCHAR" />
+		<result column="area_color" property="areaColor" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" jdbcType="CHAR" />
+		<result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+		<result column="id_num" property="idNum" jdbcType="VARCHAR" />
+		<result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+		<result column="member_address_id" property="memberAddressId"
+			jdbcType="BIGINT" />
+		<result column="member_detaile_display" property="memberDetaileDisplay"
+			jdbcType="VARCHAR" />
+		<result column="member_detailed_address" property="memberDetailedAddress"
+			jdbcType="VARCHAR" />
+		<result column="verif_flag" property="verifFlag" jdbcType="SMALLINT" />
+		<result column="regist_flag" property="registFlag" jdbcType="SMALLINT" />
+		<result column="referrals_id" property="referralsId" jdbcType="BIGINT" />
+		<result column="member_source" property="memberSource"
+			jdbcType="SMALLINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="member_sort" property="memberSort" jdbcType="SMALLINT" />
+		<result column="erp_customer_id" property="erpCustomerId"
+			jdbcType="BIGINT" />
+		<result column="role_id" property="roleId" jdbcType="SMALLINT" />
+		<result column="employee_work_status_flag" property="employeeWorkStatusFlag"
+			jdbcType="SMALLINT" />
+		<result column="address_type" property="addressType" jdbcType="SMALLINT" />
+		<result column="associated_number" property="associatedNumber"
+			jdbcType="VARCHAR" />
+		<result column="comp_id" property="compId"
+			jdbcType="VARCHAR" />
+		<result column="member_detaile_display" property="memberDetaileDisplay"
+			jdbcType="VARCHAR" />
+		<result column="member_detailed_address" property="memberDetailedAddress"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findMemberIdByMemberPhone" parameterType="java.lang.String" resultType="java.lang.Long">
+		select member_id 
+		from member_info where member_phone = #{memberPhone}
+	</select>
+
+	<select id="queryMemberByMemberPhone" parameterType="java.lang.String" resultType="net.okdi.api.entity.MemberInfo">
+		select member_id, member_name, gender, birthday, 
+			id_num, member_phone, member_address_id, member_detaile_display, 
+			member_detailed_address, verif_flag, regist_flag, referrals_id, 
+			member_source, create_time, member_sort, erp_customer_id 
+		from member_info where member_phone = #{memberPhone}
+	</select>
+	<select id="findById" parameterType="java.lang.String" resultMap="memberInfoMap">
+		select member_id, member_name,member_phone
+		from member_info where member_id = #{id}
+	</select>
+	<sql id="base_column">
+		b.comp_id as compId,
+		m.member_id as memberId,
+		m.member_name
+		as memberName,
+		b.role_id as roleId,
+		b.employee_work_status_flag as
+		employeeWorkStatusFlag,
+		m.member_source as memberSource,
+		c.associated_number as associatedNumber
+	</sql>
+	<sql id="where_clause">
+		where 1=1 and b.comp_id=#{compId} order by m.create_time desc
+	</sql>
+	<!-- 收派员查询列表 -->
+	<select id="queryMemberInfo" resultMap="memberInfoMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="base_column" />
+		from bas_employee_relation b LEFT JOIN member_info m on
+		b.member_id=m.member_id
+		LEFT JOIN member_comm_info c on m.member_id=c.member_id and
+		c.address_type=0
+		<include refid="where_clause" />
+		limit #{page.offset} ,#{page.pageSize}
+	</select>
+	<!-- 收派员查询列表总页数 -->
+	<select id="queryMemberInfo_Count" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*)
+		from bas_employee_relation b LEFT JOIN member_info m on
+		b.member_id=m.member_id
+		LEFT JOIN member_comm_info c on m.member_id=c.member_id and
+		c.address_type=0
+		<include refid="where_clause" />
+	</select>
+
+
+	<!-- 网点资料注册的时候添加到本站点一条初始化的站长记录 -->
+	<insert id="insertMemberInfo" parameterType="java.util.HashMap">
+		insert into member_info(
+		member_id,
+		member_name,
+		member_phone,
+		member_source,
+		id_num,
+		verif_flag,
+		regist_flag,
+		create_time)
+		values(#{memberId},#{memberName},#{memberPhone},
+		#{memberSource},
+		#{idNum},
+		-1,
+		1,#{createTime})
+	</insert>
+
+	<update id="editMemberInfo">
+		update member_info set 
+		member_name =#{memberName},<!-- 这里注释先放开 -->
+		member_phone=#{memberPhone},regist_flag=1,member_source=1
+		where member_id=#{memberId}
+	</update>
+	<!-- 点击姓名 反显右侧信息 -->
+	<select id="getMemberInfoById" parameterType="java.lang.Integer"
+		resultMap="memberInfoMap">
+		select
+		b.comp_id as compId,
+		m.member_id,
+		m.member_name,
+		m.member_phone,
+		b.role_id,
+		b.area_color as areaColor,
+		b.employee_work_status_flag,
+		m.member_source,
+		m.member_detaile_display, 
+		m.create_time,
+		m.member_detailed_address 
+		from member_info m LEFT JOIN bas_employee_relation b on
+		b.member_id=m.member_id where 1=1
+		and m.member_id=#{memberId} order by m.create_time desc limit 0,1
+	</select>
+	<delete id="delMemberInfo" parameterType="long">
+		delete from member_info where member_id=#{memberId}
+	</delete>
+	<insert id="doAddMember" parameterType="java.util.HashMap">
+		insert into member_info(
+		member_id,
+		member_name,
+		member_phone,
+		id_num,
+		create_time)
+		values(
+		#{memberId},
+		#{memberName},
+		#{memberPhone},
+		#{idNum},
+		#{createTime}
+		)
+	</insert>
+	<select id="queryUnAuditMemberInfo" parameterType="java.lang.Long"
+		resultType="java.util.HashMap">
+		select
+		a.member_id as memberId,
+		a.audit_comp as compId,
+		m.member_name as memberName,
+		a.application_role_type as roleId,
+		a.audit_opinion as
+		auditOpinion,
+		'1' as employeeWorkStatusFlag,
+		m.member_source as
+		memberSource
+		from bas_employeeaudit a LEFT JOIN member_info m on
+		a.member_id=m.member_id
+		LEFT JOIN member_comm_info f on m.member_id=f.member_id
+		where a.audit_comp=#{compId} and a.audit_item=2 and a.audit_opinion =0
+	</select>
+	<select id="queryCompNameById" parameterType="java.lang.Long"
+		resultType="java.util.HashMap">
+		select
+		b.comp_id as compId,
+		b.comp_name as compName,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId
+		from bas_compinfo b where b.comp_id= #{compId}
+
+	</select>
+	<select id="queryIsOne" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		select count(*) from member_info m LEFT JOIN bas_employee_relation b on
+		m.member_id=b.member_id
+		where m.member_phone=#{associatedNumber} 
+<!-- 		and b.member_id is null -->
+	</select>
+	<select id="queryCount" parameterType="java.lang.Long"
+		resultType="java.lang.Integer">
+		select count(m.member_id) from member_info m where m.member_id=#{memberId}
+	</select>
+
+	<update id="upMemberInfo" parameterType="java.util.HashMap">
+		update member_info set member_name =#{member_name}
+		,create_time=#{createTime} where member_id=#{memberId}
+	</update>
+	<select id="queryRegTime" parameterType="java.lang.Long"
+		resultType="java.util.HashMap">
+		select date_format(m.create_time,'%Y-%m-%d') as workTime from member_info m
+		where m.member_id=#{memberId}
+	</select>
+	<update id="editMemberName" parameterType="java.util.HashMap">
+		update member_info set member_name=#{memberName} where member_id=#{memberId}
+	</update>
+	<update id="verifyIdentity" parameterType="java.util.HashMap">
+		update member_info set verif_flag =
+		<if test="flag ==1">
+			1
+		</if>
+		<if test="flag ==2">
+			2
+		</if>
+		where member_id=#{memberId}
+	</update>
+	<select id="findMemberInfoByCompId" parameterType="java.lang.Long"
+		resultMap="memberInfoMap">
+		SELECT
+		b.comp_id AS compId,
+		b.member_id AS memberId,
+		m.member_name AS memberName,
+		m.member_phone AS memberPhone,
+		b.role_id AS roleId,
+		b.area_color AS areaColor,
+		b.employee_work_status_flag AS employeeWorkStatusFlag,
+		m.member_source AS memberSource
+		FROM
+		bas_employee_relation b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+		1 = 1
+		AND b.comp_id =#{compId}
+		AND m.member_name IS NOT NULL
+		AND m.member_name != ''
+		ORDER BY
+		m.create_time ASC
+	</select>
+	<sql id="base_column1">
+		b.comp_id as compId,
+		b.member_id as memberId,
+		m.member_name
+		as memberName,
+		m.member_phone as memberPhone,
+		b.role_id as roleId,
+		b.area_color as areaColor,
+		b.employee_work_status_flag as
+		employeeWorkStatusFlag,
+		m.member_source as memberSource
+	</sql>
+	<sql id="where_clause1">
+		where 1=1 and b.comp_id=#{compId} and m.member_name is not null and
+		m.member_name !='' order by m.create_time asc
+	</sql>
+
+	<!-- 收派员查询列表 -->
+	<select id="findPage" resultMap="memberInfoMap" parameterType="java.util.Map">
+		select
+		<include refid="base_column1" />
+		from bas_employee_relation b LEFT JOIN member_info m on
+		b.member_id=m.member_id
+		<include refid="where_clause1" />
+		limit #{page.offset} ,#{page.pageSize}
+	</select>
+	<!-- 收派员查询列表总页数 -->
+	<select id="findPage_Count" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*)
+		from bas_employee_relation b LEFT JOIN member_info m on
+		b.member_id=m.member_id
+		<include refid="where_clause1" />
+	</select>
+<!-- 同步通行证的人员基本信息  增加 -->
+	<insert id="saveMemberInfo" parameterType="net.okdi.api.vo.VO_MemberInfo">
+		insert into member_info(
+								member_id,
+								member_name,
+								id_num,
+								member_phone,
+								member_address_id,
+								member_detaile_display,
+								member_detailed_address,
+								regist_flag,
+								create_time,
+								member_source
+						)values(
+								#{memberId},
+								#{memberName},
+								#{idNum},
+								#{memberPhone},
+								#{memberAddressId},
+								#{memberDetaileDisplay},
+								#{memberDetailedAddress},
+								1,
+								#{createTime},
+								#{memberSource}
+		)
+	</insert>
+	<!-- 同步通行证的人员基本信息  修改 -->
+	<update id ="updateMemberInfo" parameterType="net.okdi.api.vo.VO_MemberInfo">
+	update member_info set
+						member_name=#{memberName}
+						<if test="memberPhone!=null and memberPhone !=''">
+						,member_phone=#{memberPhone}
+						</if>
+						,member_address_id=#{memberAddressId},
+						member_detaile_display=#{memberDetaileDisplay},
+						member_detailed_address=#{memberDetailedAddress},
+						member_source=#{memberSource}
+						where member_id =#{memberId}
+	</update>
+	<!-- <select id ="queryEmployeeCache" parameterType="java.lang.Long" resultType="net.okdi.api.vo.VO_MemberInfo">
+	SELECT
+	b.comp_id AS compId,
+	b.member_id AS memberId,
+	m.member_name AS
+	memberName,
+	m.member_phone AS memberPhone,
+	m.birthday,
+	m.gender,
+	m.id_num,
+	m.member_address_id as memberAddressId,
+	m.member_detailed_address as
+	memberDetailedAddress,
+	date_format(m.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
+	m.member_detaile_display as memberDetaileDisplay,
+	m.verif_flag as verifFlag,
+	b.role_id AS roleId,
+	b.area_color AS
+	areaColor,
+	b.employee_work_status_flag AS employeeWorkStatusFlag,
+	m.member_source AS memberSource
+	FROM
+	bas_employee_relation b
+	LEFT JOIN member_info m ON b.member_id = m.member_id
+	WHERE
+	1 = 1
+	AND b.comp_id =#{compId}
+	AND m.member_name IS NOT NULL
+	AND m.member_name != ''
+	ORDER BY
+	m.create_time ASC
+	</select>-->
+	<select id ="queryEmployeeCache" parameterType="java.lang.Long" resultType="net.okdi.api.vo.VO_MemberInfo">
+	SELECT
+	b.comp_id AS compId,
+	b.member_id AS memberId,
+	CASE m.member_name WHEN  '' THEN '快递员' ELSE m.member_name END as memberName,
+	m.member_phone AS memberPhone,
+	m.birthday,
+	m.gender,
+	m.id_num,
+	m.member_address_id as memberAddressId,
+	m.member_detailed_address as
+	memberDetailedAddress,
+	date_format(m.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
+	m.member_detaile_display as memberDetaileDisplay,
+	m.verif_flag as verifFlag,
+	b.role_id AS roleId,
+	b.area_color AS
+	areaColor,
+	b.employee_work_status_flag AS employeeWorkStatusFlag,
+	m.member_source AS memberSource
+	FROM
+	bas_employee_relation b
+	LEFT JOIN member_info m ON b.member_id = m.member_id
+	WHERE
+	1 = 1
+	AND b.comp_id =#{compId}
+	ORDER BY role_id desc,
+	m.create_time ASC
+	</select>
+<select id="queryMemberNameByMemberId" parameterType="java.lang.Long" resultType="java.util.Map">
+ select member_name as memberName from member_info where member_id = #{memberId}
+ </select>
+	 <select id="quertDefulatAddress" parameterType="java.util.Map" resultType="java.util.Map">
+ select member_address_id,member_detaile_display,member_detailed_address from member_info where member_id = #{memberId}
+ </select>
+ <select id ="getMemberAddress" parameterType="java.lang.Long" resultType="java.util.HashMap">
+ select a.latitude,a.longitude from member_address_info a where a.member_id=#{memberId}
+ </select>
+ <select id ="getAuditInfo" parameterType="java.lang.Long" resultType="java.util.HashMap">
+	select a.id,a.member_id as memebrId,a.audit_comp as
+	compId,a.application_role_type as roleId
+	,a.application_desc as appDesc,max(a.application_time) as appTime
+	from bas_employeeaudit a where a.member_id=#{memberId}   and a.audit_item = 2 group by a.member_id
+ </select>
+
+ <select id ="getValidationStatus" parameterType="java.lang.Long" resultType="java.util.HashMap">
+<!-- 	 SELECT  -->
+<!-- 	 a.member_id AS memberId,  -->
+<!-- 	 	CASE  -->
+<!-- 	 WHEN a.verif_flag = 0 THEN -->
+<!-- 	 	0  -->
+<!-- 	 WHEN a.verif_flag = 1 THEN -->
+<!-- 	 	1  -->
+<!-- 	 WHEN a.verif_flag = 2 THEN -->
+<!-- 	 	2  -->
+<!-- 	 END AS veriFlag, -->
+<!-- 	  CASE  -->
+<!-- 	 WHEN b.id IS not NULL THEN  -->
+<!-- 	 	-1 -->
+<!-- 	 ELSE  -->
+<!-- 		3  -->
+<!-- 	 END AS relationFlag , -->
+<!-- 	 b.role_id as roleId, -->
+<!-- 	 b.comp_id as compId -->
+<!-- 	 FROM  -->
+<!-- 		member_info a  -->
+<!-- 	 LEFT JOIN bas_employee_relation b ON a.member_id = b.member_id and b.audit_item=2 -->
+<!--     WHERE  -->
+<!-- 	a.member_id =#{memberId}  -->
+SELECT 
+	 a.member_id AS memberId, 
+	 	CASE 
+	 WHEN a.verif_flag = 0 THEN
+	 	0 
+	 WHEN a.verif_flag = 1 THEN
+	 	1 
+	 WHEN a.verif_flag = 2 THEN
+	 	2 
+	 END AS veriFlag,
+	  CASE 
+	 WHEN b.id IS not NULL THEN 
+	 	-1
+	 ELSE 
+		 b.audit_opinion 
+	 END AS relationFlag ,
+	 b.application_role_type as roleId,
+	 b.audit_comp as compId,
+	 b.audit_opinion AS realNameFlag
+	 FROM 
+		member_info a 
+	 LEFT JOIN bas_employeeaudit b ON a.member_id = b.member_id and b.audit_item=1
+    WHERE 
+	a.member_id =#{memberId} 
+<!--  select  -->
+<!--  sum(case WHEN  be.audit_item =1 THEN be.audit_opinion END) veriFlag, -->
+<!--  sum(case WHEN  be.audit_item =2 THEN be.audit_opinion  END) relationFlag, be.member_id AS memberId -->
+<!--  from bas_employeeaudit be where  be.member_id = #{memberId}  -->
+ </select>
+ <!-- -->
+ <select id ="getBranchInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+ 	SELECT
+	a.id AS relationId,
+	a.parent_comp_id AS parentCompId,
+	a.comp_id AS compId,
+	b.comp_name AS compName,
+	c.responsible,
+	a.area_color AS areaColor,
+	REPLACE (
+		REPLACE (b.comp_address, '-', ''),
+		'|',
+		''
+	) AS compAddress,
+	c.responsible_telephone AS telPhone
+FROM
+	exp_comp_relation a
+LEFT JOIN bas_compinfo b ON a.comp_id = b.comp_id
+LEFT JOIN bas_compbusiness c ON b.comp_id = c.comp_id
+WHERE
+	1 = 1
+AND b.comp_type_num = 1050
+AND b.comp_status = 1
+AND a.parent_comp_id =#{compId}
+ORDER BY
+	a.create_time DESC
+ </select>
+ <select id = "getRelationInfo" parameterType="java.lang.Long" resultType="java.util.HashMap">
+ 	select a.id,a.member_id as memebrId,a.audit_comp as
+	compId,a.application_role_type as roleId
+	,a.application_desc as appDesc,max(a.application_time) as appTime,audit_opinion as auditOpnion
+	from bas_employeeaudit a where a.member_id=#{memberId} and a.audit_item=2  
+	<!-- and a.audit_opinion != 2 -->
+	  group by a.member_id
+ </select>
+ 
+<!-- <select id="loadMemberInfo" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		SELECT
+				a.id as logId,
+		a.audit_comp as compId,
+		a.member_id as memberId,
+		m.member_name as memberName,
+		m.member_phone as memberPhone,
+		a.application_role_type as roleId,
+		a.audit_desc as auditDesc,
+		a.audit_opinion as auditOpinion,
+		'1' as
+		employeeWorkStatusFlag,
+		'0' as memberSource,
+		max(date_format(a.application_time,'%Y-%m-%d %H:%i:%s')) as
+		createTime
+		FROM
+		bas_employeeaudit a
+		LEFT JOIN member_info m ON a.member_id =
+		m.member_id
+		LEFT JOIN bas_compinfo b ON a.audit_comp = b.comp_id
+		WHERE 1=1
+		and a.audit_comp =#{compId}
+		AND b.comp_status = 1
+		AND a.audit_item = 2
+		AND
+		audit_opinion =0
+		AND m.member_name IS NOT NULL
+		AND m.member_name != ''
+		GROUP BY a.member_id
+	</select>
+  -->
+<select id="loadMemberInfo" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		SELECT
+				a.id as logId,
+		a.audit_comp as compId,
+		a.member_id as memberId,
+		CASE m.member_name WHEN  '' THEN '快递员' ELSE m.member_name END as memberName,
+		m.member_phone as memberPhone,
+		a.application_role_type as roleId,
+		a.audit_desc as auditDesc,
+		a.audit_opinion as auditOpinion,
+		'1' as
+		employeeWorkStatusFlag,
+		'0' as memberSource,
+		max(date_format(a.application_time,'%Y-%m-%d %H:%i:%s')) as
+		createTime
+		FROM
+		bas_employeeaudit a
+		LEFT JOIN member_info m ON a.member_id =
+		m.member_id
+		LEFT JOIN bas_compinfo b ON a.audit_comp = b.comp_id
+		WHERE 1=1
+		and a.audit_comp =#{compId}		AND b.comp_status = 1
+		AND a.audit_item = 2
+		AND
+		audit_opinion =0
+		GROUP BY a.member_id
+
+	</select>
+
+<update id = "doUpdateMemberInfo" parameterType="net.okdi.api.vo.VO_MemberInfo">
+update member_info set verif_flag=0
+<if test="memberName !=null and memberName !=''"></if>
+,member_name=#{memberName}
+<if test="idNum !=null and idNum !=''">
+,id_num=#{idNum}
+</if>
+<if test="memberPhone !=null and memberPhone !=''">
+,member_phone =#{memberPhone}
+</if>
+,regist_flag=0
+ where member_id=#{memberId}
+</update>
+
+
+
+	<!-- 拦截器执行查出根据memberId获取真实姓名，公司等信息 -->
+		<resultMap id="loginInfoResultMap" type="net.okdi.api.entity.LoginInfo">
+		<!-- <result column="member_id" property="userId" jdbcType="BIGINT" /> -->
+		<result column="member_Name" property="memberName" jdbcType="VARCHAR" />
+		<result column="role_id" property="roleId" jdbcType="SMALLINT" />
+		<result column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="comp_name" property="companyName" jdbcType="VARCHAR" />
+		<result column="comp_type_num" property="compTypeNum" jdbcType="CHAR" />
+		<result column="comp_status" property="compStatus" jdbcType="SMALLINT" />
+		<result column="net_id" property="netId" jdbcType="BIGINT" />
+		<result column="net_name" property="netName" jdbcType="VARCHAR" />
+		<result column="net_num" property="netNum" jdbcType="VARCHAR" />
+		
+	</resultMap>
+	<select id="getLoginInfoByMemberId" resultMap="loginInfoResultMap"
+		parameterType="java.lang.Long">
+		SELECT m.member_name, e.role_id, c.comp_id, c.comp_name,
+		c.comp_type_num, c.comp_status,
+		n.net_id, n.net_name, n.net_num
+		from member_info m
+		LEFT JOIN bas_employee_relation e on m.member_id=e.member_id
+		LEFT JOIN bas_compinfo c on e.comp_id=c.comp_id
+		LEFT JOIN bas_netinfo n on c.belong_to_net_id=n.net_id
+		where
+		m.member_id=#{memberId}
+	</select>
+	<!-- 拦截器执行查出根据memberId获取真实姓名，公司等信息 -->
+
+<select id = "queryMemberInfoByMemberPhone" parameterType="java.lang.String" resultType="java.util.HashMap">
+
+<!-- SELECT
+c.net_id as netId,
+c.net_name as netName,
+	a.comp_id as compId,
+	b.comp_name as compName,
+	a.member_id as deliverId,
+	m.member_name as deliverName,
+	m.member_phone as deliverPhone,
+	'1' as registFlag,
+	a.review_task_receiving_flag as receivingFlag
+FROM
+	bas_employee_relation a
+LEFT JOIN member_info m ON a.member_id = m.member_id
+LEFT JOIN bas_compinfo b ON a.comp_id = b.comp_id
+LEFT JOIN bas_netinfo c ON b.belong_to_net_id = c.net_id
+where 1=1 and m.member_phone=#{memberPhone} -->
+SELECT
+c.net_id as netId,
+c.net_name as netName,
+	d.AUDIT_COMP as compId,
+	b.comp_name as compName,
+	m.member_id as deliverId,
+	m.member_name as deliverName,
+	m.member_phone as deliverPhone,
+	'1' as registFlag,
+	IFNULL(a.review_task_receiving_flag,0) as receivingFlag
+FROM BAS_EMPLOYEEAUDIT d 
+LEFT JOIN member_info m ON d.member_id = m.member_id
+LEFT JOIN bas_employee_relation a ON m.member_id = a.member_id 
+LEFT JOIN bas_compinfo b ON d.AUDIT_COMP = b.comp_id
+LEFT JOIN bas_netinfo c ON b.belong_to_net_id = c.net_id
+where 1=1 and d.AUDIT_ITEM=2 and m.member_phone=#{memberPhone}
+</select>
+
+<update id="updateName" parameterType="net.okdi.api.vo.VO_MemberInfo" >
+update member_info set member_name =#{memberName},member_source=0 where member_id = #{memberId}
+</update>
+
+<update id = "updateSource" parameterType="java.lang.Long">
+update member_info set member_source=0 where member_id = #{memberId}
+</update>
+<select id="getInfoByMemberId" resultType="map" parameterType="java.lang.Long">
+SELECT
+	m.member_id AS memberId,
+	m.member_name AS memberName,
+	m.member_phone AS memberPhone,
+	m.id_num AS idNum,
+	m.verif_flag AS verifFlag
+FROM
+	member_info m
+where member_id=#{memberId};
+
+</select>
+
+<select id="getCompInfoByMemberId" resultType="map" parameterType="java.lang.Long">
+SELECT
+	b.audit_opinion as relationFlag,
+	c.comp_id as compId,
+	c.comp_name as compName,
+	c.comp_address as compAddress,
+	responsible_telephone,
+	b.application_role_type as roleType,
+	n.net_name as netName,
+	b.application_desc
+FROM
+	bas_employeeaudit b
+LEFT JOIN bas_compinfo c ON b.audit_comp = c.comp_id 
+LEFT JOIN bas_compbusiness s on c.comp_id = s.comp_id
+LEFT JOIN bas_netinfo n on c.belong_to_net_id=n.net_id
+WHERE
+	b.audit_item = 2 and b.member_id=#{memberId};
+
+</select>
+<select id="findMemberAll" resultType="map" parameterType="map">
+SELECT
+	e.RELATION_FLAG,
+	a.verif_flag AS VERIFY_FLAG,
+	c.COMP_TYPE_NUM,
+	e.APPLICATION_ROLE_TYPE,
+	date_format(
+		e.AUDIT_TIME,
+		'%Y-%c-%d %H:%i:%s'
+	) AS JOIN_TIME,
+	d.NET_ID,
+	a.MEMBER_ID,
+	a.MEMBER_NAME,
+	cast(a.CREATE_TIME AS CHAR) AS REGIST_TIME,
+	a.CREATE_TIME,
+	a.MEMBER_PHONE AS LOGIN_ID,
+	c.COMP_ID,
+	c.COMP_NAME,
+	d.NET_NAME AS PARENT_NAME
+FROM
+	member_info AS a
+LEFT JOIN (
+	SELECT
+		au1.audit_opinion AS RELATION_FLAG,
+		au1.APPLICATION_ROLE_TYPE,
+		au1.AUDIT_TIME,
+		au1.MEMBER_ID,
+		au1.AUDIT_COMP,
+		au1.audit_item,
+		au1.audit_opinion
+	FROM
+		BAS_EMPLOYEEAUDIT au1
+	WHERE
+		au1.audit_item = 2
+	AND (
+		au1.application_role_type != 2
+		OR au1.application_role_type IS NULL
+	)
+) AS e ON a.MEMBER_ID = e.MEMBER_ID
+LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+WHERE 1=1 
+<if test="compType ==0">
+	and c.COMP_TYPE_NUM IN (1006,1003)
+</if>
+<if test="compType ==1">
+	and c.COMP_TYPE_NUM IN (1050) 
+</if>
+<if test="compType ==2">
+	and c.COMP_TYPE_NUM IN (1006,1003,1050) 
+</if>
+<if test="opinion == 0 ">
+		
+</if>
+<if test="opinion == 1 ">
+	AND (
+	e.RELATION_FLAG = - 1
+	OR a.e.RELATION_FLAG IS NULL
+)
+</if>
+<if test="opinion == 2 ">
+	AND (
+	a.verif_flag = - 1
+	OR a.verif_flag IS NULL
+)
+</if>
+<if test="opinion == 3 ">
+	AND a.verif_flag = 1
+	AND e.RELATION_FLAG = 1
+</if>
+<if test="memberName !=null and memberName !=''">
+	AND a.MEMBER_NAME = #{memberName} 
+</if>
+<if test="memberPhone !=null and memberPhone !=''">
+	AND a.MEMBER_PHONE = #{memberPhone} 
+</if>
+<if test="roleType == 0">
+	AND e.APPLICATION_ROLE_TYPE = 0 
+</if>
+<if test="roleType ==-1 ">
+	AND e.APPLICATION_ROLE_TYPE = -1 
+</if>
+<if test="roleType == 1 or roleType== -2 ">
+	AND e.APPLICATION_ROLE_TYPE in (1,-2) 
+</if>
+<if test="roleType == 3 ">
+</if>
+<if test="compName !=null and compName !=''">
+	AND c.COMP_NAME = #{compName}
+</if>
+<if test="netId !=null and netId !=''">
+	AND d.NET_ID = #{netId}
+</if>
+<if test="beginTime !=null and beginTime !=''">
+	AND a.CREATE_TIME >= #{beginTime}
+</if>
+<if test="endTime !=null and endTime !=''">
+  <![CDATA[	AND a.CREATE_TIME <= #{endTime}   ]]>
+</if>
+ORDER BY
+	a.create_time DESC
+LIMIT #{pageNum},#{pageSize}
+</select>
+<select id="getCountTotalPending" resultType="java.lang.Integer" parameterType="map" >
+	SELECT
+	count(*)
+FROM
+	(
+		SELECT
+			c.COMP_STATUS,
+			e.RELATION_FLAG,
+			e.APPLICATION_ROLE_TYPE,
+			a.MEMBER_ID,
+			c.COMP_NAME,
+			d.NET_NAME AS PARENT_NAME
+		FROM
+			member_info AS a
+		LEFT JOIN (
+			SELECT
+				au1.audit_opinion AS RELATION_FLAG,
+				au1.APPLICATION_ROLE_TYPE,
+				au1.AUDIT_TIME,
+				au1.MEMBER_ID,
+				au1.AUDIT_COMP
+			FROM
+				BAS_EMPLOYEEAUDIT au1
+			WHERE
+				au1.audit_item = 2
+		) AS e ON a.MEMBER_ID = e.MEMBER_ID
+		LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+		LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+		 WHERE 1=1 
+	<if test="compType ==0">
+		and c.COMP_TYPE_NUM IN (1006,1003)
+	</if>
+	<if test="compType ==1">
+		and c.COMP_TYPE_NUM IN (1050) 
+	</if>
+	<if test="compType ==2">
+		and c.COMP_TYPE_NUM IN (1006,1003,1050) 
+	</if>
+	<if test="opinion == 0 ">
+		AND (
+		a.verif_flag = 0
+		OR e.RELATION_FLAG = 0
+	)
+	</if>
+	<if test="opinion == 1 ">
+		AND (
+		a.verif_flag NOT IN (- 1, 1, 2)
+		AND e.RELATION_FLAG NOT IN (- 1, 1, 2)
+	)
+	</if>
+	<if test="opinion == 2 ">
+		AND (
+			a.verif_flag NOT IN (- 1, 1, 2)
+		AND e.RELATION_FLAG IN (1, 2)
+	)
+	</if>
+	<if test="opinion == 3 ">
+		AND (
+			a.verif_flag IN (1, 2)
+		AND e.RELATION_FLAG NOT IN (- 1, 1, 2)
+	)
+	</if>
+	<if test="memberName !=null and memberName !=''">
+		AND a.MEMBER_NAME = #{memberName} 
+	</if>
+	<if test="memberPhone !=null and memberPhone !=''">
+		AND a.MEMBER_PHONE = #{memberPhone} 
+	</if>
+	<if test="roleType == 0">
+		AND e.APPLICATION_ROLE_TYPE = 0 
+	</if>
+	<if test="roleType ==-1 ">
+		AND e.APPLICATION_ROLE_TYPE = -1 
+	</if>
+	<if test="roleType == 1 or roleType== -2 ">
+		AND e.APPLICATION_ROLE_TYPE in (1,-2) 
+	</if>
+	<if test="roleType == 3 ">
+	</if>
+	<if test="compName !=null and compName !=''">
+		AND c.COMP_NAME = #{compName}
+	</if>
+	<if test="netId !=null and netId !=''">
+		AND d.NET_ID = #{netId}
+	</if>
+	<if test="beginTime !=null and beginTime !=''">
+		AND a.CREATE_TIME >= #{beginTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	  <![CDATA[	AND a.CREATE_TIME <= #{endTime}   ]]>
+	</if>
+		
+	) tmp_count_t
+</select>
+<select id="getCountTotalAll" resultType="java.lang.Integer" parameterType="map" >
+SELECT
+	count(*)
+FROM
+	(
+		SELECT
+			e.RELATION_FLAG,
+			a.verif_flag AS VERIFY_FLAG,
+			c.COMP_TYPE_NUM,
+			e.APPLICATION_ROLE_TYPE,
+			a.MEMBER_ID,
+			a.CREATE_TIME,
+			c.COMP_NAME,
+			d.NET_NAME AS PARENT_NAME
+		FROM
+			member_info AS a
+		LEFT JOIN (
+			SELECT
+				au1.audit_opinion AS RELATION_FLAG,
+				au1.APPLICATION_ROLE_TYPE,
+				au1.AUDIT_TIME,
+				au1.MEMBER_ID,
+				au1.AUDIT_COMP,
+				au1.audit_opinion
+			FROM
+				BAS_EMPLOYEEAUDIT au1
+			WHERE
+				au1.audit_item = 2
+			AND (
+				au1.application_role_type != 2
+				OR au1.application_role_type IS NULL
+			)
+		) AS e ON a.MEMBER_ID = e.MEMBER_ID
+		LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+		LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+		 WHERE 1=1 
+	<if test="compType ==0">
+		and c.COMP_TYPE_NUM IN (1006,1003)
+	</if>
+	<if test="compType ==1">
+		and c.COMP_TYPE_NUM IN (1050) 
+	</if>
+	<if test="compType ==2">
+		and c.COMP_TYPE_NUM IN (1006,1003,1050) 
+	</if>
+	<if test="opinion == 0 ">
+		
+	</if>
+	<if test="opinion == 1 ">
+		AND (
+		e.RELATION_FLAG = - 1
+		OR a.e.RELATION_FLAG IS NULL
+	)
+	</if>
+	<if test="opinion == 2 ">
+		AND (
+		a.verif_flag = - 1
+		OR a.verif_flag IS NULL
+	)
+	</if>
+	<if test="opinion == 3 ">
+		AND a.verif_flag = 1
+		AND e.RELATION_FLAG = 1
+	</if>
+	<if test="memberName !=null and memberName !=''">
+		AND a.MEMBER_NAME = #{memberName} 
+	</if>
+	<if test="memberPhone !=null and memberPhone !=''">
+		AND a.MEMBER_PHONE = #{memberPhone} 
+	</if>
+	<if test="roleType == 0">
+		AND e.APPLICATION_ROLE_TYPE = 0 
+	</if>
+	<if test="roleType ==-1 ">
+		AND e.APPLICATION_ROLE_TYPE = -1 
+	</if>
+	<if test="roleType == 1 or roleType== -2 ">
+		AND e.APPLICATION_ROLE_TYPE in (1,-2) 
+	</if>
+	<if test="roleType == 3 ">
+	</if>
+	<if test="compName !=null and compName !=''">
+		AND c.COMP_NAME = #{compName}
+	</if>
+	<if test="netId !=null and netId !=''">
+		AND d.NET_ID = #{netId}
+	</if>
+	<if test="beginTime !=null and beginTime !=''">
+		AND a.CREATE_TIME >= #{beginTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	  <![CDATA[	AND a.CREATE_TIME <= #{endTime}   ]]>
+	</if>
+	) tmp_count_t
+</select>
+
+<select id="getallMemberNum" resultType="java.lang.Integer">
+	SELECT
+	count(*)
+FROM
+	(
+		SELECT
+			e.RELATION_FLAG,
+			a.verif_flag AS VERIFY_FLAG,
+			c.COMP_TYPE_NUM,
+			e.APPLICATION_ROLE_TYPE,
+			a.MEMBER_ID,
+			a.CREATE_TIME,
+			c.COMP_NAME,
+			d.NET_NAME AS PARENT_NAME
+		FROM
+			member_info AS a
+		LEFT JOIN (
+			SELECT
+				au1.audit_opinion AS RELATION_FLAG,
+				au1.APPLICATION_ROLE_TYPE,
+				au1.AUDIT_TIME,
+				au1.MEMBER_ID,
+				au1.AUDIT_COMP,
+				au1.audit_opinion
+			FROM
+				BAS_EMPLOYEEAUDIT au1
+			WHERE
+				au1.audit_item = 2
+			AND (
+				au1.application_role_type != 2
+				OR au1.application_role_type IS NULL
+			)
+		) AS e ON a.MEMBER_ID = e.MEMBER_ID
+		LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+		LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+		WHERE
+		 c.COMP_TYPE_NUM IN (1006, 1003, 1050)
+	) tmp_count_t
+</select>
+
+<select id="getUnPassNum" resultType="java.lang.Integer">
+	SELECT
+	count(*)
+FROM
+	(
+		SELECT
+			c.COMP_STATUS,
+			e.RELATION_FLAG,
+			e.APPLICATION_ROLE_TYPE,
+			a.MEMBER_ID,
+			c.COMP_NAME,
+			d.NET_NAME AS PARENT_NAME
+		FROM
+			member_info AS a
+		LEFT JOIN (
+			SELECT
+				au1.audit_opinion AS RELATION_FLAG,
+				au1.APPLICATION_ROLE_TYPE,
+				au1.AUDIT_TIME,
+				au1.MEMBER_ID,
+				au1.AUDIT_COMP
+			FROM
+				BAS_EMPLOYEEAUDIT au1
+			WHERE
+				au1.audit_item = 2
+		) AS e ON a.MEMBER_ID = e.MEMBER_ID
+		LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+		LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+		WHERE
+			c.COMP_TYPE_NUM IN (1006, 1003, 1050)
+		AND (
+			a.verif_flag = 0
+			OR e.RELATION_FLAG = 0
+		)
+		ORDER BY
+			a.create_time DESC
+	) tmp_count_t
+</select>
+
+<select id="findMemberPinding" parameterType="map" resultType="map">
+	SELECT
+		c.COMP_STATUS,
+		e.RELATION_FLAG,
+		a.verif_flag AS VERIFY_FLAG,
+		c.COMP_TYPE_NUM,
+		e.APPLICATION_ROLE_TYPE,
+		e.AUDIT_TIME AS JOIN_TIME,
+		d.NET_ID,
+		a.MEMBER_ID,
+		a.MEMBER_NAME,
+		cast(a.CREATE_TIME AS CHAR) AS REGIST_TIME,
+		a.CREATE_TIME,
+		a.MEMBER_PHONE AS LOGIN_ID,
+		c.COMP_ID,
+		c.COMP_NAME,
+		d.NET_NAME AS PARENT_NAME
+	FROM
+		member_info AS a
+	LEFT JOIN (
+		SELECT
+			au1.audit_opinion AS RELATION_FLAG,
+			au1.APPLICATION_ROLE_TYPE,
+			au1.AUDIT_TIME,
+			au1.MEMBER_ID,
+			au1.AUDIT_COMP
+		FROM
+			BAS_EMPLOYEEAUDIT au1
+		WHERE
+			au1.audit_item = 2
+	) AS e ON a.MEMBER_ID = e.MEMBER_ID
+	LEFT JOIN BAS_COMPINFO AS c ON c.COMP_ID = e.AUDIT_COMP
+	LEFT JOIN BAS_NETINFO AS d ON c.BELONG_TO_NET_ID = d.net_id
+	WHERE 1=1 
+	<if test="compType ==0">
+		and c.COMP_TYPE_NUM IN (1006,1003)
+	</if>
+	<if test="compType ==1">
+		and c.COMP_TYPE_NUM IN (1050) 
+	</if>
+	<if test="compType ==2">
+		and c.COMP_TYPE_NUM IN (1006,1003,1050) 
+	</if>
+	<if test="opinion == 0 ">
+		AND (
+		a.verif_flag = 0
+		OR e.RELATION_FLAG = 0
+	)
+	</if>
+	<if test="opinion == 1 ">
+		AND (
+		a.verif_flag NOT IN (- 1, 1, 2)
+		AND e.RELATION_FLAG NOT IN (- 1, 1, 2)
+	)
+	</if>
+	<if test="opinion == 2 ">
+		AND (
+			a.verif_flag NOT IN (- 1, 1, 2)
+		AND e.RELATION_FLAG IN (1, 2)
+	)
+	</if>
+	<if test="opinion == 3 ">
+		AND (
+			a.verif_flag IN (1, 2)
+		AND e.RELATION_FLAG NOT IN (- 1, 1, 2)
+	)
+	</if>
+	<if test="memberName !=null and memberName !=''">
+		AND a.MEMBER_NAME = #{memberName} 
+	</if>
+	<if test="memberPhone !=null and memberPhone !=''">
+		AND a.MEMBER_PHONE = #{memberPhone} 
+	</if>
+	<if test="roleType == 0">
+		AND e.APPLICATION_ROLE_TYPE = 0 
+	</if>
+	<if test="roleType ==-1 ">
+		AND e.APPLICATION_ROLE_TYPE = -1 
+	</if>
+	<if test="roleType == 1 or roleType== -2 ">
+		AND e.APPLICATION_ROLE_TYPE in (1,-2) 
+	</if>
+	<if test="roleType == 3 ">
+	</if>
+	<if test="compName !=null and compName !=''">
+		AND c.COMP_NAME = #{compName}
+	</if>
+	<if test="netId !=null and netId !=''">
+		AND d.NET_ID = #{netId}
+	</if>
+	<if test="beginTime !=null and beginTime !=''">
+		AND a.CREATE_TIME >= #{beginTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	  <![CDATA[	AND a.CREATE_TIME <= #{endTime}   ]]>
+	</if>
+	ORDER BY
+		a.create_time DESC
+	LIMIT #{pageNum},#{pageSize}
+
+</select>
+
+	<select id="getMasterPhone" parameterType="java.lang.Long" resultType="java.util.Map">
+	SELECT
+	b.member_id as memberId,
+	m.member_phone as memberPhone
+	FROM
+	bas_employee_relation b
+	LEFT JOIN member_info m ON b.member_id = m.member_id
+	WHERE
+	b.comp_id = #{compId}
+	</select>
+	
+	<update id="updateVerifFlag">
+		update member_info set verif_flag=#{auditOpinion}  where member_id=#{memberId}
+	</update>
+	
+	<select id="queryVerifFlag" parameterType="java.lang.Long" resultType="java.lang.Short">
+		select verif_flag from member_info where member_id = #{memberId}
+	</select>
+	
+ <select id="queryCourierAuditList" parameterType="java.util.Map" resultType="java.util.Map">
+select m.member_id as memberId,m.member_phone as memberPhone,m.member_name as memberName,date_format(m.create_time,'%Y-%m-%d %H:%i:%S') as createTime 
+from member_info m left JOIN bas_employeeaudit b ON b.member_id=m.member_id AND b.audit_item=2 AND b.audit_opinion!=2
+left JOIN bas_employee_relation r on m.member_id=r.member_id 
+where 1=1 and (b.member_id is not null  or r.member_id is not NULL) 
+		AND m.verif_flag = #{auditType} 
+	<if test="startTime !=null and startTime !=''">
+		AND m.CREATE_TIME >= #{startTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	  <![CDATA[	AND m.CREATE_TIME <= #{endTime} ]]>
+	</if>
+	<if test="memberName !=null and memberName !=''">
+		AND m.MEMBER_NAME = #{memberName} 
+	</if>
+	<if test="phone !=null and phone !=''">
+		AND m.MEMBER_PHONE = #{phone} 
+	</if>
+ ORDER BY m.create_time desc LIMIT #{pageNo},#{pageSize}
+ </select>
+ <select id="queryCourierAuditCount" parameterType="java.util.Map" resultType="Integer">
+select count(1)
+from member_info m left JOIN bas_employeeaudit b ON b.member_id=m.member_id AND b.audit_item=2 AND b.audit_opinion!=2
+left JOIN bas_employee_relation r on m.member_id=r.member_id 
+where 1=1 and (b.member_id is not null  or r.member_id is not NULL) 
+	<if test="auditType !=null and auditType !=''">
+		AND m.verif_flag = #{auditType} 
+	</if>
+	<if test="startTime !=null and startTime !=''">
+		AND m.CREATE_TIME >= #{startTime}
+	</if>
+	<if test="endTime !=null and endTime !=''">
+	  <![CDATA[	AND m.CREATE_TIME <= #{endTime} ]]>
+	</if>
+	<if test="memberName !=null and memberName !=''">
+		AND m.MEMBER_NAME = #{memberName} 
+	</if>
+	<if test="phone !=null and phone !=''">
+		AND m.MEMBER_PHONE = #{phone} 
+	</if>
+ </select>
+  <select id="queryCourierAuditInfo"  resultType="java.util.Map">
+select m.member_id as memberId,m.member_phone as memberPhone,m.member_name as memberName,m.id_num as idNum
+from member_info m left JOIN bas_employeeaudit b ON b.member_id=m.member_id AND b.audit_item=2 AND b.audit_opinion!=2
+left JOIN bas_employee_relation r on m.member_id=r.member_id 
+where 1=1 and (b.member_id is not null  or r.member_id is not NULL) 
+AND m.MEMBER_ID = #{memberId} GROUP BY m.member_id
+ </select>
+ 
+   <select id="queryMemberByPhone"  resultType="java.lang.String">
+select member_id as memberId
+from member_info where 1=1 AND MEMBER_PHONE = #{memberPhone}
+ </select>
+ <delete id="deleteResumeByMemberId">
+ delete from bas_comp_employee_resume where employee_user_id=#{memberId}
+ </delete>
+  <delete id="deleteAuditByMemberId">
+delete from bas_employeeaudit where member_id =#{memberId} and audit_item = 2
+ </delete>
+  <delete id="deleteRelationalByMemberId">
+  delete from bas_employee_relation where member_id=#{memberId}
+ </delete>
+  <delete id="deleteInfoByMemberId">
+  delete from member_info where member_id=#{memberId}
+ </delete>
+</mapper>

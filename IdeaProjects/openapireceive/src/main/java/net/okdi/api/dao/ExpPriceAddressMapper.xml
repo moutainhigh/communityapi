@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpPriceAddressMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpPriceAddress" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="first_price_id" property="firstPriceId" jdbcType="BIGINT" />
+    <result column="arrive_address_id" property="arriveAddressId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, first_price_id, arrive_address_id
+  </sql>
+  <delete id="batchDeleteByFirstPriceId" parameterType="java.util.List" >
+    delete from exp_price_address where first_price_id in 
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+  </delete>
+  <delete id="batchDeleteById" parameterType="java.util.List" >
+    delete from exp_price_address where id in 
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+  </delete>
+  <select id="getChildAddress" resultType="java.util.Map" parameterType="java.util.HashMap" >
+   SELECT pa.id,first_price_id firstPriceId FROM exp_price_address pa 
+	LEFT JOIN exp_first_price fp ON fp.id=pa.first_price_id
+	LEFT JOIN dic_addressaid address ON ADDRESS_ID=pa.arrive_address_id
+	where group_id=#{groupId} AND comp_id=#{compId}
+	<if test="addressLevel == 2" >
+  		 AND ADDRESS_LEVEL>=2 AND PROVINCE_ID=#{addressId}
+  	</if>
+	 <if test="addressLevel == 3" >
+  		 AND ADDRESS_LEVEL>=3 AND CITY_ID=#{addressId}
+  	</if>
+  	<if test="addressLevel == 4" >
+  		 AND ADDRESS_LEVEL>=4 AND COUNTY_ID=#{addressId}
+  	</if>
+  </select>
+  <select id="getFirstPriceIdByFirstPriceId" resultType="java.lang.Long" parameterType="java.util.List" >
+   SELECT first_price_id FROM exp_price_address 
+	where first_price_id in 
+	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach> 
+  </select>
+  <insert id="batchSavePriceAddress" parameterType="net.okdi.api.entity.ExpPriceAddress" >
+    insert into exp_price_address (id, first_price_id, arrive_address_id)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.id,jdbcType=BIGINT}, #{item.firstPriceId,jdbcType=BIGINT}, #{item.arriveAddressId,jdbcType=BIGINT})
+    </foreach>  
+  </insert>
+</mapper>

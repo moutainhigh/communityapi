@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.MemberInfoMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberInfo" >
+    <id column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="member_name" property="memberName" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="CHAR" />
+    <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+    <result column="id_num" property="idNum" jdbcType="VARCHAR" />
+    <result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+    <result column="member_address_id" property="memberAddressId" jdbcType="BIGINT" />
+    <result column="member_detaile_display" property="memberDetaileDisplay" jdbcType="VARCHAR" />
+    <result column="member_detailed_address" property="memberDetailedAddress" jdbcType="VARCHAR" />
+    <result column="verif_flag" property="verifFlag" jdbcType="SMALLINT" />
+    <result column="regist_flag" property="registFlag" jdbcType="SMALLINT" />
+    <result column="referrals_id" property="referralsId" jdbcType="BIGINT" />
+    <result column="member_source" property="memberSource" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="member_sort" property="memberSort" jdbcType="SMALLINT" />
+    <result column="ERP_CUSTOMER_ID" property="erpCustomerId" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    member_id, member_name, gender, birthday, id_num, member_phone, member_address_id, 
+    member_detaile_display, member_detailed_address, verif_flag, regist_flag, referrals_id, 
+    member_source, create_time, member_sort, ERP_CUSTOMER_ID
+  </sql>
+  <!-- 验证身份证号是否重复注册 -->
+  <select id="isIdNumRepeat" resultType="net.okdi.api.entity.MemberInfo" parameterType="java.lang.String" >
+    select 
+    member_name as memberName,id_num as idNum,member_phone as memberPhone
+    from member_info
+    where id_num = #{idNum,jdbcType=VARCHAR} AND member_phone != #{memberPhone}
+  </select>
+  <!-- 通过id获取对象信息 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    member_name,member_phone,id_num
+    from member_info
+    where member_id = #{memberId,jdbcType=BIGINT}
+  </select>
+  <!-- 获取站点认证信息 -->
+  <select id="queryCompInfo" resultType="java.util.Map" parameterType="java.lang.String" >
+    SELECT
+	a.comp_name AS compName,
+	b.net_name AS netName,
+	a.comp_status AS compStatus,
+	a.comp_id AS compId,
+	b.net_id AS netId
+	FROM
+		bas_compinfo a
+	LEFT JOIN bas_netinfo b ON a.belong_to_net_id = b.net_id
+	WHERE
+		a.comp_id = #{compId}
+  </select>
+  <!-- 虚拟站点下查询填写的站点名称不显示未标记站点 -->
+  <select id="querySiteNameByMemberId"  resultType="java.util.HashMap">
+        SELECT		
+	      e.show_comp_name AS comp_name
+			FROM
+				bas_employeeaudit e 
+				left join bas_compinfo b on e.audit_comp = b.comp_id
+			WHERE
+			 e.audit_item = 2
+			AND e.member_id=#{memberId}
+	</select>
+  <!-- 获取人员认证信息归属认证状态 -->
+  <select id="queryMemberinfo" resultType="java.util.Map" parameterType="java.lang.String" >
+    SELECT
+		a.member_name,
+		b.audit_opinion,
+		b.application_role_type,
+		a.member_id
+	FROM
+		member_info a
+	LEFT JOIN bas_employeeaudit b ON a.member_id = b.member_id
+	WHERE
+		b.audit_item = 2
+	AND a.member_id = #{memberId}
+	group by a.member_id
+  </select>
+  <!-- 修改姓名、身份证号 -->
+	<update id="updateMemberInfo" parameterType="java.util.Map">
+		update member_info set 
+		member_id = #{memberId}
+		<if test="memberId !=null" >
+		,member_name = #{memberName}
+		</if>
+		<if test="idNum !=null" >
+		,id_num = #{idNum}
+		</if>		
+	 where member_id = #{memberId}
+	</update>
+  <!-- 收派员审核列表信息 -->  
+  <select id="queryUserAuditList" resultType="net.okdi.apiV1.vo.VoUserAudit" parameterType="java.util.Map">
+		SELECT
+			a.member_id AS memberId,
+			a.audit_comp AS compId,
+			b.member_name AS memberName,
+			b.member_phone AS memberPhone,
+			b.id_num AS idNum,
+			a.application_role_type AS applicationRoleType,
+			d.net_name AS netName,
+			DATE_FORMAT(
+				b.create_time,
+				'%Y-%m-%d %H:%i:%S'
+			) AS createTime
+		FROM
+			bas_employeeaudit as a
+		LEFT JOIN member_info b ON a.member_id = b.member_id
+		LEFT JOIN bas_compinfo c ON a.audit_comp = c.comp_id
+		LEFT JOIN bas_netinfo d ON c.belong_to_net_id = d.net_id
+		WHERE
+			1 = 1
+		AND a.application_role_type IN (1, 0 ,-1)
+		AND c.comp_type_num IN (1006,1050,1003)
+        
+        <if test="map.auditItem==0">
+               AND a.audit_item in (1,3)
+        </if>
+        <if test="map.auditItem==1">
+               AND a.audit_item =4
+        </if>
+        <if test="map.auditItem==-1">
+               AND a.audit_item in (1,3,4)
+        </if>
+        <if test="map.auditStatus != null " >
+           <if test="map.auditStatus == 3" >
+        	   AND a.audit_opinion in (-1,0,1,2)
+           </if>
+           <if test="map.auditStatus != 3 " >
+        	   AND a.audit_opinion =#{map.auditStatus}
+           </if>
+      	</if>
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and e.parent_id like CONCAT('',#{map.provinceId,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.memberName != null and map.memberName != '' " >
+        	and b.member_name like CONCAT('%',#{map.memberName,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.memberPhone != null and map.memberPhone != '' " >
+        	and b.member_phone like CONCAT('%',#{map.memberPhone,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.idNum != null and map.idNum != '' " >
+        	and b.id_num like CONCAT('%',#{map.idNum,jdbcType=VARCHAR},'%') 
+      	</if>
+		<if test="map.roleId != null and map.roleId != '' "  >
+	        and a.application_role_type = #{map.roleId,jdbcType=VARCHAR}
+	    </if>
+		<if test="map.netId != null and map.netId != '' "  >
+	        and d.net_id = #{map.netId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="map.startTime != null and map.startTime != ''">
+			<![CDATA[
+			      and DATE_FORMAT(b.create_time, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{map.startTime}, '%Y-%m-%d %H:%i:%S')
+			]]>
+		</if>
+		<if test="map.endTime != null and map.endTime != ''">
+			<![CDATA[
+			      and DATE_FORMAT(b.create_time, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{map.endTime}, '%Y-%m-%d %H:%i:%S')
+			]]>
+		</if>
+		GROUP BY a.member_id
+		ORDER BY b.create_time DESC
+		<if test="map.page != null">
+      		limit #{map.page.offset},#{map.page.pageSize}
+      	</if>
+  </select>
+  <!-- 查询收派员数量-->  
+  <select id="queryCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+      SELECT  COUNT(1)  from (
+  	  SELECT
+			a.member_id
+		FROM
+			bas_employeeaudit as a
+		LEFT JOIN member_info b ON a.member_id = b.member_id
+		LEFT JOIN bas_compinfo c ON a.audit_comp = c.comp_id
+		LEFT JOIN bas_netinfo d ON c.belong_to_net_id = d.net_id
+		WHERE
+			1 = 1
+		AND a.application_role_type IN (1, 0 ,-1)
+		AND c.comp_type_num IN (1006,1050,1003)
+         <if test="map.auditItem==0">
+               AND a.audit_item in (1,3)
+        </if>
+        <if test="map.auditItem==1">
+               AND a.audit_item =4
+        </if>
+        <if test="map.auditItem==-1">
+               AND a.audit_item in (1,3,4)
+        </if>
+        <if test="map.auditStatus != null " >
+           <if test="map.auditStatus == 3" >
+        	   AND a.audit_opinion in (-1,0,1,2)
+           </if>
+           <if test="map.auditStatus != 3 " >
+        	   AND a.audit_opinion =#{map.auditStatus}
+           </if>
+      	</if>
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and e.parent_id like CONCAT('',#{map.provinceId,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.memberName != null and map.memberName != '' " >
+        	and b.member_name like CONCAT('%',#{map.memberName,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.memberPhone != null and map.memberPhone != '' " >
+        	and b.member_phone like CONCAT('%',#{map.memberPhone,jdbcType=VARCHAR},'%') 
+      	</if>
+      	<if test="map.idNum != null and map.idNum != '' " >
+        	and b.id_num like CONCAT('%',#{map.idNum,jdbcType=VARCHAR},'%') 
+      	</if>
+		<if test="map.roleId != null and map.roleId != '' "  >
+	        and a.application_role_type = #{map.roleId,jdbcType=VARCHAR}
+	    </if>
+		<if test="map.netId != null and map.netId != '' "  >
+	        and d.net_id = #{map.netId,jdbcType=VARCHAR}
+	    </if>
+	    <if test="map.startTime != null and map.startTime != ''">
+			<![CDATA[
+			      and DATE_FORMAT(b.create_time, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{map.startTime}, '%Y-%m-%d %H:%i:%S')
+			]]>
+		</if>
+		<if test="map.endTime != null and map.endTime != ''">
+			<![CDATA[
+			      and DATE_FORMAT(b.create_time, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{map.endTime}, '%Y-%m-%d %H:%i:%S')
+			]]>
+		</if>
+		GROUP BY a.member_id
+		ORDER BY b.create_time DESC
+		) as total
+  </select>
+  
+    <select id="selectMumberByMumberId" resultType="java.util.Map" >
+	    SELECT
+			a.member_name,
+			a.member_id,
+			id_num
+		FROM
+			member_info a
+		WHERE
+		 a.member_id = #{memberId}
+  </select>
+  	<select id="queryAllAudit" resultType="java.util.HashMap">
+		SELECT
+		b.id,
+		m.member_id,
+		m.member_name,
+		m.member_phone,
+		m.id_num,
+		b.audit_comp,
+		b.application_role_type,
+		DATE_FORMAT(m.create_time, '%Y-%m-%d %H:%i:%S') as create_time,
+		b.audit_time,
+		DATE_FORMAT(b.audit_time, '%Y-%m-%d %H:%i:%S') as audit_time,
+		DATE_FORMAT(b.application_time, '%Y-%m-%d %H:%i:%S') as application_time,
+		b.audit_item,
+		b.audit_opinion,
+		b.audit_user
+		FROM
+		bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id 
+		LEFT JOIN bas_compinfo c ON b.audit_comp = c.comp_id
+		where 
+		1 = 1
+		and b.audit_item=1 
+		and b.application_role_type in (2,3) 
+		and b.audit_opinion in(-1,0,1,2)
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and c.comp_address LIKE CONCAT('',(SELECT address_name FROM dic_address d WHERE d.address_id=#{map.provinceId}),'%') 
+      	</if>
+		<if test="map.registerStartTime !=null and map.registerStartTime !=''">
+			and m.create_time >= #{map.registerStartTime}
+		</if>
+		<if test="map.registerEndTime !=null and map.registerEndTime !=''">
+			 <![CDATA[	AND m.create_time <= #{map.registerEndTime}]]>
+		</if>
+		<if test="map.memberStatus !=null and map.memberStatus !=''">
+			and b.audit_opinion=#{map.memberStatus}
+		</if>
+		<if test="map.memberName !=null and map.memberName!=''">
+			and m.member_name LIKE CONCAT('%',#{map.memberName},'%')
+		</if>
+		<if test="map.mobile !=null and map.mobile!=''">
+		   and m.member_phone LIKE CONCAT('%',#{map.mobile},'%')
+		</if>
+		<if test="map.idNum !=null and map.idNum!=''">
+		    and m.id_num LIKE CONCAT('%',#{map.idNum},'%')
+		</if>
+		<if test="map.roleId !=null and map.roleId!=''">
+			and b.application_role_type=#{map.roleId}
+		</if>
+		order by m.create_time desc
+		limit #{map.currentPage},#{map.pageSize}
+	</select>
+		<select id="queryAllAuditCount"  resultType="java.lang.Integer">
+		SELECT
+	       count(1)
+		FROM
+		bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id 
+		LEFT JOIN bas_compinfo c ON b.audit_comp = c.comp_id
+		where
+		1 = 1 
+		and b.audit_item=1 
+		and b.application_role_type in (2,3) 
+		and b.audit_opinion in(-1,0,1,2)
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and c.comp_address LIKE CONCAT('',(SELECT address_name FROM dic_address d WHERE d.address_id=#{map.provinceId}),'%') 
+      	</if>
+		<if test="map.registerStartTime !=null and map.registerStartTime !=''">
+			and m.create_time >= #{map.registerStartTime}
+		</if>
+		<if test="map.registerEndTime !=null and map.registerEndTime !=''">
+			 <![CDATA[	AND m.create_time <= #{map.registerEndTime}]]>
+		</if>
+		<if test="map.memberStatus !=null and map.memberStatus !=''">
+			and b.audit_opinion=#{map.memberStatus}
+		</if>
+		<if test="map.memberName !=null and map.memberName!=''">
+			and m.member_name=#{map.memberName}
+		</if>
+		<if test="map.mobile !=null and map.mobile!=''">
+			and m.member_phone=#{map.mobile}
+		</if>
+		<if test="map.idNum !=null and map.idNum!=''">
+			and m.id_num=#{map.idNum}
+		</if>
+		<if test="map.roleId !=null and map.roleId!=''">
+			and b.application_role_type=#{map.roleId}
+		</if>
+  	</select>
+	
+	<select id="queryByMemberId" resultType="java.util.HashMap">
+		SELECT
+			i.member_id,
+			i.member_name,
+			i.member_phone,
+			i.id_num,
+			e.audit_reject_reason,
+			e.audit_desc,
+			e.audit_time,
+			b.agent_type,
+	     	e.audit_opinion
+
+		FROM
+			member_info i,
+			bas_employeeaudit e,
+			bas_compinfo b
+		WHERE
+		    e.audit_item=1 
+     	AND b.comp_id = e.audit_comp
+		AND i.member_id = e.member_id
+		AND e.member_id = #{memberId}
+	    AND e.audit_opinion = #{memStatus}
+	</select>
+	
+	<select id="queryByMemberId2" resultType="java.util.HashMap">
+		SELECT
+			e.application_role_type,
+			b.comp_name,
+			e.audit_opinion 
+		FROM
+			member_info i,
+			bas_employeeaudit e,
+			bas_compinfo b
+		WHERE
+		    e.audit_item=2 
+     	AND b.comp_id = e.audit_comp
+		AND i.member_id = e.member_id
+		AND e.member_id = #{memberId}
+	</select>
+	
+	<select id="queryAuditPeopleByMemberId" resultType="java.util.HashMap">
+		SELECT
+			i.member_name
+		FROM
+			member_info i
+		WHERE
+			i.member_id = (
+				SELECT
+					audit_user
+				FROM
+					bas_employeeaudit t
+				WHERE audit_item=1 AND
+					t.member_id = #{memberId}
+			)
+	</select>
+	<select id="findShopowner" resultType="java.util.HashMap">
+	SELECT
+			ifnull(b.responsible,'') as responsible,
+			ifnull(b.responsible_telephone,'') as responsible_telephone,
+			ifnull(b.responsible_id_num,'') as responsible_id_num,
+		    ifnull(c.comp_name,'') as comp_name,
+		    ifnull(c.comp_status,'') as comp_status,
+		    ifnull(n.net_name, '') as net_name,
+			ifnull(c.comp_address,'') as  comp_address,
+		    ifnull(u.application_role_type,'') as  application_role_type,
+			ifnull(u.audit_opinion,'') as audit_opinion,
+			ifnull(u.audit_reject_reason,'') as audit_reject_reason,
+			ifnull(u.audit_desc,'') as audit_desc,
+			ifnull(m.member_id,'') as member_id
+		FROM
+		    bas_compbusiness b
+			LEFT JOIN bas_compinfo c ON b.comp_id = c.comp_id
+			LEFT JOIN bas_netinfo n ON n.net_id = c.belong_to_net_id
+			LEFT JOIN bas_employeeaudit u ON u.audit_comp = c.comp_id
+			LEFT JOIN member_info m ON m.member_id = u.member_id
+			AND u.audit_comp = c.comp_id
+		WHERE
+		     u.audit_item = 2
+			AND m.member_id = #{memberId}
+			AND u.application_role_type=#{roleId}
+	</select>
+	<select id="findToreceiveAndLogistic"  resultType="java.util.HashMap">
+	
+			SELECT
+				ifnull(b.comp_name,'') as comp_name,
+				ifnull(s.responsible,'') as responsible,
+				ifnull(s.responsible_id_num,'') as  responsible_id_num,
+				ifnull(s.business_license_num,'') as  business_license_num,
+				ifnull(s.responsible_telephone,'') as responsible_telephone,
+				ifnull(n.net_name, '') as net_name,
+				ifnull(m.member_id, '') as member_id,
+				ifnull(b.comp_address, '') as comp_address,
+				ifnull(e.application_role_type, '') as application_role_type,
+				ifnull(e.audit_opinion,'') as audit_opinion,
+				ifnull(e.audit_reject_reason,'') as audit_reject_reason,
+			    ifnull(e.audit_desc,'') as audit_desc,
+			    ifnull(b.comp_status,'') as comp_status,
+			    ifnull(b.description_msg,'') as description_msg
+			FROM
+				bas_employeeaudit e 
+				left join member_info m on e.member_id = m.member_id
+				left join bas_compinfo b on e.audit_comp = b.comp_id
+				left join bas_compbusiness s on s.comp_id = b.comp_id
+				left join bas_netinfo n on n.net_id = b.belong_to_net_id
+			WHERE
+			 e.audit_item = 2
+			AND m.member_id=#{memberId}
+            AND e.application_role_type=#{roleId}
+            GROUP BY m.member_id
+	</select>
+	
+		<select id="findbasCompaudit"  resultType="java.util.HashMap">
+				SELECT
+					b.audit_opinion,
+					b.audit_desc,
+					b.audit_time
+				FROM
+					bas_compaudit b
+				LEFT JOIN bas_employee_relation c ON b.comp_id = c.comp_id
+				WHERE
+					c.member_id =#{memberId}
+				ORDER BY
+					b.audit_time DESC
+	</select>
+	<select id="findStationmaster"  resultType="java.util.HashMap">
+	 SELECT
+			ifnull(i.image_type,'') as image_type,
+			ifnull(i.image_url,'') as image_url
+		FROM
+				member_info m 
+				left join bas_employee_relation e on m.member_id = e.member_id 
+			    left join bas_compimage i on   i.comp_id = e.comp_id
+		WHERE
+			i.image_type in(2,5,8,9)
+			AND m.member_id = #{memberId}
+			AND e.role_id = #{roleId}
+			ORDER BY i.id
+	</select>
+	
+	<select id = "queryMemberInfoByMemberPhone" resultMap="BaseResultMap">
+	
+	select
+	
+	    member_id, member_name, id_num, member_phone,verif_flag, regist_flag,
+    member_source, create_time
+    
+	from member_info where member_phone = #{memberPhone} 
+	
+	</select>
+	<select id = "queryMemberInfoByMemberId" resultMap="BaseResultMap">
+	select
+	    member_id, member_name, id_num, member_phone,verif_flag, regist_flag,
+    member_source, create_time
+	from member_info where member_id = #{memberId} 
+	
+	</select>
+	<!--  代收点店员审核 查询列表中的数据 -->
+	<select id="queryAuditItemAll" resultType="java.util.Map" parameterType="java.util.HashMap">
+		SELECT 
+			m.member_id,
+			m.member_name,
+			m.member_phone,
+			m.id_num,
+			b.application_role_type,
+			DATE_FORMAT(m.create_time, '%Y-%m-%d %H:%i:%S') as create_time
+		FROM
+			bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id 
+		LEFT JOIN bas_compinfo c ON b.audit_comp = c.comp_id
+		WHERE
+		b.audit_item = 1 
+		AND	b.audit_opinion in(1,2)
+		AND b.application_role_type in(2,3)
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and c.comp_address_id like CONCAT('',#{map.provinceId,jdbcType=VARCHAR},'%') 
+      	</if>
+		<if test="map.registerStartTime !=null and map.registerStartTime !=''">
+			and m.create_time >= #{map.registerStartTime}
+		</if>
+		<if test="map.registerEndTime !=null and map.registerEndTime !=''">
+			 <![CDATA[	AND m.create_time <= #{map.registerEndTime}]]>
+		</if>
+		<if test="map.memberStatus !=null and map.memberStatus !=''">
+			and b.audit_opinion=#{map.memberStatus}
+		</if>
+		<if test="map.memberName !=null and map.memberName!=''">
+			and m.member_name LIKE CONCAT('%',#{map.memberName},'%')
+		</if>
+		<if test="map.mobile !=null and map.mobile!=''">
+		   and m.member_phone LIKE CONCAT('%',#{map.mobile},'%')
+		</if>
+		<if test="map.idNum !=null and map.idNum!=''">
+		    and m.id_num LIKE CONCAT('%',#{map.idNum},'%')
+		</if>
+		<if test="map.roleId !=null and map.roleId!=''">
+			and b.application_role_type=#{map.roleId}
+		</if>
+		GROUP BY 
+		m.member_id	
+	</select>
+	<!--  查询归属审核状态-->
+	<select id="queryAttributionAuditState" resultType="java.util.Map" parameterType="java.util.HashMap">
+		SELECT 
+			m.member_id,
+			b.audit_opinion,
+			b.application_role_type
+		FROM
+			bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id 
+		LEFT JOIN bas_compinfo c ON b.audit_comp = c.comp_id
+		WHERE
+		b.audit_item = 2 
+		AND	b.audit_opinion in(1,2)
+		AND b.application_role_type in(2,3)
+		<if test="map.provinceId != null and map.provinceId != '' " >
+        	and c.comp_address_id like CONCAT('',#{map.provinceId,jdbcType=VARCHAR},'%') 
+      	</if>
+		<if test="map.registerStartTime !=null and map.registerStartTime !=''">
+			and m.create_time >= #{map.registerStartTime}
+		</if>
+		<if test="map.registerEndTime !=null and map.registerEndTime !=''">
+			 <![CDATA[	AND m.create_time <= #{map.registerEndTime}]]>
+		</if>
+		<if test="map.memberStatus !=null and map.memberStatus !=''">
+			and b.audit_opinion=#{map.memberStatus}
+		</if>
+		<if test="map.memberName !=null and map.memberName!=''">
+			and m.member_name LIKE CONCAT('%',#{map.memberName},'%')
+		</if>
+		<if test="map.mobile !=null and map.mobile!=''">
+		   and m.member_phone LIKE CONCAT('%',#{map.mobile},'%')
+		</if>
+		<if test="map.idNum !=null and map.idNum!=''">
+		    and m.id_num LIKE CONCAT('%',#{map.idNum},'%')
+		</if>
+		<if test="map.roleId !=null and map.roleId!=''">
+			and b.application_role_type=#{map.roleId}
+		</if>
+		GROUP BY 
+		m.member_id	
+	</select>
+	<!-- 通过手机号集合查询memberid集合 -->
+	<select id="queryMemberInfoByMemberPhones" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM member_info WHERE 1=1
+		<if test="memberPhonesArry != null and memberPhonesArry != '' "  >
+			and member_phone IN
+			<foreach item="item1" index="index" collection="memberPhonesArry" 
+	              open="(" separator="," close=")">
+	             #{item1}
+	        </foreach>
+         </if>
+	</select>
+	
+</mapper>

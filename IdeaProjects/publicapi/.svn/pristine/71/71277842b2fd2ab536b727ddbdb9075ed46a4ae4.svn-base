@@ -1,0 +1,12 @@
+net.okdi.core 放构架相关文件
+net.okdi.api  放api相关文件
+
+API模块开发目录
+net.okdi.api 下放controller
+                dao
+                entity
+                service
+                vo
+
+短信模块开发目录
+net.okdi.sms

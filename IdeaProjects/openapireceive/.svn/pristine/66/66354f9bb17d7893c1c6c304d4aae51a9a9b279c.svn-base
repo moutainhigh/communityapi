@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.BasEmployeeRelationMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="SMALLINT" />
+    <result column="area_color" property="areaColor" jdbcType="CHAR" />
+    <result column="employee_work_status_flag" property="employeeWorkStatusFlag" jdbcType="SMALLINT" />
+    <result column="review_task_receiving_flag" property="reviewTaskReceivingFlag" jdbcType="SMALLINT" />
+    <result column="margin" property="margin" jdbcType="BIGINT" />
+    <result column="credit_limit" property="creditLimit" jdbcType="BIGINT" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, member_id, comp_id, role_id, area_color, employee_work_status_flag, review_task_receiving_flag, 
+    margin, credit_limit
+  </sql>
+  
+  <!-- 保存人员关系 -->
+  <insert id="saveRelation"  parameterType="net.okdi.api.entity.BasEmployeeRelation" >  
+       INSERT INTO bas_employee_relation (  
+           id,   
+           member_id,   
+           comp_id,   
+           role_id,
+           area_color,
+           employee_work_status_flag,
+           review_task_receiving_flag
+           )   
+       VALUES (  
+           #{id},   
+           #{memberId},   
+           #{compId},   
+           #{roleId},   
+           #{areaColor},
+           #{employeeWorkStatusFlag},
+           #{reviewTaskReceivingFlag}
+           )  
+  </insert>
+ 
+	<insert id="insertBasEmployeeRelation">
+		INSERT INTO bas_employee_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			member_id,
+			comp_id,
+			role_id,
+			area_color,
+			employee_work_status_flag,
+			review_task_receiving_flag
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{map.id},
+			#{map.member_id},
+			#{map.comp_id},
+			#{map.role_id},
+			#{map.area_color},
+			#{map.employee_work_status_flag},
+			#{map.review_task_receiving_flag}
+		</trim>
+	</insert>
+</mapper>

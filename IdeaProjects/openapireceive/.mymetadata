@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="openapi-takeSend"
+  id="myeclipse.1412754595884"
+  context-root="/openapi"
+  j2ee-spec="5.0"
+  archive="openapi-takeSend.war">
+  <attributes>
+    <attribute name="webrootdir" value="/src/main/webapp" />
+  </attributes>
+</project-module>
+

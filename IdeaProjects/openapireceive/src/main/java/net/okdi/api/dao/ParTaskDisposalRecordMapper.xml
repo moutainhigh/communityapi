@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ParTaskDisposalRecordMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ParTaskDisposalRecord">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="task_id" property="taskId" jdbcType="BIGINT" />
+		<result column="disposal_type" property="disposalType"
+			jdbcType="TINYINT" />
+		<result column="member_id" property="memberId" jdbcType="BIGINT" />
+		<result column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="disposal_object" property="disposalObject"
+			jdbcType="TINYINT" />
+		<result column="show_flag" property="showFlag" jdbcType="TINYINT" />
+		<result column="task_error_flag" property="taskErrorFlag"
+			jdbcType="TINYINT" />
+		<result column="disposal_desc" property="disposalDesc"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="modified_time" property="modifiedTime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, task_id, disposal_type, member_id, comp_id, disposal_object,
+		show_flag, task_error_flag,
+		disposal_desc, create_time, modified_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="queryByTaskIdAndDisposalObject" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where task_id = #{taskId}
+		and disposal_object = #{disposalObject} and disposal_type != 10 
+		<if test="compId != null">
+			and comp_id = #{compId}
+		</if>
+		<if test="memberId != null">
+			and member_id = #{memberId}
+		</if>
+	</select>
+
+	<select id="queryTaskByExpCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(dr.task_id) from
+		par_task_disposal_record dr LEFT JOIN par_task_info ti ON dr.task_id = ti.task_id where
+		ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_object =
+		#{disposalObject} and dr.disposal_type != 10 
+		<if
+			test="disposalType != null and disposalType != -1">
+			and dr.disposal_type = #{disposalType}
+		</if>
+		<if
+			test="disposalType != null and disposalType == -1">
+			and (dr.disposal_type = 1 or dr.disposal_type = 2)
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and ti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ti.contact_name like #{contactName}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and dr.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dr.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="spacetimeparam == 'h1'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2m'">
+			and dr.create_time <![CDATA[<=]]>
+			#{spacetime}
+		</if>
+		<if test="memberId != null">
+			and ti.actor_member_id = #{memberId}
+		</if>
+		<if test="compId != null">
+			and ti.coop_comp_id = #{compId}
+		</if>
+		<if test="operatorCompId != null">
+			and dr.comp_id = #{operatorCompId}
+		</if>
+	</select>
+
+	<!-- <select id="queryTaskByExp" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select
+		cast(dr.id as char) as id, cast(dr.task_id as char) as taskId, 
+		dr.disposal_desc as disposalDesc, dr.create_time as createTime, 
+		dr.task_error_flag as taskErrorFlag, ti.appoint_time as appointTime, 
+		ti.appoint_desc as appointDesc, ti.contact_name as contactName,
+		ti.contact_mobile as contactMobile, ti.contact_address as contactAddress, 
+		dr.disposal_type as disposalType, ti.coop_comp_id as compId, 
+		mi.member_name as memberName, mi.member_phone as memberPhone
+
+		from par_task_disposal_record dr LEFT JOIN par_task_info ti ON
+		dr.task_id = ti.task_id
+		LEFT JOIN bas_compinfo ci ON ti.coop_comp_id = ci.comp_id
+		LEFT JOIN member_info mi ON ti.actor_member_id = mi.member_id 
+		where ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_object =
+		#{disposalObject}
+		<if
+			test="disposalType == -1">
+			and (dr.disposal_type = 1 or dr.disposal_type = 2)
+		</if>
+		<if
+			test="disposalType != null  and disposalType != -1">
+			and dr.disposal_type = #{disposalType}
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and ti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ti.contact_name like #{contactName}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and dr.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dr.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="spacetimeparam == 'h1'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2m'">
+			and dr.create_time <![CDATA[<=]]>
+			#{spacetime}
+		</if>
+		<if test="memberId != null and memberId != ''">
+			and ti.actor_member_id = #{memberId}
+		</if>
+		<if test="compId != null and compId != ''">
+			and ti.coop_comp_id = #{compId}
+		</if>
+		<if test="operatorCompId != null and operatorCompId != ''">
+			and dr.comp_id = #{operatorCompId}
+		</if>
+		order by dr.create_time limit #{page.offset},#{page.pageSize}
+	</select> -->
+	
+	<!-- queryTaskByExp缓存修改 -->
+	<select id="queryTaskByExp" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select
+		cast(dr.id as char) as id, cast(dr.task_id as char) as taskId 
+		from par_task_disposal_record dr LEFT JOIN par_task_info ti ON
+		dr.task_id = ti.task_id 
+		where ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_object =
+		#{disposalObject} and dr.disposal_type != 10 
+ 		<if
+			test="disposalType == -1">
+			and (dr.disposal_type = 1 or dr.disposal_type = 2)
+		</if>
+		<if
+			test="disposalType != null  and disposalType != -1">
+			and dr.disposal_type = #{disposalType}
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and ti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ti.contact_name like #{contactName}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and dr.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dr.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="spacetimeparam == 'h1'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2m'">
+			and dr.create_time <![CDATA[<=]]>
+			#{spacetime}
+		</if>
+		<if test="memberId != null and memberId != ''">
+			and ti.actor_member_id = #{memberId}
+		</if>
+		<if test="compId != null and compId != ''">
+			and ti.coop_comp_id = #{compId}
+		</if>
+		<if test="operatorCompId != null and operatorCompId != ''">
+			and dr.comp_id = #{operatorCompId}
+		</if>
+		order by dr.create_time limit #{page.offset},#{page.pageSize}
+	</select>
+	
+	<!-- <select id="queryCancelTaskByExp" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select
+		cast(dr.id as char) as id, cast(dr.task_id as char) as taskId, dr.disposal_desc as disposalDesc, dr.create_time as
+		createTime,
+		appoint_time as appointTime, ti.appoint_desc as
+		appointDesc, ti.contact_name as contactName,
+		ti.contact_mobile as
+		contactMobile, ti.contact_address as contactAddress,
+		tp.task_transmit_cause as taskTransmitCause, dr.disposal_desc as taskProcessDesc,
+		tp.operator_comp_id as compId,
+		mi.member_name as memberName, tp.create_time as cancelTime
+		from par_task_disposal_record dr LEFT JOIN par_task_info ti ON dr.task_id
+		= ti.task_id LEFT JOIN
+		par_task_process tp ON dr.task_id = tp.task_id LEFT JOIN bas_compinfo ci ON
+		tp.operator_comp_id = ci.comp_id
+		LEFT JOIN member_info mi ON tp.operator_id = mi.member_id where
+
+		ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_object =
+		#{disposalObject} 
+		and tp.create_time = (select max(ptp.create_time) from par_task_process ptp where
+		ptp.task_id = dr.task_id) 
+		<if test="disposalType != null and disposalType != -1">
+			and dr.disposal_type = #{disposalType}
+		</if>
+		<if
+			test="disposalType != null and disposalType == -1">
+			and (dr.disposal_type = 1 or dr.disposal_type = 2)
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and ti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ti.contact_name like #{contactName}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and dr.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dr.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="spacetimeparam == 'h1'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2m'">
+			and dr.create_time <![CDATA[<=]]>
+			#{spacetime}
+		</if>
+		<if test="memberId != null">
+			and ti.actor_member_id = #{memberId}
+		</if>
+		<if test="compId != null">
+			and ti.coop_comp_id = #{compId}
+		</if>
+		<if test="operatorCompId != null">
+			and dr.comp_id = #{operatorCompId}
+		</if>
+		order by dr.create_time limit #{page.offset},#{page.pageSize}
+	</select> -->
+	
+	<!-- queryCancelTaskByExp缓存修改 -->
+	<select id="queryCancelTaskByExp" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select
+		cast(dr.id as char) as id, cast(dr.task_id as char) as taskId, cast(tp.id as char) as cancelId 
+		
+		from par_task_disposal_record dr 
+		LEFT JOIN par_task_info ti ON dr.task_id = ti.task_id 
+		LEFT JOIN par_task_process tp ON dr.task_id = tp.task_id
+		
+		where ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_object =
+		#{disposalObject} and dr.disposal_type != 10 
+		and tp.create_time = (select max(ptp.create_time) from par_task_process ptp where
+		ptp.task_id = dr.task_id) 
+		<if test="disposalType != null and disposalType != -1">
+			and dr.disposal_type = #{disposalType}
+		</if>
+		<if
+			test="disposalType != null and disposalType == -1">
+			and (dr.disposal_type = 1 or dr.disposal_type = 2)
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and ti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ti.contact_name like #{contactName}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and dr.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and dr.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		<if test="spacetimeparam == 'h1'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2'">
+			and dr.create_time <![CDATA[>=]]>
+			#{spacetime}
+		</if>
+		<if test="spacetimeparam == 'h2m'">
+			and dr.create_time <![CDATA[<=]]>
+			#{spacetime}
+		</if>
+		<if test="memberId != null">
+			and ti.actor_member_id = #{memberId}
+		</if>
+		<if test="compId != null">
+			and ti.coop_comp_id = #{compId}
+		</if>
+		<if test="operatorCompId != null">
+			and dr.comp_id = #{operatorCompId}
+		</if>
+		order by dr.create_time limit #{page.offset},#{page.pageSize}
+	</select>
+	
+	<!-- <select id="queryTaskByMember" resultType="java.util.HashMap"
+		parameterType="java.lang.Long">
+		select
+		dr.id as id, dr.task_id as taskId, dr.disposal_desc as disposalDesc, 
+		dr.create_time as createTime, ti.appoint_time as appointTime, 
+		ti.appoint_desc as appointDesc, ti.contact_name as contactName,
+		ti.contact_mobile as contactMobile, ti.contact_address as contactAddress, 
+		ti.create_user_id as memberId 
+		from
+		par_task_disposal_record dr LEFT JOIN par_task_info ti ON dr.task_id =
+		ti.task_id where
+		ti.task_type = 0 and dr.show_flag = 1 and dr.disposal_type = 0 and
+		dr.disposal_object = 0
+		and dr.member_id = #{memberId}
+		<if test="disposalType != null and disposalType == 0">
+			and (dr.disposal_type = 0 or dr.disposal_type = 2)
+		</if>
+		<if test="disposalType != null and disposalType == 1">
+			and dr.disposal_type = 0
+		</if>
+		<if test="disposalType != null and disposalType == 2">
+			and dr.disposal_type = 2
+		</if>
+		<if test="taskType == 2">
+			and ti.task_type = 2
+		</if>
+		<if test="taskType != 2">
+			and ti.task_type != 2
+		</if>
+		order by dr.create_time desc
+	</select> -->
+	
+	<!-- 缓存查询收派员全部任务 -->
+	<select id="queryTaskByMember" resultType="java.lang.Long"
+		parameterType="java.lang.Long">
+		select
+		dr.id
+		from
+		par_task_disposal_record dr LEFT JOIN par_task_info ti ON dr.task_id =
+		ti.task_id where 
+		dr.show_flag = 1 and dr.disposal_object = 0
+		and dr.member_id = #{memberId} and dr.disposal_type != 10
+		<if test="disposalType != null and disposalType == 0">
+			and dr.disposal_type = 0
+		</if>
+		<if test="disposalType != null and disposalType == 1">
+			and dr.disposal_type = 0
+		</if>
+		and ti.task_type = #{taskType} order by dr.create_time desc
+	</select>
+	
+    <select id="queryIdByTaskId" resultType="java.util.HashMap"
+		parameterType="java.lang.Long">
+		select max(ptp.create_time),ptp.id as id  from par_task_process ptp where
+		ptp.task_id = #{taskId}
+	</select>
+
+	<select id="queryTaskAvailableByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where task_id = #{taskId}
+		and show_flag = 1
+		and disposal_type != 2 and disposal_type != 3 and disposal_type != 10 
+	</select>
+	
+	<select id="queryDistributeTaskByTaskId" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where task_id = #{taskId}
+		and show_flag = 1
+		and disposal_type != 2 and disposal_type != 10
+	</select>
+	
+	<select id="queryTaskByMemberIdOrCompId" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select 
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where task_id = #{taskId}
+		and show_flag = 1 and disposal_type != 2 and disposal_type != 10
+		and (disposal_object = 0 or disposal_object = 3)
+	</select>
+	
+	<select id="queryTaskUnFinished" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select 
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record 
+		where (disposal_type != 2 and disposal_type != 3 and disposal_type != 10)
+		<if test="compId != null">
+			and comp_id = #{compId}
+		</if>
+		<if test="memberId != null">
+			and member_id = #{memberId}
+		</if>
+	</select>
+	
+	<select id="queryCompTaskById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select 
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record 
+		where (disposal_type != 2 and disposal_type != 3 and disposal_type != 10) and task_id=#{taskId} 
+		and disposal_object = 4 
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from par_task_disposal_record
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="net.okdi.api.vo.TaskVo">
+		insert into par_task_disposal_record (id, task_id, disposal_type,
+		member_id, comp_id, disposal_object,
+		show_flag, task_error_flag, disposal_desc,
+		create_time, modified_time)
+		values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT},
+		#{taskStatus,jdbcType=TINYINT},
+		#{memberId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{disposalObject,jdbcType=TINYINT},
+		#{showFlag,jdbcType=TINYINT}, #{taskErrorFlag,jdbcType=TINYINT},
+		#{disposalDesc,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}, #{modifiedTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="net.okdi.api.vo.TaskVo">
+		insert into par_task_disposal_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="taskId != null">
+				task_id,
+			</if>
+			<if test="taskStatus != null">
+				disposal_type,
+			</if>
+			<if test="memberId != null">
+				member_id,
+			</if>
+			<if test="compId != null">
+				comp_id,
+			</if>
+			<if test="disposalObject != null">
+				disposal_object,
+			</if>
+			<if test="showFlag != null">
+				show_flag,
+			</if>
+			<if test="taskErrorFlag != null">
+				task_error_flag,
+			</if>
+			<if test="disposalDesc != null">
+				disposal_desc,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="modifiedTime != null">
+				modified_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="taskId != null">
+				#{taskId,jdbcType=BIGINT},
+			</if>
+			<if test="taskStatus != null">
+				#{taskStatus,jdbcType=TINYINT},
+			</if>
+			<if test="memberId != null">
+				#{memberId,jdbcType=BIGINT},
+			</if>
+			<if test="compId != null">
+				#{compId,jdbcType=BIGINT},
+			</if>
+			<if test="disposalObject != null">
+				#{disposalObject,jdbcType=TINYINT},
+			</if>
+			<if test="showFlag != null">
+				#{showFlag,jdbcType=TINYINT},
+			</if>
+			<if test="taskErrorFlag != null">
+				#{taskErrorFlag,jdbcType=TINYINT},
+			</if>
+			<if test="disposalDesc != null">
+				#{disposalDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifiedTime != null">
+				#{modifiedTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ParTaskDisposalRecord">
+		update par_task_disposal_record
+		<set>
+			<if test="taskId != null">
+				task_id = #{taskId,jdbcType=BIGINT},
+			</if>
+			<if test="disposalType != null">
+				disposal_type = #{disposalType,jdbcType=TINYINT},
+			</if>
+			<if test="memberId != null">
+				member_id = #{memberId,jdbcType=BIGINT},
+			</if>
+			<if test="compId != null">
+				comp_id = #{compId,jdbcType=BIGINT},
+			</if>
+			<if test="disposalObject != null">
+				disposal_object = #{disposalObject,jdbcType=TINYINT},
+			</if>
+			<if test="showFlag != null">
+				show_flag = #{showFlag,jdbcType=TINYINT},
+			</if>
+			<if test="taskErrorFlag != null">
+				task_error_flag = #{taskErrorFlag,jdbcType=TINYINT},
+			</if>
+			<if test="disposalDesc != null">
+				disposal_desc = #{disposalDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifiedTime != null">
+				modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ParTaskDisposalRecord">
+		update par_task_disposal_record
+		set task_id = #{taskId,jdbcType=BIGINT},
+		disposal_type = #{disposalType,jdbcType=TINYINT},
+		member_id = #{memberId,jdbcType=BIGINT},
+		comp_id = #{compId,jdbcType=BIGINT},
+		disposal_object = #{disposalObject,jdbcType=TINYINT},
+		show_flag = #{showFlag,jdbcType=TINYINT},
+		task_error_flag = #{taskErrorFlag,jdbcType=TINYINT},
+		disposal_desc = #{disposalDesc,jdbcType=VARCHAR},
+		create_time = #{createTime,jdbcType=TIMESTAMP},
+		modified_time = #{modifiedTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<update id="updateByTaskIdSelective" parameterType="net.okdi.api.entity.ParTaskDisposalRecord">
+		update par_task_disposal_record
+		<set>
+			<if test="disposalType != null">
+				disposal_type = #{disposalType,jdbcType=TINYINT},
+			</if>
+			<if test="memberId != null">
+				member_id = #{memberId,jdbcType=BIGINT},
+			</if>
+			<if test="compId != null">
+				comp_id = #{compId,jdbcType=BIGINT},
+			</if>
+			<if test="disposalObject != null">
+				disposal_object = #{disposalObject,jdbcType=TINYINT},
+			</if>
+			<if test="showFlag != null">
+				show_flag = #{showFlag,jdbcType=TINYINT},
+			</if>
+			<if test="taskErrorFlag != null">
+				task_error_flag = #{taskErrorFlag,jdbcType=TINYINT},
+			</if>
+			<if test="disposalDesc != null">
+				disposal_desc = #{disposalDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifiedTime != null">
+				modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where task_id = #{taskId,jdbcType=BIGINT}
+	</update>
+
+
+	<update id="updateCancelTaskByTaskId" parameterType="net.okdi.api.entity.ParTaskDisposalRecord">
+		update par_task_disposal_record set disposal_type =
+		#{disposalType,jdbcType=TINYINT},
+		<if test="showFlag != null">
+			show_flag = #{showFlag,jdbcType=TINYINT}, 
+		</if>
+		disposal_desc = #{disposalDesc,jdbcType=VARCHAR},
+		<if test="taskErrorFlag != null">
+			task_error_flag = #{taskErrorFlag,jdbcType=TINYINT},
+		</if>
+		modified_time = #{modifiedTime,jdbcType=TIMESTAMP}
+		where task_id = #{taskId,jdbcType=BIGINT}
+		<if test="id != null">
+			and id = #{id,jdbcType=BIGINT}
+		</if>
+	</update>
+
+	<select id="queryTaskToMember" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from par_task_disposal_record
+		where task_id = #{taskId}
+		and disposal_object = #{disposalObject} 
+		and disposal_type = 0
+	</select>
+	
+<!-- 运营平台查询取件任务记录条数 -->
+	<select id="queryTaskCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(pti.task_id) from
+		par_task_info pti 
+		where pti.task_source!=-1 and pti.task_status!=11
+		<if
+			test="taskSource != null and taskSource !=''">
+			and pti.task_source = #{taskSource}
+		</if>
+		<if
+			test="netName != null and netName != ''">
+			and pti.coop_net_id in (select net_id from bas_netinfo where net_name like '%${netName}%')
+		</if>
+		<if test="taskStatus != null and taskStatus != ''">
+			and pti.task_status = #{taskStatus}
+		</if>
+		
+		<if test="contactAddress != null and contactAddress != ''">
+			and pti.contact_address like '%${contactAddress}%'
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and pti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="actorPhone != null and actorPhone != ''">
+			and pti.actor_phone = #{actorPhone}
+		</if>
+		
+		<if test="startTime != null and startTime != ''">
+			and pti.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and pti.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+	</select>
+	
+<!-- 运营平台查询取件任务记录 -->
+	<select id="queryTaskByCriteria" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select 
+		pti.task_source,pti.contact_mobile,pti.contact_name,pti.contact_address,mi.member_name,pti.actor_phone,bn.net_name,bc.comp_name,FROM_UNIXTIME(UNIX_TIMESTAMP(pti.create_time),'%Y-%m-%d %h:%i:%s') AS create_time,pti.task_status,
+		FROM_UNIXTIME(UNIX_TIMESTAMP(pti.modify_time),'%Y-%m-%d %h:%i:%s') AS modify_time,
+		pti.task_remark,pti.par_estimate_count,pti.par_estimate_weight,
+		FROM_UNIXTIME(UNIX_TIMESTAMP(pti.appoint_time),'%Y-%m-%d %h:%i:%s') AS appoint_time,pti.appoint_desc,pti.task_id
+		from
+		par_task_info pti,member_info mi,bas_netinfo bn,bas_compinfo bc
+		where 
+		pti.actor_member_id=mi.member_id and pti.coop_net_id=bn.net_id and pti.coop_comp_id=bc.comp_id and pti.task_source!=-1 and pti.task_status!=11
+		<if
+			test="taskSource != null and taskSource !=''">
+			and pti.task_source = #{taskSource}
+		</if>
+		<if
+			test="netName != null and netName != ''">
+			and pti.coop_net_id in (select net_id from bas_netinfo where net_name like '%${netName}%')
+		</if>
+		<if test="taskStatus != null and taskStatus != ''">
+			and pti.task_status = #{taskStatus}
+		</if>
+		
+		<if test="contactAddress != null and contactAddress != ''">
+			and pti.contact_address like '%${contactAddress}%'
+		</if>
+		<if test="contactMobile != null and contactMobile != ''">
+			and pti.contact_mobile = #{contactMobile}
+		</if>
+		<if test="actorPhone != null and actorPhone != ''">
+			and pti.actor_phone = #{actorPhone}
+		</if>
+		
+		<if test="startTime != null and startTime != ''">
+			and pti.create_time <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and pti.create_time <![CDATA[<=]]> #{endTime}
+		</if>
+		limit #{page.offset},#{page.pageSize}
+	</select>
+</mapper>

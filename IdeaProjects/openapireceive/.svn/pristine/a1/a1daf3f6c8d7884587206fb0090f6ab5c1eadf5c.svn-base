@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.CourierMapper">
+<select id="queryNearMember" parameterType="java.util.Map" resultType="java.util.Map">
+SELECT
+	a.id as id ,
+	a.net_id as netId,
+	a.NET_NAME as netName,
+	a.COMP_ID as compId,
+	a.COMP_NAME as compName,
+	a.MEMBER_ID as memberId,
+	a.MEMBER_NAME as memberName,
+	a.MEMBER_MOBILE as memberMobile,
+	a.LONGITUDE as lng,
+	a.LATITUDE as lat,
+	 b.employee_user_id as flag
+FROM
+	bas_online_member a
+LEFT JOIN bas_comp_employee_resume b ON a.MEMBER_ID = b.employee_user_id
+where 
+(UNIX_TIMESTAMP(SYSDATE()) - UNIX_TIMESTAMP(a.MODIFY_TIME)) <![CDATA[ <]]> 1800
+and a.LONGITUDE BETWEEN #{leftLng} and #{rightLng} 
+and a.LATITUDE BETWEEN #{bottomLat}  and #{topLat}
+</select>
+<select id="autoSuggest" parameterType="java.util.Map" resultType="java.util.Map">
+SELECT
+ 	branch_comp_id as compId,
+ 	member_id as memberId,
+  	longitude_str as lngs,
+	latitude_str as lats
+FROM
+	exp_area_electronic_fence
+WHERE 
+(branch_comp_id is not NULL OR member_id is not NULL)
+and comp_id = #{compId}
+AND #{lat} BETWEEN min_latitude and max_latitude
+and #{lng} BETWEEN min_longitude and max_longitude
+</select>
+<select id="updateOnLineMemember" parameterType="java.util.Map" >
+  update bas_online_member set LONGITUDE = #{lng} , LATITUDE = #{lat} where MEMBER_ID = #{memberId}
+</select>
+
+<delete id="deleteOnLineMember" parameterType="java.util.Map">
+delete from bas_online_member where MEMBER_ID = #{memberId}
+</delete>
+<select id="queryNearComp" parameterType="java.util.Map" resultType="java.util.Map">
+SELECT
+DISTINCT
+	a.net_id as netId,
+	a.compId as compId,
+	
+	a.lngs as lngs,
+	a.lats as lats,
+	ifnull(a.responsibleTelephone,' ') as responsibleTelephone,
+	ifnull(a.responsible,' ') as responsible,
+	b.price as price
+FROM
+	(
+		SELECT
+			ea.net_id,
+			ea.comp_Id AS compId,
+			ea.longitude_str AS lngs,
+			ea.latitude_str AS lats,
+			bc.responsible_telephone as responsibleTelephone,
+			bc.responsible as responsible
+
+		FROM
+			exp_comp_electronic_fence ea
+		LEFT JOIN bas_compbusiness bc ON ea.comp_id = bc.comp_id
+		WHERE
+			1=1
+		AND #{lat} BETWEEN ea.min_latitude
+		AND ea.max_latitude
+		AND #{lng} BETWEEN ea.min_longitude
+		AND ea.max_longitude
+		<if test="netId!=null">
+		AND ea.net_id = #{netId}
+		</if>
+		
+	) a
+LEFT JOIN (
+	SELECT
+		net_id,
+		take_province,
+		send_province,
+		price
+	FROM
+		bas_express_price
+	WHERE
+		take_province = #{takeProvinceId}
+	AND send_province = #{sendProvinceId}
+) b ON a.net_id = b.net_id
+</select>
+</mapper>

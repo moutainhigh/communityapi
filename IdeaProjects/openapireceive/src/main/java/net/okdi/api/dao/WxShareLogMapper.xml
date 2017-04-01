@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.WxShareLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.WxShareLog" >
+    <id column="member_Id" property="memberId" jdbcType="BIGINT" />
+    <result column="shared_Member_Id" property="sharedMemberId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    member_Id, shared_Member_Id, create_time
+  </sql>
+  <select id="findByShareMId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from wx_share_log
+    where member_Id = #{memberId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from wx_share_log
+    where member_Id = #{memberId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertWxShareLog" parameterType="net.okdi.api.entity.WxShareLog" >
+    insert into wx_share_log (
+    	member_Id, shared_Member_Id, create_time
+    )
+    values (
+    	#{memberId,jdbcType=BIGINT}, #{sharedMemberId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+</mapper>

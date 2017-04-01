@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+    <!DOCTYPE mapper 
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.okdi.api.dao.MobMemberLoginMapper">
+
+	<sql id="base_column">
+		ID,CHANNEL_NO,CHANNEL_ID
+		,DEVICE_TYPE,DEVICE_TOKEN,VERSION,CONN_TIME,ADDRESS,
+		MODIFY_TIME,CREATE_TIME,CLIENT_ID,RECEIVE_NOTICE_FLAG,PUSH_TYPE
+	</sql>
+	<resultMap id="resultMap" type="net.okdi.api.entity.MobMemberLogin">
+		<result property="id" column="ID" />
+		<result property="channelNo" column="CHANNEL_NO" />
+		<result property="channelId" column="CHANNEL_ID" />
+		<result property="deviceType" column="DEVICE_TYPE" />
+		<result property="deviceToken" column="DEVICE_TOKEN" />
+		<result property="version" column="VERSION" />
+		<result property="connTime" column="CONN_TIME" />
+		<result property="address" column="ADDRESS" />
+		<result property="modifyTime" column="MODIFY_TIME" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="clientId" column="CLIENT_ID" />
+		<result property="receiveNoticeFlag" column="RECEIVE_NOTICE_FLAG" />
+		<result property="pushType" column="PUSH_TYPE" />
+	</resultMap>
+
+
+	<select id="findList" parameterType="net.okdi.api.entity.MobMemberLogin"
+		resultMap="resultMap">
+		select
+		<include refid="base_column" />
+		from mob_member_login where 1=1
+		<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+		<if test="channelId!=null">and CHANNEL_ID = #{channelId}</if>
+		<if test="deviceType!=null">and DEVICE_TYPE = #{deviceType}</if>
+		<if test="deviceToken!=null">and DEVICE_TOKEN = #{deviceToken}</if>
+		<if test="version!=null"> and VERSION = #{version} </if>
+		<if test="connTime!=null"> and CONN_TIME = #{connTime}  </if>
+		<if test="address!=null"> and ADDRESS = #{address}  </if>
+		<if test="clientId!=null"> and CLIENT_ID = #{clientId}  </if>
+		<if test="receiveNoticeFlag!=null"> and RECEIVE_NOTICE_FLAG = #{receiveNoticeFlag}  </if>
+		<if test="pushType!=null"> and PUSH_TYPE= #{pushType}  </if>
+		 and DEVICE_TOKEN !="(null)"
+		order by MODIFY_TIME desc
+	</select>
+
+
+	<select id="findListByChanIdOrToken" parameterType="net.okdi.api.entity.MobMemberLogin"
+		resultMap="resultMap">
+		select
+		<include refid="base_column" />
+		from mob_member_login where 1=1
+		<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+		<if test="channelId!=null">and CHANNEL_ID = #{channelId}</if>
+		<if test="deviceType!=null">and DEVICE_TYPE = #{deviceType}</if>
+		<if test="deviceToken!=null">or DEVICE_TOKEN = #{deviceToken}</if>
+		<if test="version!=null"> and VERSION = #{version} </if>
+		<if test="connTime!=null"> and CONN_TIME = #{connTime}  </if>
+		<if test="address!=null"> and ADDRESS = #{address}  </if>
+		<if test="clientId!=null"> and CLIENT_ID = #{clientId}  </if>
+		<if test="receiveNoticeFlag!=null"> and RECEIVE_NOTICE_FLAG = #{receiveNoticeFlag}  </if>
+		<if test="pushType!=null"> and PUSH_TYPE= #{pushType}  </if>
+	</select>
+
+	<select id="findPushList" parameterType="net.okdi.api.entity.MobMemberLogin"
+		resultMap="resultMap">
+		select
+		<include refid="base_column" />
+		from mob_member_login left join bas_client_push_jurisdiction t on
+		CHANNEL_ID=t.member_id where 1=1
+		<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+		<if test="channelId!=null">and CHANNEL_ID = #{channelId}</if>
+		<if test="deviceType!=null">and DEVICE_TYPE = #{deviceType}</if>
+		<if test="deviceToken!=null">and DEVICE_TOKEN = #{deviceToken}</if>
+		<if test="version!=null"> and VERSION = #{version} </if>
+		<if test="connTime!=null"> and CONN_TIME = #{connTime}  </if>
+		<if test="address!=null"> and ADDRESS = #{address}  </if>
+		<if test="modifyTime!=null"> and MODIFY_TIME = #{modifyTime}  </if>
+		<if test="createTime!=null"> and CREATE_TIME = #{createTime}  </if>
+		<if test="clientId!=null"> and CLIENT_ID = #{clientId}  </if>
+		<if test="receiveNoticeFlag!=null"> and RECEIVE_NOTICE_FLAG = #{receiveNoticeFlag}  </if>
+		<if test="pushType!=null"> and PUSH_TYPE= #{pushType}  </if>
+		<if test="channelId!=null">
+			and ( t.member_id is null or t.phone_client_push_switch='1')
+		</if>
+	</select>
+
+	<select id="findPushListBatch" parameterType="net.okdi.api.entity.MobMemberLogin"
+		resultMap="resultMap">
+		select
+		<include refid="base_column" />
+		from mob_member_login left join bas_client_push_jurisdiction t on CHANNEL_ID=t.member_id where 1=1
+		<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+		<if test="channelId!=null">and CHANNEL_ID = #{channelId}</if>
+		<if test="channelId!=null"> 
+			and ( t.member_id is null or t.phone_client_push_switch='1')
+		</if>
+	</select>
+	<update id="update" parameterType="net.okdi.api.entity.MobMemberLogin">   
+       update mob_member_login set 
+        <trim suffix="" suffixOverrides=",">
+			<if test="deviceToken!=null">DEVICE_TOKEN = #{deviceToken},</if>
+			<if test="deviceType!=null">DEVICE_TYPE = #{deviceType},</if>
+			<if test="version!=null">VERSION = #{version} ,</if>
+			<if test="connTime!=null">CONN_TIME = #{connTime} , </if>
+			<if test="address!=null">ADDRESS = #{address}  ,</if>
+			<if test="clientId!=null">CLIENT_ID = #{clientId}  ,</if>
+			<if test="receiveNoticeFlag!=null">RECEIVE_NOTICE_FLAG = #{receiveNoticeFlag} , </if>
+			<if test="modifyTime!=null">MODIFY_TIME = #{modifyTime},  </if>
+		</trim>
+		where CHANNEL_ID = #{channelId}
+			<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+			<if test="pushType!=null"> and  PUSH_TYPE= #{pushType}  </if>
+			<if test="deviceToken!=null"> and DEVICE_TOKEN= #{deviceToken}  </if>
+		 
+	</update>
+	
+	<insert id="insert" parameterType="net.okdi.api.entity.MobMemberLogin"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into mob_member_login(
+		<include refid="base_column" />
+		) values( #{id},#{channelNo},#{channelId},#{deviceType},
+		#{deviceToken},#{version},#{connTime},#{address},#{modifyTime},#{createTime},
+		#{clientId},#{receiveNoticeFlag},#{pushType}
+		)
+	</insert>
+	
+	<delete id="delete" parameterType="net.okdi.api.entity.MobMemberLogin" >
+		delete from mob_member_login 
+		where CHANNEL_ID = #{channelId}
+			<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+			<if test="deviceType!=null">and DEVICE_TYPE = #{deviceType}</if>
+			<if test="deviceToken!=null">and DEVICE_TOKEN = #{deviceToken}</if>
+			<if test="pushType!=null"> and  PUSH_TYPE= #{pushType}  </if>
+			<if test="id!=null"> and  id= #{id}  </if>
+	</delete>
+	
+	<delete id="deleteBatch" parameterType="arraylist" >
+		delete from mob_member_login 
+		where id in
+		<foreach collection="list" item="" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="getLastLogin" parameterType="net.okdi.api.entity.MobMemberLogin" resultMap="resultMap">
+		select <include refid="base_column" /> from mob_member_login
+			where CHANNEL_ID = #{channelId}
+			<if test="channelNo!=null">and CHANNEL_NO = #{channelNo}</if>
+			<if test="deviceType!=null">and DEVICE_TYPE = #{deviceType}</if>
+			<if test="deviceToken!=null">and DEVICE_TOKEN = #{deviceToken}</if>
+			<if test="pushType!=null"> and  PUSH_TYPE= #{pushType}  </if>
+			<if test="id!=null"> and  id= #{id}  </if>
+			 order by MODIFY_TIME desc limit 1
+	</select>
+	
+</mapper> 
+
+
+

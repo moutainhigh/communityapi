@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.SendNoticeMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParSmsAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="receiver_mobile" property="receiverMobile" jdbcType="BIGINT" />
+    <result column="member_mobile" property="memberMobile" jdbcType="VARCHAR" />
+    <result column="member_id" property="memberId" jdbcType="VARCHAR" />
+    <result column="sms_source" property="smsSource" jdbcType="SMALLINT" />
+    <result column="phone_type" property="phoneType" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="send_success" property="sendSuccess" jdbcType="SMALLINT" />
+    <result column="send_version" property="sendVersion" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, receiver_mobile, member_mobile, member_id, sms_source, phone_type ,create_time,send_success,send_version
+  </sql>
+  
+   <insert id="sendSmsAudit" parameterType="net.okdi.api.entity.ParSmsAudit">
+	insert into par_sms_audit ( <include refid="Base_Column_List"/> ) 
+	values 
+	<foreach collection="list" item="item" index="index" separator=",">
+	  (#{item.id},#{item.receiverMobile},#{item.memberMobile},#{item.memberId},#{item.smsSource},
+	  #{item.phoneType},#{item.createTime},#{item.sendSuccess},#{item.sendVersion})
+	</foreach>
+  </insert>
+ 
+</mapper>

@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ParParcelconnectionMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParParcelconnection" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="par_id" property="parId" jdbcType="BIGINT" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="exp_member_id" property="expMemberId" jdbcType="BIGINT" />
+    <result column="task_id" property="taskId" jdbcType="BIGINT" />
+    <result column="cosign_flag" property="cosignFlag" jdbcType="SMALLINT" />
+    <result column="exp_member_success_flag" property="expMemberSuccessFlag" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, par_id, net_id, comp_id, exp_member_id, task_id, cosign_flag, exp_member_success_flag, 
+    create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from par_parcelconnection
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from par_parcelconnection
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ParParcelconnection" >
+    insert into par_parcelconnection (id, par_id, net_id, 
+      comp_id, exp_member_id, task_id, 
+      cosign_flag, exp_member_success_flag, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{parId,jdbcType=BIGINT}, #{netId,jdbcType=BIGINT}, 
+      #{compId,jdbcType=BIGINT}, #{expMemberId,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, 
+      #{cosignFlag,jdbcType=SMALLINT}, #{expMemberSuccessFlag,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.ParParcelconnection" >
+    insert into par_parcelconnection
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parId != null" >
+        par_id,
+      </if>
+      <if test="netId != null" >
+        net_id,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="expMemberId != null" >
+        exp_member_id,
+      </if>
+      <if test="taskId != null" >
+        task_id,
+      </if>
+      <if test="cosignFlag != null" >
+        cosign_flag,
+      </if>
+      <if test="expMemberSuccessFlag != null" >
+        exp_member_success_flag,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="parId != null" >
+        #{parId,jdbcType=BIGINT},
+      </if>
+      <if test="netId != null" >
+        #{netId,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId != null" >
+        #{expMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="taskId != null" >
+        #{taskId,jdbcType=BIGINT},
+      </if>
+      <if test="cosignFlag != null" >
+        #{cosignFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="expMemberSuccessFlag != null" >
+        #{expMemberSuccessFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ParParcelconnection" >
+    update par_parcelconnection
+    <set >
+      <if test="parId != null" >
+        par_id = #{parId,jdbcType=BIGINT},
+      </if>
+      <if test="netId != null" >
+        net_id = #{netId,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberId != null" >
+        exp_member_id = #{expMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="taskId != null" >
+        task_id = #{taskId,jdbcType=BIGINT},
+      </if>
+      <if test="cosignFlag != null" >
+        cosign_flag = #{cosignFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="expMemberSuccessFlag != null" >
+        exp_member_success_flag = #{expMemberSuccessFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ParParcelconnection" >
+    update par_parcelconnection
+    set par_id = #{parId,jdbcType=BIGINT},
+      net_id = #{netId,jdbcType=BIGINT},
+      comp_id = #{compId,jdbcType=BIGINT},
+      exp_member_id = #{expMemberId,jdbcType=BIGINT},
+      task_id = #{taskId,jdbcType=BIGINT},
+      cosign_flag = #{cosignFlag,jdbcType=SMALLINT},
+      exp_member_success_flag = #{expMemberSuccessFlag,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="queryTask" resultType="java.util.Map">
+			SELECT
+				m.member_id memberId,
+				m.member_name memberName,
+				ifnull(c.takeCount,0) takeCount,
+				ifnull(d.sendCont,0) sendCont
+			FROM
+				bas_employee_relation b
+			LEFT JOIN member_info m ON b.member_id = m.member_id
+			LEFT JOIN (
+				SELECT
+					count(*) takeCount,
+					exp_member_id memberId
+				FROM
+					`par_parcelconnection`
+				WHERE
+					cosign_flag = 1
+					and create_time BETWEEN #{startTime} and #{endTime}
+					and exp_member_success_flag = 1
+				GROUP BY
+					exp_member_Id
+			) c ON b.member_id = c.memberId
+			LEFT JOIN (
+				SELECT
+					count(*) sendCont,
+					exp_member_id memberId
+				FROM
+					`par_parcelconnection`
+				WHERE
+					cosign_flag = 2
+					and create_time BETWEEN #{startTime} and #{endTime}
+					and exp_member_success_flag = 1
+				GROUP BY
+					exp_member_Id
+			) d ON b.member_id = d.memberId
+			WHERE
+				1 = 1
+			AND b.comp_id = #{compId}
+			AND m.member_name IS NOT NULL
+			AND m.member_name != ''
+			<if test="memberId!=-1">
+			and m.member_id = #{memberId}
+			</if>
+			order by m.create_time desc
+			limit #{page},#{pageSize}
+  </select>
+  <select id="queryTaskCount" resultType="java.lang.Long">
+			SELECT
+				count(*) totalCount
+			FROM
+				bas_employee_relation b
+			LEFT JOIN member_info m ON b.member_id = m.member_id
+			LEFT JOIN (
+				SELECT
+					count(*) takeCount,
+					exp_member_id memberId
+				FROM
+					`par_parcelconnection`
+				WHERE
+					cosign_flag = 1
+					and create_time BETWEEN #{startTime} and #{endTime}
+					and exp_member_success_flag = 1
+				GROUP BY
+					exp_member_Id
+			) c ON b.member_id = c.memberId
+			LEFT JOIN (
+				SELECT
+					count(*) sendCont,
+					exp_member_id memberId
+				FROM
+					`par_parcelconnection`
+				WHERE
+					cosign_flag = 2
+					and create_time BETWEEN #{startTime} and #{endTime}
+					and exp_member_success_flag = 1
+				GROUP BY
+					exp_member_Id
+			) d ON b.member_id = d.memberId
+			WHERE
+				1 = 1
+			AND b.comp_id = #{compId}
+			AND m.member_name IS NOT NULL
+			AND m.member_name != ''
+			<if test="memberId!=-1">
+			and m.member_id = #{memberId}
+			</if>
+			
+  </select>
+  <select id="queryTaskDetail" resultType="java.util.Map">
+  SELECT
+	ifnull(a.takeCount,0)takeCount,
+	ifnull(b.sendCount,0)sendCount,
+	ifnull(a.createTime,b.createTime) createTime
+  FROM
+  (
+  SELECT
+	CAST(DATE_FORMAT(create_time, '%Y.%m.%d') AS CHAR ) createtime
+FROM
+	par_parcelconnection
+WHERE
+	exp_member_id = #{memberId}
+GROUP BY
+	createTime) c LEFT JOIN
+	(
+		SELECT
+			count(*) takeCount,
+			CAST(
+				DATE_FORMAT(create_time, '%Y.%m.%d') AS CHAR
+			) createTime
+		FROM
+			par_parcelconnection
+		WHERE
+			exp_member_id = #{memberId}
+			and create_time  between #{startTime} and #{endTime}
+		AND cosign_flag = 1
+		and exp_member_success_flag = 1
+		GROUP BY
+			createTime
+	) a on c.createTime = a.createTime
+LEFT JOIN (
+	SELECT
+		count(*) sendCount,
+		CAST(
+			DATE_FORMAT(create_time, '%Y.%m.%d') AS CHAR
+		) createTime
+	FROM
+		par_parcelconnection
+	WHERE
+		exp_member_id = #{memberId}
+		and create_time between #{startTime} and #{endTime}
+		and exp_member_success_flag = 1
+	AND cosign_flag = 2
+	GROUP BY
+		createTime
+) b ON c.createTime = b.createTime
+ORDER BY c.createTime 
+  limit #{page},#{pageSize}
+    </select>
+    <select id="queryTaskDetailCount" resultType="java.lang.Long">
+  SELECT
+	count(*) totalCount
+  FROM
+	(
+		SELECT
+			count(*) takeCount,
+			CAST(
+				DATE_FORMAT(create_time, '%Y.%m.%d') AS CHAR
+			) createTime
+		FROM
+			par_parcelconnection
+		WHERE
+			exp_member_id = #{memberId}
+			and create_time  between #{startTime} and #{endTime}
+		AND cosign_flag = 1
+		and exp_member_success_flag = 1
+		GROUP BY
+			createTime
+	) a
+LEFT JOIN (
+	SELECT
+		count(*) sendCount,
+		CAST(
+			DATE_FORMAT(create_time, '%Y.%m.%d') AS CHAR
+		) createTime
+	FROM
+		par_parcelconnection
+	WHERE
+		exp_member_id = #{memberId}
+		and create_time between #{startTime} and #{endTime}
+		and exp_member_success_flag = 1
+	AND cosign_flag = 2
+	GROUP BY
+		createTime
+) b ON a.createTime = b.createTime
+ORDER BY a.createTime 
+
+    </select>
+    
+    <select id="queryParcelConnectionByParId" resultType="net.okdi.api.entity.ParParcelconnection">
+    	select 
+    <include refid="Base_Column_List" />
+    from par_parcelconnection
+    where par_id = #{parId,jdbcType=BIGINT}
+    </select>
+    
+    <delete id="deleteByExpMemberId" parameterType="java.lang.Long" >
+      delete from par_parcelconnection
+      where exp_member_id = #{expMemberId,jdbcType=BIGINT}
+   </delete>
+</mapper>

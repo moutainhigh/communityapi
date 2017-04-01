@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="publicapi"
+  id="myeclipse.1412754595884"
+  context-root="/publicapi"
+  j2ee-spec="5.0"
+  archive="publicapi.war">
+  <attributes>
+    <attribute name="webrootdir" value="/src/main/webapp" />
+  </attributes>
+</project-module>
+

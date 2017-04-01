@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.BasNetInfoMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasNetInfo" >
+    <id column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="net_name" property="netName" jdbcType="VARCHAR" />
+    <result column="net_type" property="netType" jdbcType="SMALLINT" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bound_comp_id" property="boundCompId" jdbcType="BIGINT" />
+    <result column="net_num" property="netNum" jdbcType="VARCHAR" />
+    <result column="delete_mark" property="deleteMark" jdbcType="SMALLINT" />
+    <result column="net_status" property="netStatus" jdbcType="SMALLINT" />
+    <result column="net_regist_way" property="netRegistWay" jdbcType="SMALLINT" />
+    <result column="first_letter" property="firstLetter" jdbcType="CHAR" />
+    <result column="verify_code_flag" property="verifyCodeFlag" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+    <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    net_id,                
+    net_name,
+    net_type,
+    description, 
+    bound_comp_id, 
+    net_num, 
+    delete_mark, 
+    net_status, 
+    net_regist_way, 
+    first_letter, 
+    verify_code_flag, 
+    url, 
+    telephone, 
+    modified_time, 
+    code
+  </sql>
+  <select id="queryNetInfo" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from bas_netinfo where delete_mark=1 and net_status=1 and code is not null
+  </select>
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_netinfo
+    where net_id = #{netId,jdbcType=BIGINT}
+  </select>
+    <select id="queryNetInfoAll" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from bas_netinfo
+  </select>
+  <update id="updateNetInfo"  parameterType="java.util.Map">
+  update bas_netinfo set
+  set net_id = #{netId}
+		<if test="netName != null">
+			,net_name=#{netName}
+		</if>
+		<if test="netType != null">
+			,net_type=#{netType}
+		</if>
+		<if test="description != null">
+			,description=#{description}
+		</if>
+		<if test="netNum != null">
+			,net_num=#{netNum}
+		</if>
+		<if test="url != null">
+			,url=#{url}
+		</if>
+		<if test="telephone != null">
+			,telephone=#{telephone}
+		</if>
+		<if test="code != null">
+			,code=#{code}
+		</if>		
+		where net_id = #{netId}
+  </update>
+</mapper>

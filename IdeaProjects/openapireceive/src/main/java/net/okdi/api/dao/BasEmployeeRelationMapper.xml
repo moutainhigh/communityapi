@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasEmployeeRelationMapper" >
+ <resultMap id="BasEmployeeRelationMap" type="net.okdi.api.entity.BasEmployeeRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="SMALLINT" />
+    <result column="area_color" property="areaColor" jdbcType="CHAR" />
+    <result column="employee_work_status_flag" property="employeeWorkStatusFlag" jdbcType="SMALLINT" />
+    <result column="review_task_receiving_flag" property="reviewTaskReceivingFlag" jdbcType="SMALLINT" />
+    <result column="margin" property="margin" jdbcType="BIGINT" />
+    <result column="credit_limit" property="creditLimit" jdbcType="BIGINT" />
+     <result column="member_name" property="memberName" jdbcType="BIGINT" />
+  </resultMap>
+<!-- 查询bas_employee_relation关系表中是否存在memberId与comId的记录 -->
+ <select id="queryCountById" resultMap="BasEmployeeRelationMap" parameterType="java.util.Map">
+ 	select 
+ 		a.member_id as memberId,
+ 		a.role_id as roleId,
+ 		a.comp_id as compId 
+ 			from bas_employee_relation a 
+ 			where 1=1 
+		 		<if test="memberId!=null and memberId!=''">
+					and a.member_id=#{memberId}
+				</if>
+				<if test="compId!=null and compId!=''">
+					and a.comp_id=#{compId}
+				</if>
+ </select>
+ <!-- 网点资料注册的时候添加到本站点一条初始化的站长记录  -->
+ <insert id="insertCompInfo" parameterType="net.okdi.api.entity.BasEmployeeRelation" >
+  insert into bas_employee_relation(id,
+ 									member_id,
+ 									comp_id,
+ 									role_id,
+ 									area_color,
+ 									employee_work_status_flag,
+ 									review_task_receiving_flag)
+ 							  values(#{relationId},
+		 							  #{memberId},
+		 							  #{compId},
+		 							  #{roleId},
+		 							  #{areaColor},
+		 							  1,
+		 							  1)									
+ </insert>
+ <update id="updateCompInfo" parameterType="net.okdi.api.entity.BasEmployeeRelation">
+ 	update bas_employee_relation set
+								 	 member_id=#{memberId},
+								 	 comp_id=#{compId},
+								 	 role_id=1
+								 	 where 1=1
+								 	 and member_id=#{memberId}
+ </update>
+ <update id="doEditComp" parameterType="java.util.HashMap">
+ 	update bas_employee_relation set comp_id=#{compIdNew} where comp_id=#{compIdOld}
+ </update>
+ <update id="doEditMemberInfo" parameterType="java.util.HashMap" >
+ 	update bas_employee_relation set 
+ 	role_id=#{roleId}
+ 	<if test ="employeeWorkStatusFlag !=null and employeeWorkStatusFlag !=''">
+ 	,employee_work_status_flag=#{employeeWorkStatusFlag}
+ 	</if>
+ 	<if test ="areaColor !=null and areaColor !=''">
+ 	,area_color=#{areaColor}
+ 	</if>
+ 	where 1=1 and member_id=#{memberId}
+ </update>
+ <delete id="deleteMemberInfo" parameterType="long">
+ 	delete from bas_employee_relation where member_id=#{memberId}
+ </delete>
+ <select id = "queryMemberIdByCompId" parameterType="java.lang.Long" resultMap="BasEmployeeRelationMap">
+ 	select a.member_id from bas_employee_relation a where a.comp_id=#{compId} and a.role_id=1
+ </select>
+ <insert id = "doAddRelation" parameterType="java.util.HashMap">
+ insert into bas_employee_relation(
+ 									id,
+ 									member_id,
+ 									comp_id,
+ 									role_id,
+ 									area_color,
+ 									employee_work_status_flag,
+									review_task_receiving_flag)
+									values(
+									#{id},
+									#{memberId},
+									#{compId},
+									#{roleId},
+									#{areaColor},
+									 1,
+									 1
+									)
+ </insert>
+ <select id = "getMemInfoByCompId" parameterType="java.lang.Long" resultType="java.util.HashMap">
+ 	 	select 
+ 			m.member_id as memberId,
+ 			m.member_name as memberName,
+ 			'' as responsible,
+ 			b.comp_id as parentId,
+			'0' as compTypeNum,
+			b.role_id as roleId,
+			m.member_phone as phone,
+			b.area_color as areaColor
+ 			from bas_employee_relation b LEFT JOIN member_info m 
+			on b.member_id= m.member_id 
+			where b.comp_id=#{parentId} and m.member_name is not null and m.member_name !='' order by m.create_time asc
+ </select>
+ <select id = "queryMemberForComp" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+ select a.member_id as memberId,
+ 		m.member_name as memberName,
+ 		a.role_id as roleId,
+ 		a.area_color as areaColor,
+ 		m.member_phone as memberPhone,
+		b.comp_id as compId
+ from bas_employee_relation a LEFT JOIN bas_compinfo b on a.comp_id=b.comp_id LEFT JOIN member_info m 
+	on a.member_id=m.member_id where a.comp_id=#{compId}
+	<if test="roleId !=null and roleId !=''">
+		and b.comp_type_num=#{roleId}
+	</if>
+
+ </select>
+ 
+ <select id="queryCompIdByMemberId" parameterType="java.lang.Long" resultMap="BasEmployeeRelationMap">
+ 	select a.comp_id,a.role_id from bas_employee_relation a where a.member_id=#{memberId}
+ </select>
+ 
+ 	<select id="getTotalNum" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+ 		SELECT
+			count(*)
+		FROM
+			bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+			b.audit_item = 2
+	</select>
+	
+	<select id="getCurrentMonthNum" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+			DATE_FORMAT(m.create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m') and b.audit_item = 2
+	</select>
+	
+	<select id="getMonthOfDaysNum" parameterType="java.lang.Integer" resultType="java.util.Map">
+		SELECT
+			COUNT(*) AS total,
+			DAYOFMONTH(m.create_time) days
+		FROM
+			bas_employeeaudit b
+		LEFT JOIN member_info m ON b.member_id = m.member_id
+		WHERE
+			m.create_time > DATE_SUB(
+				CURDATE(),
+				INTERVAL DAY (CURDATE()) - 1 DAY
+			)
+			and b.audit_item = 2
+		GROUP BY
+			days
+	</select>
+	<select id="findByMemberId" parameterType="java.lang.Long" resultType="java.lang.Long">
+ 		select
+			id from bas_employee_relation where member_id =#{memberId}
+	</select>
+	<select id="findCompIdByMemberId" parameterType="java.lang.Long" resultType="java.lang.Long">
+		select audit_comp as comp_id from bas_employeeaudit where member_id = #{actorMemberId} and audit_item = 2
+	</select>
+	
+	<update id="editBasEmployeeaudit" parameterType="java.util.HashMap" >
+ 	update bas_employeeaudit set 
+ 	application_role_type=#{roleId}
+ 	where 1=1 and member_id=#{memberId}
+ </update>
+ <select id="findMemberInfoById" resultType="java.util.HashMap">
+    SELECT
+	w.member_name AS memberName,
+	w.member_phone AS memberPhone
+    FROM
+	  member_info w
+    WHERE
+	   w.member_id = #{memberId}
+ </select>
+ <update id="updateBascompbusiness">
+  UPDATE bas_compbusiness
+    SET responsible=#{map.memberName},
+    responsible_telephone=#{map.memberPhone}
+    WHERE
+	comp_id =#{map.compId}
+ 
+ 
+ </update>
+</mapper>

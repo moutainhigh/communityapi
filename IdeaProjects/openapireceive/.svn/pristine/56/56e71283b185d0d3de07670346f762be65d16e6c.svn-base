@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpFirstPriceMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpFirstPrice" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="group_id" property="groupId" jdbcType="BIGINT" />
+    <result column="first_freight" property="firstFreight" jdbcType="DECIMAL" />
+    <result column="first_weight" property="firstWeight" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, comp_id, net_id, group_id, first_freight, first_weight
+  </sql>
+  <select id="getPriceListByGroupId" parameterType="java.util.Map" resultType="java.util.HashMap">
+     select  cp.first_price_id firstPriceId,cast(first_freight as char) firstFreight,cast(first_weight as char) firstWeight,concat('[',
+  	 group_concat(distinct concat('{"PRICE":"',CONTINUE_FREIGHT,'/'),concat(CONTINUE_WEIGHT,'"'),concat(',"WEIGHT":"',weight_min),
+  	 concat('-',IFNULL(weight_max,''),'"}')  order by weight_min separator ','),']') continueInfo
+  	,CONCAT(",",group_concat(distinct arrive_address_id),",") as city from exp_continue_price cp
+  	left join  exp_price_address pa on pa.first_price_id=cp.first_price_id
+	left join exp_first_price fp ON cp.first_price_id=fp.id WHERE group_id = #{groupId} and comp_id = #{compId}
+  	group by cp.first_price_id
+  </select>
+  <delete id="batchDeleteById" parameterType="java.util.List" >
+    delete from exp_first_price where id in 
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+  </delete>
+  <select id="getIdByGroupId" parameterType="java.util.Map" resultType="java.lang.Long">
+     select id from exp_first_price WHERE group_id = #{groupId} and comp_id = #{compId}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpFirstPrice" >
+    insert into exp_first_price (id, comp_id, net_id, 
+      group_id, first_freight, first_weight
+      )
+    values (#{id,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{netId,jdbcType=BIGINT}, 
+      #{groupId,jdbcType=BIGINT}, #{firstFreight,jdbcType=DECIMAL}, #{firstWeight,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="batchSaveFristPrice" parameterType="net.okdi.api.entity.ExpFirstPrice" >
+    insert into exp_first_price (id, comp_id, net_id, 
+      group_id, first_freight, first_weight
+      )
+    values
+    <foreach collection="list" item="item" index="index" separator="," >
+    (#{item.id,jdbcType=BIGINT}, #{item.compId,jdbcType=BIGINT}, #{item.netId,jdbcType=BIGINT}, 
+      #{item.groupId,jdbcType=BIGINT}, #{item.firstFreight,jdbcType=DECIMAL}, #{item.firstWeight,jdbcType=DECIMAL}
+      )
+    </foreach>  
+  </insert>
+</mapper>

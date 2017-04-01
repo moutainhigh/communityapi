@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.ParParcelconnectionMapperV4" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ParParcelconnection" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="par_id" property="parId" jdbcType="BIGINT" />
+    <result column="net_id" property="netId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="exp_member_id" property="expMemberId" jdbcType="BIGINT" />
+    <result column="task_id" property="taskId" jdbcType="BIGINT" />
+    <result column="cosign_flag" property="cosignFlag" jdbcType="SMALLINT" />
+    <result column="exp_member_success_flag" property="expMemberSuccessFlag" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, par_id, net_id, comp_id, exp_member_id, task_id, cosign_flag, exp_member_success_flag, 
+    create_time
+  </sql>
+  
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberContactCommMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberContactComm" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comm_tag_id" property="commTagId" jdbcType="BIGINT" />
+    <result column="contact_id" property="contactId" jdbcType="BIGINT" />
+    <result column="comm_code" property="commCode" jdbcType="VARCHAR" />
+    <result column="is_default" property="isDefault" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, comm_tag_id, contact_id, comm_code, is_default, create_time
+  </sql>
+  <insert id="batchAddMemberContactComm" parameterType="java.util.List">
+  insert into 
+  member_contact_comm(
+  id, 
+  comm_tag_id, 
+  contact_id, 
+  comm_code, 
+  is_default,
+  create_time
+  )values 
+  <foreach collection="list" item="item" index="index" separator="," >  
+       (
+       #{item.id},
+        #{item.tagId},
+        #{item.contactId},
+        #{item.num},
+        #{item.isDefault},
+        #{item.createTime}
+        
+        ) 
+    </foreach>  
+  </insert>
+  <delete id="deleteMemberContactComm" parameterType="java.util.Map">
+  delete from member_contact_comm where 
+  contact_id = #{contactId}
+  <if test="tagId!=null">
+  and comm_tag_id = #{tagId}
+  </if>
+  </delete>
+  <select id="getContactCommInfo" parameterType="java.lang.Long" resultType="java.util.Map">
+  select 
+  a.comm_tag_id as id, 
+  a.contact_id , 
+  a.comm_code , 
+  b.data_type as comm_tag_id,
+  b.custom_name, 
+  is_default 
+  from 
+  member_contact_comm a
+  left join member_comm_type_tag_info b  on a.comm_tag_id = b.id   where contact_id= #{contactId} and comm_tag_id <![CDATA[<>]]> 1     
+  </select>
+  <delete id="deleteCommByTagId" parameterType="java.lang.Long">
+  delete from member_contact_comm where comm_tag_id = #{tagId}
+  </delete>
+  <update id="updateCommIdByTagId">
+  update member_contact_comm set comm_tag_id = 14186061385696256 where comm_tag_id = #{tagId}
+  </update>
+</mapper>

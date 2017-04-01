@@ -1,0 +1,6 @@
+errCode：1 系统错误，message ： 直接返回异常信息（DB，运行时，类型转换，空指针）
+errCode： 0 逻辑错误，message ：反馈 错误信息，如用户未登录 、输入项不完整、传入格式不对等
+
+errSubCode ： 类名 + 错误序号。系统错误时，errSubCode为空。
+
+{"success":false,"errCode":0,"errSubCode":"SendParcelsAction.queryDefultAddress.001","message":"XX信息不能为空"}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.PromoRecordMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.PromoRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="member_src" property="memberSrc" jdbcType="SMALLINT" />
+    <result column="promo_type" property="promoType" jdbcType="SMALLINT" />
+    <result column="product_type" property="productType" jdbcType="SMALLINT" />
+    <result column="promo_oper" property="promoOper" jdbcType="SMALLINT" />
+    <result column="promo_reg_member_Id" property="promoRegMemberId" jdbcType="BIGINT" />
+    <result column="user_agent" property="userAgent" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, member_id, member_src, promo_type, product_type, promo_oper, promo_reg_member_Id, 
+    user_agent, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from promo_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.PromoRecord" >
+    insert into promo_record (id, member_id, member_src, 
+      promo_type, product_type, promo_oper, 
+      promo_reg_member_Id, user_agent, create_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{memberSrc,jdbcType=SMALLINT}, 
+      #{promoType,jdbcType=SMALLINT}, #{productType,jdbcType=SMALLINT}, #{promoOper,jdbcType=SMALLINT}, 
+      #{promoRegMemberId,jdbcType=VARCHAR}, #{userAgent,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+</mapper>

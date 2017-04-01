@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.BasCompBusinessMapperV2" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasCompbusiness" >
+    <id column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="comp_synopsis" property="compSynopsis" jdbcType="VARCHAR" />
+    <result column="main_proser" property="mainProser" jdbcType="VARCHAR" />
+    <result column="main_industry" property="mainIndustry" jdbcType="VARCHAR" />
+    <result column="business_mode" property="businessMode" jdbcType="VARCHAR" />
+    <result column="regist_capital" property="registCapital" jdbcType="DECIMAL" />
+    <result column="found_date" property="foundDate" jdbcType="DATE" />
+    <result column="enterprise_type" property="enterpriseType" jdbcType="VARCHAR" />
+    <result column="business_regist" property="businessRegist" jdbcType="SMALLINT" />
+    <result column="comp_license_num" property="compLicenseNum" jdbcType="VARCHAR" />
+    <result column="web_index" property="webIndex" jdbcType="VARCHAR" />
+    <result column="special_service" property="specialService" jdbcType="VARCHAR" />
+    <result column="site_quantity" property="siteQuantity" jdbcType="BIGINT" />
+    <result column="business_license_num" property="businessLicenseNum" jdbcType="VARCHAR" />
+    <result column="responsible" property="responsible" jdbcType="VARCHAR" />
+    <result column="responsible_telephone" property="responsibleTelephone" jdbcType="VARCHAR" />
+    <result column="responsible_id_num" property="responsibleIdNum" jdbcType="VARCHAR" />
+    <result column="verify_image_type" property="verifyImageType" jdbcType="SMALLINT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    comp_id, comp_synopsis, main_proser, main_industry, business_mode, regist_capital, 
+    found_date, enterprise_type, business_regist, comp_license_num, web_index, special_service, 
+    site_quantity, business_license_num, responsible, responsible_telephone, responsible_id_num, 
+    verify_image_type
+  </sql>
+  
+  <delete id="deleteBusinessMessage">
+   delete from bas_compbusiness where comp_id=#{compId}
+ </delete>
+ 
+ <insert id="insertMessage" parameterType="net.okdi.api.entity.BasCompbusiness" >
+    insert INTO bas_compbusiness(
+	  comp_id,
+	  responsible,
+	  responsible_telephone,
+	  responsible_id_num,
+	  business_license_num
+	)VALUES(
+	   #{compId}, #{responsible}, #{responsibleTelephone}, #{responsibleIdNum},#{businessLicenseNum}
+	   
+	)
+
+  </insert>
+ 
+ 
+</mapper>

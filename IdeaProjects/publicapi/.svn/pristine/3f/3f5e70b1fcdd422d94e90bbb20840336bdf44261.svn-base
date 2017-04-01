@@ -1,0 +1,10 @@
+/newRegister/validate=true
+/newRegister/sendSmsCode=true
+/newRegister/validateVerify=true
+/newRegister/register=true
+/newRegister/getBackPwd=true
+/newRegister/login=true
+/newRegister/loginOut=true
+/expBasGateway/getNets=true
+/phonelogin/getPushSwitch=true
+/phonelogin/phoneLoginIn=true

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.DicAddressMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.DicAddress" >
+    <id column="address_id" property="addressId" jdbcType="BIGINT" />
+    <result column="address_num" property="addressNum" jdbcType="VARCHAR" />
+    <result column="address_name" property="addressName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="address_level" property="addressLevel" jdbcType="SMALLINT" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="address_type" property="addressType" jdbcType="SMALLINT" />
+    <result column="address_source" property="addressSource" jdbcType="SMALLINT" />
+    <result column="use_flag" property="useFlag" jdbcType="SMALLINT" />
+    <result column="address_spell" property="addressSpell" jdbcType="VARCHAR" />
+    <result column="address_abridge" property="addressAbridge" jdbcType="VARCHAR" />
+    <result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+    <resultMap id="DicAddressaidMap" type="net.okdi.api.entity.DicAddressaid" >
+    <id column="ADDRESS_ID" property="addressId" jdbcType="BIGINT" />
+    <result column="PARENT_ID" property="parentId" jdbcType="BIGINT" />
+    <result column="COUNTRY_ID" property="countryId" jdbcType="BIGINT" />
+    <result column="COUNTRY_NAME" property="countryName" jdbcType="VARCHAR" />
+    <result column="PROVINCE_ID" property="provinceId" jdbcType="BIGINT" />
+    <result column="PROVINCE_NAME" property="provinceName" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="BIGINT" />
+    <result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+    <result column="COUNTY_ID" property="countyId" jdbcType="BIGINT" />
+    <result column="COUNTY_NAME" property="countyName" jdbcType="VARCHAR" />
+    <result column="TOWN_ID" property="townId" jdbcType="BIGINT" />
+    <result column="TOWN_NAME" property="townName" jdbcType="VARCHAR" />
+    <result column="VILLAGE_ID" property="villageId" jdbcType="BIGINT" />
+    <result column="VILLAGE_NAME" property="villageName" jdbcType="VARCHAR" />
+    <result column="ZIP_CODE" property="zipCode" jdbcType="VARCHAR" />
+    <result column="ADDRESS_NAME" property="addressName" jdbcType="VARCHAR" />
+    <result column="ADDRESS_LEVEL" property="addressLevel" jdbcType="SMALLINT" />
+    <result column="DISTRICT_ID" property="districtId" jdbcType="BIGINT" />
+    <result column="DISTRICT_NAME" property="districtName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  
+  <sql id="Base_Column_List" >
+    address_id, address_num, address_name, parent_id, address_level, longitude, latitude, 
+    address_type, address_source, use_flag, address_spell, address_abridge, modified_time
+  </sql>
+  
+  <sql id="getObjectByPrimaryKey_List" >
+  ADDRESS_ID,PARENT_ID,COUNTRY_ID,COUNTRY_NAME,PROVINCE_ID,PROVINCE_NAME,
+  CITY_ID,CITY_NAME,COUNTY_ID,COUNTY_NAME,TOWN_ID,TOWN_NAME,VILLAGE_ID,
+  VILLAGE_NAME,ZIP_CODE,ADDRESS_NAME,ADDRESS_LEVEL,DISTRICT_ID,DISTRICT_NAME
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dic_address
+    where address_id = #{addressId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dic_address
+    where address_id = #{addressId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.DicAddress" >
+    insert into dic_address (address_id, address_num, address_name, 
+      parent_id, address_level, longitude, 
+      latitude, address_type, address_source, 
+      use_flag, address_spell, address_abridge, 
+      modified_time)
+    values (#{addressId,jdbcType=BIGINT}, #{addressNum,jdbcType=VARCHAR}, #{addressName,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=BIGINT}, #{addressLevel,jdbcType=SMALLINT}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, #{addressType,jdbcType=SMALLINT}, #{addressSource,jdbcType=SMALLINT}, 
+      #{useFlag,jdbcType=SMALLINT}, #{addressSpell,jdbcType=VARCHAR}, #{addressAbridge,jdbcType=VARCHAR}, 
+      #{modifiedTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.DicAddress" >
+    insert into dic_address
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="addressId != null" >
+        address_id,
+      </if>
+      <if test="addressNum != null" >
+        address_num,
+      </if>
+      <if test="addressName != null" >
+        address_name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="addressLevel != null" >
+        address_level,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+      <if test="addressType != null" >
+        address_type,
+      </if>
+      <if test="addressSource != null" >
+        address_source,
+      </if>
+      <if test="useFlag != null" >
+        use_flag,
+      </if>
+      <if test="addressSpell != null" >
+        address_spell,
+      </if>
+      <if test="addressAbridge != null" >
+        address_abridge,
+      </if>
+      <if test="modifiedTime != null" >
+        modified_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="addressId != null" >
+        #{addressId,jdbcType=BIGINT},
+      </if>
+      <if test="addressNum != null" >
+        #{addressNum,jdbcType=VARCHAR},
+      </if>
+      <if test="addressName != null" >
+        #{addressName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="addressLevel != null" >
+        #{addressLevel,jdbcType=SMALLINT},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="addressType != null" >
+        #{addressType,jdbcType=SMALLINT},
+      </if>
+      <if test="addressSource != null" >
+        #{addressSource,jdbcType=SMALLINT},
+      </if>
+      <if test="useFlag != null" >
+        #{useFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="addressSpell != null" >
+        #{addressSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="addressAbridge != null" >
+        #{addressAbridge,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null" >
+        #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.DicAddress" >
+    update dic_address
+    <set >
+      <if test="addressNum != null" >
+        address_num = #{addressNum,jdbcType=VARCHAR},
+      </if>
+      <if test="addressName != null" >
+        address_name = #{addressName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="addressLevel != null" >
+        address_level = #{addressLevel,jdbcType=SMALLINT},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="addressType != null" >
+        address_type = #{addressType,jdbcType=SMALLINT},
+      </if>
+      <if test="addressSource != null" >
+        address_source = #{addressSource,jdbcType=SMALLINT},
+      </if>
+      <if test="useFlag != null" >
+        use_flag = #{useFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="addressSpell != null" >
+        address_spell = #{addressSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="addressAbridge != null" >
+        address_abridge = #{addressAbridge,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null" >
+        modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where address_id = #{addressId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.DicAddress" >
+    update dic_address
+    set address_num = #{addressNum,jdbcType=VARCHAR},
+      address_name = #{addressName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      address_level = #{addressLevel,jdbcType=SMALLINT},
+      longitude = #{longitude,jdbcType=DECIMAL},
+      latitude = #{latitude,jdbcType=DECIMAL},
+      address_type = #{addressType,jdbcType=SMALLINT},
+      address_source = #{addressSource,jdbcType=SMALLINT},
+      use_flag = #{useFlag,jdbcType=SMALLINT},
+      address_spell = #{addressSpell,jdbcType=VARCHAR},
+      address_abridge = #{addressAbridge,jdbcType=VARCHAR},
+      modified_time = #{modifiedTime,jdbcType=TIMESTAMP}
+    where address_id = #{addressId,jdbcType=BIGINT}
+  </update>
+  
+ <!-- <select id="DicAddressByparseAddr" resultMap="BaseResultMap" parameterType="java.util.Map" >
+	SELECT 
+      	a.address_name, 
+		a.latitude, 
+      	a.LONGITUDE, 
+      	a.address_id, 
+     	round( 
+     	6378.138 * 2 * asin(
+      			sqrt( 
+     				pow( 
+       					sin( 
+     						( 
+       							#{lat} * pi() / 180 - a.latitude * pi() / 180 
+     						) / 2 
+      					), 
+     					2 
+      				) + cos(	#{lat} * pi() / 180) * cos(a.latitude * pi() / 180) * pow(
+     					sin( 
+      					( 
+      							#{lng} * pi() / 180 - a.longitude* pi() / 180 
+     					) / 2 
+       					), 
+     					2 
+      				) 
+      		) 
+     		) * 1000 
+   	) c 
+       FROM 
+     			dic_address a 
+      		WHERE 
+      			a.LONGITUDE BETWEEN #{minlng}
+     		AND #{maxlng}
+   	AND a.LATITUDE BETWEEN #{minlat}
+      		AND #{maxlat}
+   ORDER BY 
+       	c limit 0,1
+  </select> -->
+  
+  <select id="DicAddressByparseAddr" resultType="java.util.Map" parameterType="java.util.Map" >
+	SELECT 
+      	ifnull(a.address_name,'') as addressName, 
+		ifnull(a.latitude,'') as lat, 
+      	ifnull(a.LONGITUDE,'') as lng, 
+      	ifnull(a.address_id,'') as addressId
+       FROM 
+     			dic_address a 
+      		WHERE 
+      			a.LONGITUDE BETWEEN #{minlng}
+     		AND #{maxlng}
+   	AND a.LATITUDE BETWEEN #{minlat}
+      		AND #{maxlat}
+     
+  </select>
+  
+    <select id="getObjectByPrimaryKey" resultMap="DicAddressaidMap" parameterType="java.lang.Long" >
+    select 
+	<include refid="getObjectByPrimaryKey_List" />    
+    from DIC_ADDRESSAID
+    where  ADDRESS_ID = #{addressId}
+  </select>
+  <!-- 获取省份信息 -->
+  <select id="queryProvinceInfo" resultMap="BaseResultMap" >
+	SELECT
+		address_id,
+		address_name
+	FROM
+		dic_address
+	WHERE
+		use_flag = 1
+	AND address_level = 2
+	ORDER BY
+	address_id
+  </select>
+  
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ParLogisticTraceMapper">
+	<resultMap id="resultMap" type="net.okdi.api.entity.ParLogisticTrace">
+		<id column="ID" property="id" />
+		<result column="CAS_MEMBER_ID" property="casMemberId" />
+		<result column="NET_ID" property="netId" />
+		<result column="EXP_WAYBILL_NUM" property="expWaybillNum" />
+		<result column="PAR_ID" property="parId" />
+		<result column="TRACE_STATUS" property="traceStatus" />
+		<result column="TRACE_DETAIL" property="traceDetail" />
+		<result column="MODIFY_TIME" property="modifyTime" />
+		<result column="SEND_NOTICE_FLAG" property="sendNoticeFlag" />
+		<result column="CLIENT_TRACE_STATU" property="clientTraceStatu" />
+		<result column="CLIENT_NET_NUM" property="clientNetNum" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, CAS_MEMBER_ID,NET_ID,EXP_WAYBILL_NUM,PAR_ID,
+		TRACE_STATUS,TRACE_DETAIL,MODIFY_TIME,SEND_NOTICE_FLAG,
+		CLIENT_TRACE_STATU,CLIENT_NET_NUM
+  	</sql>
+	<!-- 更新 -->
+	<update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ParLogisticTrace">
+		update par_logistic_trace
+		<set>
+			<if test="casMemberId != null">
+				CAS_MEMBER_ID = #{casMemberId,jdbcType=VARCHAR},
+      		</if>
+			<if test="netId != null">
+				NET_ID = #{netId,jdbcType=BIGINT},
+      		</if>
+			<if test="expWaybillNum != null">
+				EXP_WAYBILL_NUM = #{expWaybillNum,jdbcType=VARCHAR},
+      		</if>
+			<if test="traceStatus != null">
+				TRACE_STATUS = #{traceStatus,jdbcType=VARCHAR},
+      		</if>
+      		<if test="parId != null">
+				PAR_ID = #{parId,jdbcType=VARCHAR},
+      		</if>
+			<if test="sendNoticeFlag != null">
+				SEND_NOTICE_FLAG = #{sendNoticeFlag,jdbcType=CHAR},
+      		</if>
+			<if test="modifyTime != null">
+				MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      		</if>
+			<if test="traceDetail != null">
+				TRACE_DETAIL = #{traceDetail,jdbcType=VARCHAR},
+      		</if>
+			<if test="clientTraceStatu != null">
+				CLIENT_TRACE_STATU =
+				#{clientTraceStatu,jdbcType=VARCHAR},
+      		</if>
+			<if test="clientNetNum != null">
+				CLIENT_NET_NUM = #{clientNetNum,jdbcType=VARCHAR},
+     		</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+	<!-- 添加 -->
+	<insert id="insert" parameterType="net.okdi.api.entity.ParLogisticTrace">
+		insert into par_logistic_trace
+		(ID,CAS_MEMBER_ID,NET_ID,EXP_WAYBILL_NUM,PAR_ID,TRACE_STATUS,
+		TRACE_DETAIL,MODIFY_TIME,SEND_NOTICE_FLAG,CLIENT_TRACE_STATU,CLIENT_NET_NUM)
+		values
+		(#{id,jdbcType=BIGINT},
+		#{casMemberId,jdbcType=BIGINT},
+		#{netId,jdbcType=BIGINT},
+		#{expWaybillNum,jdbcType=VARCHAR}, 
+		#{parId,jdbcType=BIGINT},
+		#{traceStatus,jdbcType=VARCHAR},
+		#{traceDetail,jdbcType=VARCHAR},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{sendNoticeFlag,jdbcType=CHAR},
+		#{clientTraceStatu,jdbcType=VARCHAR},
+		#{clientNetNum,jdbcType=VARCHAR})
+  	</insert>
+<!-- 查询记录的条数 -->
+	<select id="getLogisticTracesByChannelId_Count" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		select count(*) from par_logistic_trace t
+		WHERE t.CAS_MEMBER_ID=#{casMemberId}
+    	<if test="traceStatus==0">
+    	and t.TRACE_STATUS=#{traceStatus}
+    	</if>
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="getLogisticTracesByChannelId" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		id AS id,
+		EXP_WAYBILL_NUM AS expWaybillNum,
+		CLIENT_NET_NUM AS clientNetNum,
+		TRACE_DETAIL as traceDetail,
+		date_format(MODIFY_TIME,'%Y-%m-%d %H:%i:%s')AS modifyTime,
+		<!-- MODIFY_TIME AS modifyTime, -->
+		CLIENT_TRACE_STATU AS
+		clientTraceStatu
+		FROM
+		par_logistic_trace t
+		WHERE t.CAS_MEMBER_ID=#{casMemberId}
+    	<if test="traceStatus==0">
+    	and t.TRACE_STATUS=#{traceStatus}
+    	</if>
+		ORDER BY MODIFY_TIME DESC limit #{page.offset} , #{page.pageSize}
+	</select>
+	<!-- 不分页查询 -->
+	<select id="findByMap1" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT  
+		id AS id,
+		CAS_MEMBER_ID AS casMemberId,
+		NET_ID AS netId,
+		EXP_WAYBILL_NUM AS expWaybillNum,
+		PAR_ID AS parId,
+		TRACE_STATUS AS traceStatus,
+		TRACE_DETAIL AS traceDetail,
+		MODIFY_TIME AS modifyTime,
+		SEND_NOTICE_FLAG AS SEND_NOTICE_FLAG,
+		CLIENT_TRACE_STATU AS clientTraceStatu,
+		CLIENT_NET_NUM AS clientNetNum
+		FROM
+		par_logistic_trace t
+    	WHERE t.CAS_MEMBER_ID=#{casMemberId} 
+    	<if test="traceStatus==0">
+    	and t.TRACE_STATUS=#{traceStatus}
+    	</if>
+    	order by MODIFY_TIME desc
+    
+    </select>
+
+	<!-- 根据ID批量删除 -->
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from par_logistic_trace where id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	<!-- 判断是更新还是添加 之前的查询-->
+	<select id="getLogisticTrace" parameterType="java.util.Map"
+		resultMap="resultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM par_logistic_trace where CAS_MEMBER_ID = #{casMemberId} and EXP_WAYBILL_NUM
+		= #{expWayBillNum}
+	</select>
+	
+
+</mapper>

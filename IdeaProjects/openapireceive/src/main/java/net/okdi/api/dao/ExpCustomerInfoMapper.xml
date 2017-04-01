@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpCustomerInfoMapper" >
+
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpCustomerInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="customer_type" property="customerType" jdbcType="SMALLINT" />
+    <result column="cooperative_state" property="cooperativeState" jdbcType="SMALLINT" />
+    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+    <result column="customer_name_spell" property="customerNameSpell" jdbcType="VARCHAR" />
+    <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR" />
+    <result column="town_id" property="townId" jdbcType="BIGINT" />
+    <result column="town_name" property="townName" jdbcType="VARCHAR" />
+    <result column="detailed_address" property="detailedAddress" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="erp_customer_id" property="erpCustomerId" jdbcType="BIGINT" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="discount_group_id" property="discountGroupId" jdbcType="BIGINT" />
+    <result column="agency_fee" property="agencyFee" jdbcType="DECIMAL" />
+    <result column="settle_type" property="settleType" jdbcType="SMALLINT" />
+    <result column="cas_member_id" property="casMemberId" jdbcType="BIGINT" />
+    
+    <result column="iphone_two" property="iphoneTwo" jdbcType="VARCHAR" />
+    <result column="comp_address" property="compAddress" jdbcType="VARCHAR" />
+    <result column="iphone_three" property="iphoneThree" jdbcType="VARCHAR" />
+    <result column="address_two" property="addressTwo" jdbcType="VARCHAR" />
+    <result column="address_thress" property="addressThress" jdbcType="VARCHAR" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, comp_id, customer_type, cooperative_state, customer_name, customer_name_spell, gender,comp_address as compName,<!-- 查询客户列表,同时查询出性别和公司名称(地址)mjx -->
+    customer_phone, town_id, town_name, detailed_address, longitude, latitude, erp_customer_id, 
+    delete_flag, create_time, update_time, discount_group_id, agency_fee, settle_type, 
+    cas_member_id,iphone_two,comp_address,iphone_three,address_two,address_thress,member_id
+  </sql>
+  
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="java.util.HashMap" >
+  	select count(a.id) 
+  	from exp_customer_info a  
+  	where  a.comp_id=#{compId}
+  	<if test="customerName != null" >
+  		and	a.customer_name like CONCAT('%',#{customerName},'%')
+  	</if>
+  	<if test="customerType != null" >
+  		and	a.customer_type = #{customerType}
+  	</if>
+  	<if test="expMemberId != null" >
+  		and	a.id in (
+  			select b.customer_id from exp_customer_member_relation b
+  			where b.exp_member_id = #{expMemberId}
+  		)
+  	</if>
+  </select>
+  
+  <select id="selectByContactName" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+  	select <include refid="Base_Column_List"/>
+  	from exp_customer_info a  
+  	where  a.comp_id=#{compId} and	a.customer_name =#{customerName}
+  </select>
+  
+  <select id="selectByKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  	select <include refid="Base_Column_List"/>
+  	from exp_customer_info a  
+  	where  a.id=#{id}
+  </select>
+  	
+  	
+  <select id="queryByErpIdandCompId" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+  	select id
+  	from exp_customer_info a  
+  	where  a.comp_id=#{compId}
+  		and	a.erp_customer_id = #{erpId}
+  </select>
+  
+  <select id="selectCustomers" resultType="java.lang.Long" parameterType="java.util.HashMap" >
+  	select id
+  	from exp_customer_info a  
+  	where   a.comp_id=#{compId}
+  	<if test="customerName != null" >
+  		and	a.customer_name like CONCAT('%',#{customerName},'%')
+  	</if>
+  	<if test="customerType != null" >
+  		and	a.customer_type = #{customerType}
+  	</if>
+  	<if test="customerPhone != null" >
+  		and	a.customer_phone like CONCAT('%',#{customerPhone},'%')
+  	</if>
+  	<if test="expMemberId != null" >
+  		and	a.id in (
+  			select b.customer_id from exp_customer_member_relation b
+  			where b.exp_member_id = #{expMemberId}
+  		)
+  	</if>
+  	order by customer_name_spell
+  	limit #{page.offset},#{page.pageSize} 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from exp_customer_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.ExpCustomerInfo" >
+    insert into exp_customer_info (id, comp_id, customer_type, 
+      cooperative_state, customer_name, customer_name_spell, 
+      customer_phone, town_id, town_name, 
+      detailed_address, longitude, latitude, 
+      erp_customer_id, delete_flag, create_time, 
+      update_time, discount_group_id, agency_fee, 
+      settle_type, cas_member_id)
+    values (#{id,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{customerType,jdbcType=SMALLINT}, 
+      #{cooperativeState,jdbcType=SMALLINT}, #{customerName,jdbcType=VARCHAR}, #{customerNameSpell,jdbcType=VARCHAR}, 
+      #{customerPhone,jdbcType=VARCHAR}, #{townId,jdbcType=BIGINT}, #{townName,jdbcType=VARCHAR}, 
+      #{detailedAddress,jdbcType=VARCHAR}, #{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, 
+      #{erpCustomerId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=SMALLINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{discountGroupId,jdbcType=BIGINT}, #{agencyFee,jdbcType=DECIMAL}, 
+      #{settleType,jdbcType=SMALLINT}, #{casMemberId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertV4" parameterType="net.okdi.api.entity.ExpCustomerInfo" >
+    insert into exp_customer_info (id, comp_id, customer_type, 
+       customer_name,gender, customer_name_spell, 
+      customer_phone,  town_name, 
+      create_time, iphone_two,comp_address,iphone_three,address_two,address_thress,member_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT}, #{customerType,jdbcType=SMALLINT}, 
+       #{customerName,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT}, #{customerNameSpell,jdbcType=VARCHAR}, 
+      #{customerPhone,jdbcType=VARCHAR}, #{townName,jdbcType=VARCHAR}, 
+       #{createTime,jdbcType=TIMESTAMP},    #{iphoneTwo,jdbcType=VARCHAR}, #{compAddress,jdbcType=VARCHAR},
+       #{iphoneThree,jdbcType=VARCHAR}, #{addressTwo,jdbcType=VARCHAR},  #{addressThress,jdbcType=VARCHAR},#{memberId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.ExpCustomerInfo" >
+    insert into exp_customer_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="customerType != null" >
+        customer_type,
+      </if>
+      <if test="cooperativeState != null" >
+        cooperative_state,
+      </if>
+      <if test="customerName != null" >
+        customer_name,
+      </if>
+      <if test="customerNameSpell != null" >
+        customer_name_spell,
+      </if>
+      <if test="customerPhone != null" >
+        customer_phone,
+      </if>
+      <if test="townId != null" >
+        town_id,
+      </if>
+      <if test="townName != null" >
+        town_name,
+      </if>
+      <if test="detailedAddress != null" >
+        detailed_address,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+      <if test="erpCustomerId != null" >
+        erp_customer_id,
+      </if>
+      <if test="deleteFlag != null" >
+        delete_flag,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="discountGroupId != null" >
+        discount_group_id,
+      </if>
+      <if test="agencyFee != null" >
+        agency_fee,
+      </if>
+      <if test="settleType != null" >
+        settle_type,
+      </if>
+      <if test="casMemberId != null" >
+        cas_member_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="customerType != null" >
+        #{customerType,jdbcType=SMALLINT},
+      </if>
+      <if test="cooperativeState != null" >
+        #{cooperativeState,jdbcType=SMALLINT},
+      </if>
+      <if test="customerName != null" >
+        #{customerName,jdbcType=VARCHAR},
+      </if>
+      <if test="customerNameSpell != null" >
+        #{customerNameSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="customerPhone != null" >
+        #{customerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null" >
+        #{townId,jdbcType=BIGINT},
+      </if>
+      <if test="townName != null" >
+        #{townName,jdbcType=VARCHAR},
+      </if>
+      <if test="detailedAddress != null" >
+        #{detailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="erpCustomerId != null" >
+        #{erpCustomerId,jdbcType=BIGINT},
+      </if>
+      <if test="deleteFlag != null" >
+        #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="discountGroupId != null" >
+        #{discountGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="agencyFee != null" >
+        #{agencyFee,jdbcType=DECIMAL},
+      </if>
+      <if test="settleType != null" >
+        #{settleType,jdbcType=SMALLINT},
+      </if>
+      <if test="casMemberId != null" >
+        #{casMemberId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="clearDiscountGroupIdByCompId" parameterType="java.util.Map" >
+    update exp_customer_info
+    <set >
+       discount_group_id = null
+    </set>
+    where comp_id = #{compId} and discount_group_id = #{discountGroupId}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.ExpCustomerInfo" >
+    update exp_customer_info
+    <set >
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="customerType != null" >
+        customer_type = #{customerType,jdbcType=SMALLINT},
+      </if>
+      <if test="cooperativeState != null" >
+        cooperative_state = #{cooperativeState,jdbcType=SMALLINT},
+      </if>
+      <if test="customerName != null" >
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
+      <if test="customerNameSpell != null" >
+        customer_name_spell = #{customerNameSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="customerPhone != null" >
+        customer_phone = #{customerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null" >
+        town_id = #{townId,jdbcType=BIGINT},
+      </if>
+      <if test="townName != null" >
+        town_name = #{townName,jdbcType=VARCHAR},
+      </if>
+      <if test="detailedAddress != null" >
+        detailed_address = #{detailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="erpCustomerId != null" >
+        erp_customer_id = #{erpCustomerId,jdbcType=BIGINT},
+      </if>
+      <if test="deleteFlag != null" >
+        delete_flag = #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="discountGroupId != null" >
+        discount_group_id = #{discountGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="agencyFee != null" >
+        agency_fee = #{agencyFee,jdbcType=DECIMAL},
+      </if>
+      <if test="settleType != null" >
+        settle_type = #{settleType,jdbcType=SMALLINT},
+      </if>
+      <if test="casMemberId != null" >
+        cas_member_id = #{casMemberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.ExpCustomerInfo" >
+    
+    update exp_customer_info
+    set comp_id = #{compId,jdbcType=BIGINT},
+      customer_type = #{customerType,jdbcType=SMALLINT},
+      cooperative_state = #{cooperativeState,jdbcType=SMALLINT},
+      customer_name = #{customerName,jdbcType=VARCHAR},
+      customer_name_spell = #{customerNameSpell,jdbcType=VARCHAR},
+      customer_phone = #{customerPhone,jdbcType=VARCHAR},
+      town_id = #{townId,jdbcType=BIGINT},
+      town_name = #{townName,jdbcType=VARCHAR},
+      detailed_address = #{detailedAddress,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=DECIMAL},
+      latitude = #{latitude,jdbcType=DECIMAL},
+      erp_customer_id = #{erpCustomerId,jdbcType=BIGINT},
+      delete_flag = #{deleteFlag,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      discount_group_id = #{discountGroupId,jdbcType=BIGINT},
+      agency_fee = #{agencyFee,jdbcType=DECIMAL},
+      settle_type = #{settleType,jdbcType=SMALLINT},
+      cas_member_id = #{casMemberId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectCustomer" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	select <include refid="Base_Column_List"/>
+  	from exp_customer_info a  
+  	where  a.member_id=#{memberId} and	customer_type is null
+  </select>
+  
+  <update id="editCustomer" parameterType="net.okdi.api.entity.ExpCustomerInfo">
+  	  update exp_customer_info
+    <set >
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="customerType != null" >
+        customer_type = #{customerType,jdbcType=SMALLINT},
+      </if>
+      <if test="cooperativeState != null" >
+        cooperative_state = #{cooperativeState,jdbcType=SMALLINT},
+      </if>
+      <if test="customerName != null" >
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=TINYINT},
+      </if>
+      <if test="customerNameSpell != null" >
+        customer_name_spell = #{customerNameSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="customerPhone != null" >
+        customer_phone = #{customerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="townId != null" >
+        town_id = #{townId,jdbcType=BIGINT},
+      </if>
+      <if test="townName != null" >
+        town_name = #{townName,jdbcType=VARCHAR},
+      </if>
+      <if test="detailedAddress != null" >
+        detailed_address = #{detailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="erpCustomerId != null" >
+        erp_customer_id = #{erpCustomerId,jdbcType=BIGINT},
+      </if>
+      <if test="deleteFlag != null" >
+        delete_flag = #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      
+      <if test="iphoneTwo != null" >
+        iphone_two = #{iphoneTwo,jdbcType=TIMESTAMP},
+      </if>
+      <if test="compAddress != null" >
+        comp_address = #{compAddress,jdbcType=TIMESTAMP},
+      </if>
+      <if test="iphoneThree != null" >
+        iphone_three = #{iphoneThree,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addressTwo != null" >
+        address_two = #{addressTwo,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addressThress != null" >
+        address_thress = #{addressThress,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null" >
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="addCustomerType" parameterType="map">
+  	    update exp_customer_info
+    <set >
+      <if test="customerType != null" >
+        customer_type = #{customerType,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{customerId,jdbcType=BIGINT}
+  </update>
+  <update id="deleteCustomerType" parameterType="map">
+  update exp_customer_info
+    <set >
+        customer_type = null,
+    </set>
+    where id = #{customerId,jdbcType=BIGINT}
+  </update>
+  <select id="selectCustomersByMobile" parameterType="map"  resultType="net.okdi.api.entity.ExpCustomerInfo">
+  	SELECT
+	*
+	FROM
+		exp_customer_info
+	WHERE
+		customer_phone =#{phone}
+		and member_id=#{memberId}
+  </select>
+  
+</mapper>

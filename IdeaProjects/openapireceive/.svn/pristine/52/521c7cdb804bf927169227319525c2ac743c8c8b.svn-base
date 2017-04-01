@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.DailyRewardActivityMapperV2" >
+  <resultMap id="BaseResultMap" type="net.okdi.apiV2.entity.DailyRewardActivity" >
+    <id column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="site_reward_price" property="siteRewardPrice" jdbcType="DECIMAL" />
+    <result column="site_reward_num" property="siteRewardNum" jdbcType="INTEGER" />
+    <result column="point_reward_price" property="pointRewardPrice" jdbcType="DECIMAL" />
+    <result column="point_reward_num" property="pointRewardNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+ 
+	 <select id="queryDailyRewardActivityList" resultType="java.util.Map">
+	 	select activity_id,province,site_reward_price,site_reward_num,point_reward_price,point_reward_num 
+	 	from daily_reward_activity
+	 </select>
+ 
+	<!--  <select id="queryRewardActivity" resultType="java.util.Map" parameterType="java.lang.String">
+	 	select activity_id,
+	 	<if test="roleId!= 1040 and roleId != 1040">
+	 		site_reward_price,site_reward_num
+		</if>
+	 	<if test="roleId!= 1006 and roleId != 1006">
+	 		point_reward_price,point_reward_num
+		</if>
+	 	where province = #{province}
+	 </select> -->
+ 
+ 	<update id="updateProvinceRewardPriceOrNum" parameterType="net.okdi.apiV2.entity.DailyRewardActivity">
+ 		update daily_reward_activity
+ 		set 
+ 		activity_id = #{activityId},
+ 		site_reward_price = #{siteRewardPrice},
+ 		site_reward_num = #{siteRewardNum},
+ 		point_reward_price = #{pointRewardPrice},
+ 		point_reward_num = #{pointRewardNum},
+ 		update_time = #{updateTime}
+ 	</update>
+ 
+ 
+</mapper>

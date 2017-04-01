@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV1.dao.BasCompInfoMapperV1" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasCompInfo" >
+    <id column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="comp_num" property="compNum" jdbcType="VARCHAR" />
+    <result column="comp_short" property="compShort" jdbcType="VARCHAR" />
+    <result column="comp_name" property="compName" jdbcType="VARCHAR" />
+    <result column="first_letter" property="firstLetter" jdbcType="CHAR" />
+    <result column="regist_flag" property="registFlag" jdbcType="SMALLINT" />
+    <result column="comp_type_num" property="compTypeNum" jdbcType="CHAR" />
+    <result column="comp_address_id" property="compAddressId" jdbcType="BIGINT" />
+    <result column="comp_address" property="compAddress" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="comp_url" property="compUrl" jdbcType="VARCHAR" />
+    <result column="taobao_url" property="taobaoUrl" jdbcType="VARCHAR" />
+    <result column="comp_status" property="compStatus" jdbcType="SMALLINT" />
+    <result column="comp_regist_way" property="compRegistWay" jdbcType="SMALLINT" />
+    <result column="belong_to_net_id" property="belongToNetId" jdbcType="BIGINT" />
+    <result column="belong_to_comp_id" property="belongToCompId" jdbcType="BIGINT" />
+    <result column="relation_comp_id" property="relationCompId" jdbcType="BIGINT" />
+    <result column="write_send_status" property="writeSendStatus" jdbcType="SMALLINT" />
+    <result column="goods_payment_status" property="goodsPaymentStatus" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modifiy_time" property="modifiyTime" jdbcType="TIMESTAMP" />
+    <result column="league_time" property="leagueTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="BIGINT" />
+    <result column="internal_user_last_time" property="internalUserLastTime" jdbcType="TIMESTAMP" />
+    <result column="tao_goods_payment_status" property="taoGoodsPaymentStatus" jdbcType="SMALLINT" />
+    <result column="last_audit_id" property="lastAuditId" jdbcType="BIGINT" />
+    <result column="comp_telephone" property="compTelephone" jdbcType="VARCHAR" />
+    <result column="comp_email" property="compEmail" jdbcType="VARCHAR" />
+    <result column="comp_mobile" property="compMobile" jdbcType="VARCHAR" />
+    <result column="login_flag" property="loginFlag" jdbcType="SMALLINT" />
+    <result column="erp_comp_id" property="erpCompId" jdbcType="BIGINT" />
+    <result column="description_msg" property="descriptionMsg" jdbcType="VARCHAR" />
+  </resultMap>
+
+ <sql id="Base_Column_List">
+		comp_id, comp_num, comp_short, comp_name, first_letter,
+		regist_flag,
+		comp_type_num,
+		comp_address_id, comp_address, longitude,
+		latitude, comp_url, taobao_url, comp_status,
+		comp_regist_way,
+		belong_to_net_id, belong_to_comp_id,
+		relation_comp_id,
+		write_send_status,
+		goods_payment_status, create_time, modifiy_time,
+		league_time, create_user,
+		internal_user_last_time,
+		tao_goods_payment_status, last_audit_id, comp_telephone, comp_email,
+		comp_mobile,
+		login_flag
+  </sql>
+  
+  
+  <insert id="insert" parameterType="net.okdi.api.entity.BasCompInfo">
+		insert into bas_compinfo
+		(comp_id, comp_num, comp_short,
+		comp_name, first_letter, regist_flag,
+		comp_type_num, comp_address_id, comp_address,
+		longitude, latitude,
+		comp_url,
+		taobao_url, comp_status, comp_regist_way,
+		belong_to_net_id,
+		belong_to_comp_id, relation_comp_id,
+		write_send_status,
+		goods_payment_status,
+		create_time, modifiy_time, league_time,
+		create_user, internal_user_last_time, tao_goods_payment_status,
+		last_audit_id, comp_telephone, comp_email,
+		comp_mobile, login_flag)
+		SELECT #{compId,jdbcType=BIGINT}, #{compNum,jdbcType=VARCHAR},
+		#{compShort,jdbcType=VARCHAR},
+		#{compName,jdbcType=VARCHAR},
+		#{firstLetter,jdbcType=CHAR}, #{registFlag,jdbcType=SMALLINT},
+		#{compTypeNum,jdbcType=CHAR}, #{compAddressId,jdbcType=BIGINT},
+		#{compAddress,jdbcType=VARCHAR},
+		#{longitude,jdbcType=DECIMAL},
+		#{latitude,jdbcType=DECIMAL}, #{compUrl,jdbcType=VARCHAR},
+		#{taobaoUrl,jdbcType=VARCHAR}, #{compStatus,jdbcType=SMALLINT},
+		#{compRegistWay,jdbcType=SMALLINT},
+		#{belongToNetId,jdbcType=BIGINT},
+		#{belongToCompId,jdbcType=BIGINT}, #{relationCompId,jdbcType=BIGINT},
+		#{writeSendStatus,jdbcType=SMALLINT},
+		#{goodsPaymentStatus,jdbcType=SMALLINT},
+		#{createTime,jdbcType=TIMESTAMP}, #{modifiyTime,jdbcType=TIMESTAMP},
+		#{leagueTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{internalUserLastTime,jdbcType=TIMESTAMP},
+		#{taoGoodsPaymentStatus,jdbcType=SMALLINT},
+		#{lastAuditId,jdbcType=BIGINT}, #{compTelephone,jdbcType=VARCHAR},
+		#{compEmail,jdbcType=VARCHAR},
+		#{compMobile,jdbcType=VARCHAR},
+		#{loginFlag,jdbcType=SMALLINT} FROM DUAL
+  </insert>
+  
+  <select id="getSameCompNameForMobile" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select comp_id as compId, comp_name as compName,first_letter as firstLetter
+		from bas_compinfo where belong_to_net_id=#{netId} and
+		comp_name=#{compName}
+	</select>
+	
+	<select id="findById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from bas_compinfo
+		where comp_id = #{compId,jdbcType=BIGINT}
+	</select>
+
+
+	<select id="queryOpenSiteDetail" parameterType="java.lang.Long"
+		resultType="java.util.HashMap">
+		SELECT
+			com.comp_id AS compId,
+			com.comp_name AS compName,
+			com.comp_address AS compAddress,
+			ifnull(com.comp_telephone, '') AS compMobile,
+			ifnull(bus.responsible_telephone,'') AS responesible,
+			ifnull(com.belong_to_net_id,'') AS netId,
+			ifnull(info.member_id,'') AS memberId,
+			ifnull(info.member_phone,'') AS memberPhone
+		FROM
+			bas_compinfo com
+		LEFT JOIN bas_compbusiness bus ON com.comp_id = bus.comp_id
+		LEFT JOIN bas_employee_relation emprel on emprel.comp_id = com.comp_id
+		LEFT JOIN member_info info on emprel.member_id = info.member_id
+		WHERE
+			com.comp_id = #{comid}
+			and emprel.role_id = 2
+	</select>
+
+   <select id = "queryCompInfoByLongitudeAndLatitude" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  
+	SELECT
+		b.comp_id AS compId,
+		b.comp_name AS compName,
+		b.comp_address AS compAddress,
+		b.longitude,
+		b.latitude,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId,
+		c.responsible_telephone as resPhone
+	FROM
+		bas_compinfo b LEFT JOIN bas_compbusiness c ON b.comp_id = c.comp_id
+	WHERE
+		b.longitude > 0
+	AND b.latitude > 0
+	and b.relation_comp_id=-1 and b.comp_type_num=1003
+	AND b.longitude BETWEEN #{leftLng} and #{rightLng}
+	AND b.latitude BETWEEN #{bottomLat} and #{topLat}
+  
+  </select>
+   <select id = "queryWechatCompInfoByLongitudeAndLatitude" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  
+	SELECT
+		b.comp_id AS compId,
+		b.comp_name AS compName,
+		b.comp_address AS compAddress,
+		b.longitude,
+		b.latitude,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId,
+		c.net_name as netName,
+		c1.responsible_telephone as resPhone
+	FROM
+		bas_compinfo b LEFT JOIN bas_netinfo c ON b.belong_to_net_id = c.net_id 
+		LEFT JOIN bas_compbusiness c1 ON b.comp_id = c1.comp_id
+	WHERE
+		b.longitude > 0
+	AND b.latitude > 0
+	and b.comp_type_num in (1006,1050)
+	AND b.longitude BETWEEN #{leftLng} and #{rightLng}
+	AND b.latitude BETWEEN #{bottomLat} and #{topLat}
+  
+  </select>
+  
+    <select id = "queryCompInfoByRoleId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  
+	SELECT
+		b.comp_id AS compId,
+		b.comp_name AS compName,
+		b.comp_address AS compAddress,
+		b.longitude,
+		b.latitude,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId,
+		b.comp_status as compStatus,
+		b.comp_telephone as compTelephone,
+		b.create_time as createTime,
+	    c.responsible_telephone as resPhone
+	FROM
+		bas_compinfo b LEFT JOIN bas_compbusiness c ON b.comp_id = c.comp_id
+	WHERE
+		b.longitude > 0
+	AND b.latitude > 0
+	and (b.comp_status = 0 or b.comp_status = 1) and (b.comp_type_num=1006)
+	AND b.longitude BETWEEN #{leftLng} and #{rightLng}
+	AND b.latitude BETWEEN #{bottomLat} and #{topLat}
+	and b.longitude is not null
+	and b.latitude is not null
+  
+  </select>
+  <select id = "queryCompInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  
+	SELECT
+		b.comp_id AS compId,
+		b.comp_name AS compName,
+		b.comp_address AS compAddress,
+		b.longitude,
+		b.latitude,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId,
+		b.comp_status as compStatus,
+		b.comp_telephone as compTelephone,
+		b.create_time as createTime,
+	    c.responsible_telephone as resPhone
+	FROM
+		bas_compinfo b LEFT JOIN bas_compbusiness c ON b.comp_id = c.comp_id
+	WHERE
+		b.longitude > 0
+	AND b.latitude > 0
+	and (b.comp_status = 0 or b.comp_status = 1) and (b.comp_type_num=1030)
+	AND b.longitude BETWEEN #{leftLng} and #{rightLng}
+	AND b.latitude BETWEEN #{bottomLat} and #{topLat}
+	and b.longitude is not null
+	and b.latitude is not null
+  
+  </select>
+  <select id="queryCompAuditDesc" resultType="java.lang.String"
+		parameterType="java.lang.Long">
+		select audit_desc auditDesc
+		from bas_compinfo left join
+		Bas_Compaudit on id=last_audit_id
+		where bas_compinfo.comp_id =
+		#{compId,jdbcType=BIGINT}
+  </select>
+
+  <select id = "queryCollectionByRoleId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  
+  	SELECT
+		b.comp_id AS compId,
+		b.comp_name AS compName,
+		b.comp_address AS compAddress,
+		b.longitude,
+		b.latitude,
+		b.comp_type_num as compTypeNum,
+		b.belong_to_net_id as netId,
+		b.comp_status as compStatus,
+		c.responsible_telephone as resPhone
+	FROM
+		bas_compinfo b LEFT JOIN bas_compbusiness c ON b.comp_id = c.comp_id
+	WHERE
+		b.longitude > 0
+	AND b.latitude > 0
+	<if test = "roleId == 2"><!-- 2代表代收站店长 -->
+	and b.comp_type_num=1030
+	and b.relation_comp_id=-1
+	</if>
+	<if test = "roleId == 3"><!-- 2代表代收站店员 -->
+	and b.comp_type_num=1040
+	and (b.comp_status=1 or b.comp_status=0)
+	</if>
+	AND b.longitude BETWEEN #{leftLng} and #{rightLng}
+	AND b.latitude BETWEEN #{bottomLat} and #{topLat}
+  </select>
+
+  <select id = "queryCompInfoByCompName" resultType="java.util.HashMap">
+  
+  SELECT
+	b.comp_id AS compId,
+	b.comp_name AS compName,
+	b.comp_type_num AS compTypeNum,
+	b.comp_address_id  as addressId,
+	b.comp_address AS compAddress,
+	b.belong_to_net_id as netId,
+	c.net_name as netName,
+	CONCAT(#{readPath},ifnull(d.image_url,''))  as compImgUrl
+FROM
+	bas_compinfo b left join dic_addressaid a on b.comp_address_id=a.address_id 
+	left join bas_netinfo c on b.belong_to_net_id=c.net_id
+	LEFT JOIN bas_compimage d on b.comp_id= d.comp_id and  d.image_type=8
+where 1=1
+
+		and (a.town_id=#{addressId} or a.county_id=#{addressId} or a.city_id=#{addressId} or a.province_id=#{addressId})
+AND comp_name like CONCAT('%',#{compName},'%')
+	<if test = "roleId == 1"><!-- 2代表站点站长 -->
+	and b.comp_type_num=1003
+	and b.relation_comp_id=-1
+	</if>
+	<if test = "roleId == -1"><!-- -2代表后勤 -->
+	and (b.comp_type_num=1006 or b.comp_type_num=1050)
+	and (b.comp_status=1 or b.comp_status=0)
+	</if>
+	<if test = "roleId == 0"><!-- 0代表收派员 -->
+	and (b.comp_type_num=1006 or b.comp_type_num=1050)
+	and (b.comp_status=1 or b.comp_status=0)
+	</if>
+	<if test = "roleId == 2"><!-- 2代表代收站店长 -->
+	and b.comp_type_num=1030
+	and b.relation_comp_id=-1	
+	</if>
+	<if test = "roleId == 3"><!-- 3代表代收站店员 -->
+	and b.comp_type_num=1040
+	and (b.comp_status=1 or b.comp_status=0)
+	</if>	
+
+  </select>
+
+	<select id="findShopowner" resultType="java.util.HashMap">
+		SELECT
+			ifnull(com.comp_id,'') as comp_id,
+			ifnull(com.comp_name,'') as comp_name,
+			ifnull(com.comp_address,'') as comp_address,
+			ifnull(com.belong_to_net_id,'') AS netId,
+			ifnull(image.image_url,'') as image_url,
+			ifnull(info.member_id,'') as member_id
+		FROM
+			bas_compinfo com LEFT JOIN bas_employee_relation emp ON com.comp_id = emp.comp_id and emp.role_id = 2
+			LEFT JOIN bas_compimage image on com.comp_id = image.comp_id and image.image_type = 2
+			LEFT JOIN member_info info on info.member_id = emp.member_id
+		WHERE
+		 info.member_phone = #{memberTelephone}
+	</select>
+	
+	<insert id="insertBasCompinfo">
+	    INSERT INTO bas_compinfo
+	   <trim prefix="(" suffix=")" suffixOverrides=",">
+	comp_id,
+	comp_name,
+	first_letter,
+	regist_flag,
+	comp_type_num,
+	comp_address_id,
+	comp_address,
+	longitude,
+	latitude,
+ 	comp_status,
+	belong_to_net_id,
+	belong_to_comp_id,
+	relation_comp_id,
+	write_send_status,
+	goods_payment_status,
+	create_time,
+	comp_mobile,
+	comp_telephone,
+	tao_goods_payment_status,
+	login_flag
+</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{map.comp_id},
+		#{map.comp_name},
+		#{map.first_letter},
+		#{map.regist_flag},
+		#{map.comp_type_num},
+		#{map.comp_address_id},
+		#{map.comp_address},
+		#{map.longitude},
+		#{map.latitude},
+ 		#{map.comp_status},
+		#{map.belong_to_net_id},
+		#{map.belong_to_comp_id},
+		#{map.relation_comp_id},
+		#{map.write_send_status},
+		#{map.goods_payment_status},
+		#{map.create_time},
+		#{map.comp_mobile},
+		#{map.comp_telephone},
+		#{map.tao_goods_payment_status},
+		#{map.login_flag}
+		</trim>
+	</insert>
+	<insert id="insertBasCompinfoNew">
+	    INSERT INTO bas_compinfo
+	   <trim prefix="(" suffix=")" suffixOverrides=",">
+	comp_id,
+	comp_name,
+	first_letter,
+	regist_flag,
+	comp_type_num,
+	comp_address_id,
+	comp_address,
+	longitude,
+	latitude,
+ 	comp_status,
+	belong_to_net_id,
+	belong_to_comp_id,
+	relation_comp_id,
+	write_send_status,
+	goods_payment_status,
+	create_time,
+	comp_mobile,
+	comp_telephone,
+	tao_goods_payment_status,
+	login_flag,
+	agent_type
+</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{map.comp_id},
+		#{map.comp_name},
+		#{map.first_letter},
+		#{map.regist_flag},
+		#{map.comp_type_num},
+		#{map.comp_address_id},
+		#{map.comp_address},
+		#{map.longitude},
+		#{map.latitude},
+ 		#{map.comp_status},
+		#{map.belong_to_net_id},
+		#{map.belong_to_comp_id},
+		#{map.relation_comp_id},
+		#{map.write_send_status},
+		#{map.goods_payment_status},
+		#{map.create_time},
+		#{map.comp_mobile},
+		#{map.comp_telephone},
+		#{map.tao_goods_payment_status},
+		#{map.login_flag},
+		#{map.agentType}
+		</trim>
+	</insert>
+	<select id="queryOpenSite"  resultType="java.util.HashMap">
+	SELECT
+	comp_id,
+	comp_name,
+	first_letter,
+	regist_flag,
+	comp_type_num,
+	comp_address_id,
+	comp_address,
+	longitude,
+	latitude,
+	comp_status,
+	belong_to_net_id,
+	belong_to_comp_id,
+	relation_comp_id,
+	write_send_status,
+	goods_payment_status,
+	create_time,
+	comp_mobile,
+	comp_telephone,
+	tao_goods_payment_status,
+	login_flag
+FROM
+	bas_compinfo
+WHERE
+	comp_id= #{compid}
+	</select>
+	
+	
+	<select id="selectCompinfoByName"  resultType="java.util.HashMap">
+	SELECT
+	comp_id,
+	comp_name,
+	first_letter,
+	regist_flag,
+	comp_type_num,
+	comp_address_id,
+	comp_address,
+	longitude,
+	latitude,
+	comp_status,
+	belong_to_net_id,
+	belong_to_comp_id,
+	relation_comp_id,
+	write_send_status,
+	goods_payment_status,
+	create_time,
+	comp_mobile,
+	comp_telephone,
+	tao_goods_payment_status,
+	login_flag
+FROM
+	bas_compinfo
+WHERE
+	comp_name= #{comp_name}
+	</select>
+	
+	
+	
+	<insert id="saveEmployeeRelation" parameterType="java.util.HashMap">
+		insert into bas_employee_relation  
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		id,
+		member_id,
+		comp_id,
+		role_id
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{eid},
+		#{memberid},
+		#{compid},
+		#{roleid}
+		</trim>
+	</insert>
+
+	<update id="updateBaseCompinfo" parameterType="java.util.HashMap">
+		update bas_compinfo set relation_comp_id = #{id} ,modifiy_time=#{date} where comp_id = #{compid}
+	</update>	
+	
+	<select id="queryEmployeeauditByPhone" resultType="java.util.Map">
+		select audit_opinion from bas_employeeaudit 
+		where
+		member_id = #{memberid}
+		and audit_item = #{auditItem}
+	</select>
+	
+	<insert id="saveEmployeeaudit" parameterType="java.util.HashMap">
+		insert into bas_employeeaudit  
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		id,
+		member_id,
+		audit_comp,
+		application_role_type,
+		application_time,
+		audit_item,
+		audit_opinion
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{id},
+		#{memberid},
+		#{compId},
+		#{roleid},
+		#{application_time},
+		#{auditItem},
+		#{auditOpinion}
+		</trim>
+	</insert>
+	<select id="queryManagerIsInviteByPhone" resultType="java.lang.Long">
+		select id from member_invitation_register 
+		where 
+		from_member_id = #{fromMemberId}
+		and from_member_phone = #{fromMemberPhone}
+		and to_member_phone = #{toMemberPhone}
+	</select>
+	
+	<update id="ManagerIsInviteByPhone">
+		update member_invitation_register 
+		set modity_time = #{modityTime} 
+		where 
+		from_member_id = #{fromMemberId}
+		and from_member_phone = #{fromMemberPhone}
+		and to_member_phone = #{toMemberPhone}
+	</update>
+	<insert id="saveMemberInvitationRegister" parameterType="java.util.HashMap">
+		insert into member_invitation_register  
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		id,
+		from_member_id,
+		from_member_phone,
+		from_member_role_id,
+		to_member_phone,
+		to_member_role_id,
+		create_time,
+		to_member_net_id,
+		is_registered
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{id},
+		#{fromMemberId},
+		#{fromMemberPhone},
+		#{fromMemberRoleid},
+		#{toMemberPhone},
+		#{toRoleId},
+		#{createTime},
+		#{belongToNetId,jdbcType=BIGINT},
+		#{isRegister}
+		</trim>
+	</insert>
+	
+	
+	<select id="queryJoinState1"  resultType="java.lang.String">
+	select comp_id
+	from bas_employee_relation bas
+	INNER JOIN
+	   member_info mem
+	on bas.member_id=mem.member_id
+	where mem.member_phone=#{member_phone} and bas.role_id = 1
+	</select>
+	<select id="queryJoinState2"  resultType="java.util.HashMap">
+	select com.comp_id,
+		com.comp_name,
+		com.comp_address
+	FROM
+		bas_compinfo com
+
+	where com.comp_id=#{comp_id}
+	</select>
+	
+	<select id="queryJoinState3"  resultType="java.lang.String">
+	select image_url
+	FROM
+		bas_compimage bas
+
+	where bas.comp_id=#{comp_id} and image_type=8
+	</select>
+	
+	<insert id="applyJoin" >
+	   insert into bas_employeeaudit(
+	      id,
+		  member_id,
+		  audit_comp,
+		  application_role_type ,
+		  application_time ,
+		  audit_item ,
+		  audit_opinion
+        )VALUES(#{id},#{member_id,jdbcType=VARCHAR},
+          #{audit_comp,jdbcType=VARCHAR},
+           #{application_role_type,jdbcType=VARCHAR},
+            #{application_time},
+              #{audit_item,jdbcType=VARCHAR},
+              #{audit_opinion,jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="updateCompTypeNum" >
+		update bas_compinfo
+		set
+		relation_comp_id =#{relationCompId,jdbcType=CHAR}
+		where comp_id =#{compId,jdbcType=BIGINT} and comp_type_num='1003'
+  </update>
+  <update id="updateCompStatus">
+      update bas_compinfo
+		set
+		comp_status =#{compStatus} 
+		where comp_id =#{compId,jdbcType=BIGINT} 
+  </update>
+  
+  <update id="auditSite">
+      update bas_compinfo
+		set
+		comp_status =#{compStatus,jdbcType=CHAR}
+		where comp_id =#{compId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="siteAuditNotThrough" parameterType="java.util.HashMap">
+  	UPDATE bas_employeeaudit
+		SET audit_opinion = #{auditOpinion},
+		<if test = "isn != null and isn != '' ">
+		audit_reject_reason = #{isn},
+		</if>
+		audit_desc = #{refuseDesc},
+		audit_time = #{auditTime}
+		WHERE
+			id = #{keyId}
+  </update>
+  
+  <select id="queryMemberPhoneByMemberId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  	SELECT
+		m.member_phone
+	FROM
+		member_info m
+	WHERE
+		TRIM(m.id_num) = (
+			SELECT
+				TRIM(info.id_num)
+			FROM
+				member_info info
+			WHERE
+				info.member_phone IS NOT NULL
+			AND info.id_num IS NOT NULL
+			AND info.member_id = #{memberId}
+			AND LENGTH(TRIM(info.id_num)) > 0
+		)
+	and m.member_phone is not null
+  </select>
+ 
+  
+   <update id="updateCompType">
+      update bas_compinfo
+		set
+		comp_status =#{compStatus,jdbcType=CHAR},
+		comp_name =#{compMess,jdbcType=CHAR}
+		where comp_id =#{compId,jdbcType=BIGINT}
+  </update>
+  
+  <select id="queryCompName" resultType="java.lang.String">
+     select comp_name from bas_compinfo where comp_id=#{compId,jdbcType=BIGINT}
+  </select>
+ <insert id="performAudit">
+   insert into bas_compaudit(id,comp_id,audit_opinion,audit_desc,audit_time)
+   values(#{id},#{compId},#{compStatus},#{auditDesc},#{auditTime})
+ </insert>
+ 
+ 
+ <select id = "queryMemberInfoByCompId" resultType="java.util.HashMap">
+ 
+ SELECT
+	b.member_id AS memberId,
+	b.member_name AS memberName,
+	b.member_phone AS memberPhone
+FROM
+	bas_employee_relation a
+LEFT JOIN member_info b ON a.member_id = b.member_id
+WHERE
+	a.comp_id =#{compId} and a.role_id = 0
+ </select>
+ 
+ <select id="queryFormMemberId" resultType="java.util.HashMap">
+       select from_member_id,from_member_role_id
+        from bas_employee_relation rel,
+             member_info info,
+              member_invitation_register reg
+
+		where rel.member_id=info.member_id 
+		   and info.member_phone =reg.from_member_phone
+		   and rel.comp_id=#{compId} 
+ </select>
+ 
+ <select id="queryPushMessage" resultType="java.util.HashMap">
+       select a.member_id member_id,member_phone 
+       from member_info a
+		INNER JOIN bas_employee_relation b
+		INNER JOIN bas_compinfo c
+		
+		on a.member_id=b.member_id
+		AND b.role_id='1'
+		and b.comp_id=c.comp_id
+		and c.comp_id=#{compId} 
+ </select>
+ 
+ 
+ <update id="updateBasEmployeeaudit" >
+  	UPDATE bas_employeeaudit
+		SET audit_comp = #{auditComp}
+	WHERE
+		member_id = #{memberId} and audit_item = #{auditItem}
+  </update>
+  
+  <update id="updateMemberInvitationRegister">
+		update member_invitation_register 
+		set to_member_net_id = #{toMemberNetId} 
+		where 
+		from_member_id = #{fromMemberId}
+		and to_member_phone = #{toMemberPhone}
+	</update>
+	
+	<select id = "queryVirtualCompInfo" resultType="net.okdi.api.entity.BasCompInfo">
+	SELECT
+	a.comp_id AS compId
+FROM
+	bas_compinfo a
+WHERE
+	a.comp_type_num = #{compTypeNum}
+AND a.comp_regist_way = -1
+AND a.belong_to_net_id =#{netId}
+	</select>
+	<select id="queryRelationCompId" resultType="java.lang.Long">
+	  select relation_comp_id 
+		from 
+		bas_compinfo where comp_id= #{compId}
+	</select>
+	<!-- 店长审核店员 -->
+	<update id="updateEmployeeAudit" parameterType="java.util.HashMap">
+		update bas_employeeaudit set audit_opinion = #{auditOpinion}, audit_user = #{auditUser}
+		where member_id = #{memberId}
+		and audit_comp = #{compId}
+		and application_role_type = 3
+		and audit_item = 2
+	</update>
+	<delete id="removeEmployeeAudit">
+		delete from bas_employeeaudit
+		where
+		member_id = #{memberId} 
+		and audit_comp = #{compId} 
+		and application_role_type = #{roleType}
+		and audit_item = #{auditItem}
+	</delete>
+	
+	<select id="queryCompStatus" resultType="java.lang.String">
+	  select comp_status from bas_compinfo where comp_id=#{compId}
+	</select>
+	
+	<delete id = "deleteRelation">
+	delete from  bas_employeeaudit where member_id =#{memberId} and audit_item = 2
+	</delete>
+	
+	<select id="queryDeviceInfos" resultType="java.util.HashMap">
+	   SELECT
+		    info.member_phone,
+			CHANNEL_ID AS memberId,
+			DEVICE_TYPE,
+			DEVICE_TOKEN,
+			MEMBER_SORT
+		FROM
+			mob_member_login mob,
+		  member_info info
+		WHERE
+		  mob.CHANNEL_ID = info.member_id
+		  GROUP BY info.member_phone
+		  order by  mob.CREATE_TIME desc
+		LIMIT 	#{startSize},	#{size}
+  	</select>
+	<select id="queryDeviceInfosByCon" resultType="java.util.HashMap">
+		SELECT
+		info.member_phone,
+		CHANNEL_ID AS memberId,
+		DEVICE_TYPE,
+		DEVICE_TOKEN,
+		MEMBER_SORT
+		FROM
+		( 
+		  SELECT * FROM member_info info1 
+		  WHERE 
+		  1=1
+		  <if test = "startTime!=null and startTime!=''">
+		  and 
+	      info1.create_time <![CDATA[>=]]> #{startTime}
+	     </if>
+	     <if test = "endTime!=null and endTime!=''">
+		  and 
+	      info1.create_time <![CDATA[<=]]> #{endTime}
+	     </if> 
+	     <if test = "list!=null and list!=''">
+	      and 
+		  info1.member_phone in
+			<foreach item="item" index="index" collection="list" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	    ) AS info
+		left join
+		mob_member_login mob
+		on
+		mob.CHANNEL_ID = info.member_id
+		left join
+		bas_employeeaudit ber
+		on
+		info.member_id = ber.member_id
+		where 1=1
+		
+		<if test = "userType!=null and userType!=''">
+		  and 
+	      ber.application_role_type in
+	      <foreach item="item" index="index" collection="userType" open="("
+			separator="," close=")">
+			#{item}
+	      </foreach>
+	    </if>
+	    <if test = "platform=='android'">
+		  and 
+	      mob.device_type = 'android'
+	    </if>
+	     <if test = "platform=='apple'">
+		  and 
+	      mob.device_type in ('IE','IP')
+	    </if>
+	   
+	GROUP BY info.member_phone
+  	</select>
+	<!-- 查询身份认证审核信息数量 -->
+   <select id ="queryCountSF" parameterType="java.lang.String" resultType="java.lang.Integer">
+   	select count(*) from bas_employeeaudit a where a.audit_item=1 and a.member_id=#{member_id} 
+   </select>
+	<!-- 查询快递认证审核信息数量 -->
+   <select id ="queryCountKD" parameterType="java.lang.String" resultType="java.lang.Integer">
+   	select count(*) from bas_employeeaudit a where a.audit_item=3 and a.member_id=#{member_id} 
+   </select>
+   <!-- 查询归属认证审核信息数量 -->
+   <select id ="queryCountGS" parameterType="java.lang.String" resultType="java.lang.Integer">
+   	select count(*) from bas_employeeaudit a where a.audit_item=2 and a.member_id=#{member_id} 
+   </select>
+   <!-- 修改身份认证信息的站点compId -->
+	<update id="updateSFAuditInfo" parameterType="java.lang.String">
+		UPDATE bas_employeeaudit
+		SET audit_comp = #{audit_comp}
+		WHERE
+			member_id = #{member_id}
+		AND audit_item = 1
+	</update>
+	<!-- 修改快递认证信息的站点compId -->
+	<update id="updateKDAuditInfo" parameterType="java.lang.String">
+		UPDATE bas_employeeaudit
+		SET audit_comp = #{audit_comp}
+		WHERE
+			member_id = #{member_id}
+		AND audit_item = 3
+	</update>
+   
+   
+    <select id ="queryPhones"  resultType="java.lang.Long">
+       SELECT
+		    info.member_phone
+			
+		FROM
+			mob_member_login mob,
+		  member_info info
+		WHERE
+		  mob.CHANNEL_ID = info.member_id 
+		<if test = "phone!=null and phone!=''">
+		  and 
+	      member_phone = #{phone}
+	    </if>
+        
+        LIMIT #{currentPage},#{pageSize}
+   </select>
+   <select id ="queryPhonesTotal"  resultType="java.lang.Integer">
+       SELECT
+		    count(*)
+		FROM
+			mob_member_login mob,
+		  member_info info
+		WHERE
+		  mob.CHANNEL_ID = info.member_id 
+		<if test = "phone!=null and phone!=''">
+		  and 
+	      member_phone = #{phone}
+	    </if>
+   </select>
+   
+     <select id ="exportPhones"  resultType="java.lang.Long">
+       SELECT
+		    info.member_phone
+			
+		FROM
+			mob_member_login mob,
+		  member_info info
+		WHERE
+		  mob.CHANNEL_ID = info.member_id 
+		<if test = "phone!=null and phone!=''">
+		  and 
+	      member_phone = #{phone}
+	    </if>
+   </select>
+</mapper>

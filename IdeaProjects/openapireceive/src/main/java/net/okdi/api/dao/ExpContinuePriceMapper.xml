@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpContinuePriceMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpContinuePrice" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="first_price_id" property="firstPriceId" jdbcType="BIGINT" />
+    <result column="continue_weight" property="continueWeight" jdbcType="DECIMAL" />
+    <result column="continue_freight" property="continueFreight" jdbcType="DECIMAL" />
+    <result column="weight_min" property="weightMin" jdbcType="DECIMAL" />
+    <result column="weight_max" property="weightMax" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, first_price_id, continue_weight, continue_freight, weight_min, weight_max
+  </sql>
+ <delete id="batchDeleteByFirstPriceId" parameterType="java.util.List" >
+    delete from exp_continue_price where first_price_id in 
+    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+        #{item}   
+    </foreach>  
+  </delete>
+ <insert id="batchSaveContinuePrice" parameterType="net.okdi.api.entity.ExpContinuePrice" >
+    insert into exp_continue_price (id, first_price_id, continue_weight, 
+      continue_freight, weight_min, weight_max
+      )
+    values 
+    <foreach collection="list" item="item" index="index" separator="," >
+    (#{item.id,jdbcType=BIGINT}, #{item.firstPriceId,jdbcType=BIGINT}, #{item.continueWeight,jdbcType=DECIMAL}, 
+      #{item.continueFreight,jdbcType=DECIMAL}, #{item.weightMin,jdbcType=DECIMAL}, #{item.weightMax,jdbcType=DECIMAL}
+      )
+    </foreach>  
+  </insert>
+</mapper>

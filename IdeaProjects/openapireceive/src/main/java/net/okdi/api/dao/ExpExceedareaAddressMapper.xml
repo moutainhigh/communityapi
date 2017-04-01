@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.ExpExceedareaAddressMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ExpExceedareaAddress">
+		<id column="address_id" property="addressId" jdbcType="BIGINT" />
+		<id column="comp_id" property="compId" jdbcType="BIGINT" />
+		<result column="net_id" property="netId" jdbcType="BIGINT" />
+		<result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		address_id, comp_id, net_id, created_time
+  </sql>
+	<select id="queryExceedareaAddress" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from exp_exceedarea_address
+		where comp_id = #{compId,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteExceedareaAddress" parameterType="java.lang.Long">
+		delete from exp_exceedarea_address
+		where comp_id = #{compId,jdbcType=BIGINT}
+  </delete>
+	<insert id="saveBatch" parameterType="net.okdi.api.entity.ExpExceedareaAddress">
+		insert into exp_exceedarea_address (address_id, comp_id, net_id,
+		created_time)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.addressId,jdbcType=BIGINT}, #{item.compId,jdbcType=BIGINT}, #{item.netId,jdbcType=BIGINT},
+			#{item.createdTime,jdbcType=TIMESTAMP})
+    </foreach>
+	</insert>
+	<select id="getExceedareaList" resultType="java.lang.String"
+		parameterType="java.lang.Long">
+		SELECT DISTINCT
+		dic.ADDRESS_NAME
+		FROM
+		exp_exceedarea_address
+		exp
+		LEFT JOIN dic_addressaid dic ON exp.address_id = dic.ADDRESS_ID
+		WHERE
+		exp.comp_id =#{compId}
+		ORDER BY
+		dic.address_level DESC
+  	</select>
+	<select id="getExceedAddress" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		 <if test="addressLevel == 1" >
+		 	SELECT address_id ADDRESS_ID,address_name ADDRESS_NAME
+ 			from dic_address WHERE parent_id=#{addressId} and use_flag=1 and NOT EXISTS 
+			(SELECT  b.PROVINCE_ID FROM dic_send_address_net a 
+			LEFT JOIN dic_addressaid b on a.address_id=b.address_id where net_id=#{netId} and use_flag=1);
+		 </if>
+		 <if test="addressLevel == 2" >
+		 	SELECT address_id ADDRESS_ID,address_name ADDRESS_NAME
+ 			from dic_address WHERE parent_id=#{addressId} and use_flag=1 and NOT EXISTS 
+			(SELECT  b.CITY_ID FROM dic_send_address_net a 
+			LEFT JOIN dic_addressaid b on a.address_id=b.address_id  where net_id=#{netId} and use_flag=1 AND b.PROVINCE_ID=#{addressId});
+		 </if>
+		 <if test="addressLevel == 3" >
+		 	SELECT address_id ADDRESS_ID,address_name ADDRESS_NAME
+ 			from dic_address WHERE parent_id=#{addressId} and use_flag=1 and NOT EXISTS 
+			(SELECT  b.county_ID FROM dic_send_address_net a 
+			LEFT JOIN dic_addressaid b on a.address_id=b.address_id  where net_id=#{netId} and use_flag=1 AND b.city_ID=#{addressId});
+		 </if>
+	</select>
+</mapper>

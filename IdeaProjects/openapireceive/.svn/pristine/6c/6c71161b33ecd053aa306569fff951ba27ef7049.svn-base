@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.okdi.api.dao.ParParcelinfoMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.ParParcelinfo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="exp_waybill_num" jdbcType="VARCHAR" property="expWaybillNum" />
+		<result column="sender_type" jdbcType="SMALLINT" property="senderType" />
+		<result column="sender_comp_id" jdbcType="BIGINT" property="senderCompId" />
+		<result column="sender_user_id" jdbcType="BIGINT" property="senderUserId" />
+		<result column="ord_of_seller_id" jdbcType="VARCHAR" property="ordOfSellerId" />
+		<result column="total_goods_amount" jdbcType="DECIMAL"
+			property="totalGoodsAmount" />
+		<result column="insure_amount" jdbcType="DECIMAL" property="insureAmount" />
+		<result column="tip_amount" jdbcType="DECIMAL" property="tipAmount" />
+		<result column="chare_weight_forsender" jdbcType="DECIMAL"
+			property="chareWeightForsender" />
+		<result column="chare_weight_fortransit" jdbcType="DECIMAL"
+			property="chareWeightFortransit" />
+		<result column="parcel_volume" jdbcType="DECIMAL" property="parcelVolume" />
+		<result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
+		<result column="parcel_remark" jdbcType="VARCHAR" property="parcelRemark" />
+		<result column="goods_payment_method" jdbcType="SMALLINT"
+			property="goodsPaymentMethod" />
+		<result column="cod_amount" jdbcType="DECIMAL" property="codAmount" />
+		<result column="cod_is_recovery" jdbcType="SMALLINT" property="codIsRecovery" />
+		<result column="actual_cod_amount" jdbcType="DECIMAL" property="actualCodAmount" />
+		<result column="freight_payment_method" jdbcType="SMALLINT"
+			property="freightPaymentMethod" />
+		<result column="freight" jdbcType="DECIMAL" property="freight" />
+		<result column="freight_payment_status" jdbcType="SMALLINT"
+			property="freightPaymentStatus" />
+		<result column="payment_method" jdbcType="SMALLINT" property="paymentMethod" />
+		<result column="goods_payment_status" jdbcType="SMALLINT"
+			property="goodsPaymentStatus" />
+		<result column="freight_payment_time" jdbcType="TIMESTAMP"
+			property="freightPaymentTime" />
+		<result column="service_id" jdbcType="BIGINT" property="serviceId" />
+		<result column="tacking_status" jdbcType="SMALLINT" property="tackingStatus" />
+		<result column="sign_result" jdbcType="SMALLINT" property="signResult" />
+		<result column="sign_member" jdbcType="VARCHAR" property="signMember" />
+		<result column="disposal_desc" jdbcType="VARCHAR" property="disposalDesc" />
+		<result column="sign_time" jdbcType="TIMESTAMP" property="signTime" />
+		<result column="sign_goods_total" jdbcType="DECIMAL" property="signGoodsTotal" />
+		<result column="create_user_id" jdbcType="BIGINT" property="createUserId" />
+		<result column="comp_id" jdbcType="BIGINT" property="compId" />
+		<result column="net_id" jdbcType="BIGINT" property="netId" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="sign_img_url" jdbcType="VARCHAR" property="signImgUrl" />
+		<result column="parcel_type" jdbcType="CHAR" property="parcelType" />
+		<result column="parcel_end_mark" jdbcType="CHAR" property="parcelEndMark" />
+		<result column="take_task_id" jdbcType="BIGINT" property="takeTaskId" />
+		<result column="send_task_id" jdbcType="BIGINT" property="sendTaskId" />
+		<result column="actual_take_member" jdbcType="BIGINT" property="actualTakeMember" />
+		<result column="actual_send_member" jdbcType="BIGINT" property="actualSendMember" />
+		<result column="receipt_id" jdbcType="BIGINT" property="receiptId" />
+		<result column="print_flag" jdbcType="SMALLINT" property="printFlag" />
+		<result column="no_fly" jdbcType="SMALLINT" property="noFly" />
+		<result column="packing_charges" jdbcType="DECIMAL" property="packingCharges" />
+		<result column="price_premium" jdbcType="DECIMAL" property="pricePremium" />
+		<result column="parcel_status" jdbcType="SMALLINT" property="parcelStatus" />
+	</resultMap>
+ 
+	<sql id="Base_Column_List">
+		id, exp_waybill_num, sender_type, sender_comp_id, sender_user_id,
+		ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount, chare_weight_forsender,
+		chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark, goods_payment_method, cod_amount,
+		cod_is_recovery,
+		actual_cod_amount, freight_payment_method, convert(freight,decimal) as freight,freight_payment_status,
+		payment_method,
+		goods_payment_status, freight_payment_time, service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total, create_user_id, comp_id,
+		net_id, create_time,
+		sign_img_url, parcel_type, parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member,
+		actual_send_member, receipt_id, print_flag, no_fly, packing_charges,
+		price_premium,parcel_status
+	</sql>
+	<sql id="Base_Column_Query">
+		id, exp_waybill_num, sender_type, sender_comp_id, sender_user_id,
+		ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount, chare_weight_forsender,
+		chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark, goods_payment_method, cod_amount,
+		cod_is_recovery,
+		actual_cod_amount, freight_payment_method, freight, freight_payment_status,
+		payment_method,
+		goods_payment_status, freight_payment_time, service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total, create_user_id, comp_id,
+		net_id, create_time,
+		sign_img_url, parcel_type, parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member,
+		actual_send_member, receipt_id, print_flag, no_fly, packing_charges, price_premium,
+		send_name, send_address_id, send_address, send_mobile, send_mobile,
+		send_phone, send_zipcode, send_customer_id,
+		send_contact_id, addressee_name, addressee_address_id, addressee_address,
+		addressee_mobile, addressee_phone, addressee_zipcode,
+		addressee_customer_id,
+		addressee_contact_id, agency_site_id, send_longitude, send_latitude, addressee_longitude,
+		addressee_latitude
+	</sql>
+	<sql id="Blob_Column_List">
+		goods_desc
+	</sql>
+
+	<!-- 根据运单号与网络id获取包裹内容信息 -->
+	<select id="findByWaybillNumAndNetId" parameterType="net.okdi.api.entity.ParParcelinfo"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from par_parcelinfo
+		where exp_waybill_num = #{expWaybillNum,jdbcType=VARCHAR} and net_id =
+		#{netId,jdbcType=BIGINT}
+	</select>
+	
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from par_parcelinfo
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="getParcelInfoByIdNoEnd" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from par_parcelinfo
+		where id = #{id,jdbcType=BIGINT}  and parcel_end_mark != 1 and tacking_status != 1
+	</select>
+	
+ 	<select id="queryTaskByReceipt" resultType="java.lang.Long" parameterType="java.lang.Long"> 
+		select p.receipt_id  as receiptId
+		from par_parcelinfo p 
+		where p.id = #{parcelId}
+ 	</select>
+ 	
+ 	<select id="queryAlreadySignList" resultType="java.util.HashMap" parameterType="java.util.HashMap" > 
+ 		SELECT par.create_time as createTime,par.exp_waybill_num as waybillNum,IFNULL(par.freight,0) as freight,IFNULL(par.cod_amount,0) as totalGoodsAmount,
+        pard.addressee_name as addresseeName,pard.addressee_mobile as addresseeMobile,pard.addressee_address as addresseeAddress,par.id as parcelId,
+		par.send_task_id as sendTaskId 
+		FROM par_parcelinfo par LEFT JOIN par_parceladdress pard on par.id = pard.id where   parcel_status=11
+		and tacking_status!=1
+		and parcel_end_mark!=1
+		and sign_result!= 1
+		and actual_send_member = ${sendMemberId}
+		ORDER BY create_time DESC  
+		limit #{page.offset},#{page.pageSize};
+ 	</select>
+
+ 	<select id="queryAlreadySignCount" resultType="java.lang.Long" parameterType="java.lang.Long" > 
+ 		SELECT count(par.id) 
+		FROM par_parcelinfo par LEFT JOIN par_parceladdress pard on par.id = pard.id where   parcel_status=11
+		and tacking_status!=1
+		and parcel_end_mark!=1
+		and sign_result!= 1
+		and actual_send_member = ${sendMemberId}
+ 	</select>
+ 	
+	<select id="querySendMemberByExpWaybillNum" resultType="java.lang.Long" parameterType="java.lang.Long" > 
+ 		SELECT actual_send_member as sendMember from par_parcelinfo where exp_waybill_num  = #{expWaybillNum};
+ 	</select>
+ 	
+ 	
+ 	<select id="queryWaybillNumById" resultType="java.util.HashMap" parameterType="java.lang.Long" > 
+ 		SELECT exp_waybill_num as expWayBillNum,net_id as netId
+		FROM par_parcelinfo par where par.id = #{parcelId}
+ 	</select>
+ 	
+ 	
+ 	<select id="querySendTaskIdById" resultType="java.lang.Long" parameterType="java.lang.Long" > 
+ 		SELECT par.send_task_id as sendTaskId 
+		FROM par_parcelinfo par where id = #{id}
+ 	</select>
+	<!-- 添加一个包裹 -->
+	<insert id="insertParcel" parameterType="net.okdi.api.entity.ParParcelinfo">
+		insert into par_parcelinfo (id, exp_waybill_num, sender_type,
+		sender_comp_id, sender_user_id, ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount,
+		chare_weight_forsender, chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark,
+		goods_payment_method, cod_amount, cod_is_recovery,
+		actual_cod_amount, freight_payment_method,
+		freight, freight_payment_status, payment_method,
+		goods_payment_status, freight_payment_time,
+		service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total,
+		create_user_id, comp_id, net_id,
+		create_time, sign_img_url, parcel_type,
+		parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member, actual_send_member, receipt_id,
+		print_flag, no_fly, packing_charges,
+		price_premium, goods_desc,parcel_status,disposal_desc,pickup_time,exception_time)
+		values (#{id,jdbcType=BIGINT}, #{expWaybillNum,jdbcType=VARCHAR},
+		#{senderType,jdbcType=SMALLINT},
+		#{senderCompId,jdbcType=BIGINT}, #{senderUserId,jdbcType=BIGINT}, #{ordOfSellerId,jdbcType=VARCHAR},
+		#{totalGoodsAmount,jdbcType=DECIMAL},
+		#{insureAmount,jdbcType=DECIMAL}, #{tipAmount,jdbcType=DECIMAL},
+		#{chareWeightForsender,jdbcType=DECIMAL},
+		#{chareWeightFortransit,jdbcType=DECIMAL},
+		#{parcelVolume,jdbcType=DECIMAL}, #{goodsNum,jdbcType=INTEGER},
+		#{parcelRemark,jdbcType=VARCHAR},
+		#{goodsPaymentMethod,jdbcType=SMALLINT},
+		#{codAmount,jdbcType=DECIMAL}, #{codIsRecovery,jdbcType=SMALLINT},
+		#{actualCodAmount,jdbcType=DECIMAL},
+		#{freightPaymentMethod,jdbcType=SMALLINT},
+		#{freight,jdbcType=DECIMAL},
+		#{freightPaymentStatus,jdbcType=SMALLINT},
+		#{paymentMethod,jdbcType=SMALLINT},
+		#{goodsPaymentStatus,jdbcType=SMALLINT},
+		#{freightPaymentTime,jdbcType=TIMESTAMP},
+		#{serviceId,jdbcType=BIGINT}, #{tackingStatus,jdbcType=SMALLINT},
+		#{signResult,jdbcType=SMALLINT},
+		#{signMember,jdbcType=VARCHAR}, #{signTime,jdbcType=TIMESTAMP}, #{signGoodsTotal,jdbcType=DECIMAL},
+		#{createUserId,jdbcType=BIGINT}, #{compId,jdbcType=BIGINT},
+		#{netId,jdbcType=BIGINT},
+		#{createTime,jdbcType=TIMESTAMP}, #{signImgUrl,jdbcType=VARCHAR}, #{parcelType,jdbcType=CHAR},
+		#{parcelEndMark,jdbcType=CHAR}, #{takeTaskId,jdbcType=BIGINT},
+		#{sendTaskId,jdbcType=BIGINT},
+		#{actualTakeMember,jdbcType=BIGINT}, #{actualSendMember,jdbcType=BIGINT}, #{receiptId,jdbcType=BIGINT},
+		#{printFlag,jdbcType=SMALLINT}, #{noFly,jdbcType=SMALLINT},
+		#{packingCharges,jdbcType=DECIMAL},
+		#{pricePremium,jdbcType=DECIMAL}, #{goodsDesc,jdbcType=LONGVARCHAR},#{parcelStatus,jdbcType=SMALLINT}
+		,#{disposalDesc,jdbcType=VARCHAR},#{pickupTime,jdbcType=TIMESTAMP},#{exceptionTime})
+	</insert>
+
+	<!-- 修改一个包裹信息 -->
+	<update id="updateParcel" parameterType="net.okdi.api.entity.ParParcelinfo">
+		update par_parcelinfo
+		set
+		<!-- id = #{id,jdbcType=BIGINT}, -->
+		exp_waybill_num = #{expWaybillNum,jdbcType=VARCHAR},
+		sender_type = #{senderType,jdbcType=SMALLINT},
+		sender_comp_id = #{senderCompId,jdbcType=BIGINT},
+		sender_user_id = #{senderUserId,jdbcType=BIGINT},
+		ord_of_seller_id = #{ordOfSellerId,jdbcType=VARCHAR},
+		total_goods_amount = #{totalGoodsAmount,jdbcType=DECIMAL},
+		insure_amount = #{insureAmount,jdbcType=DECIMAL},
+		tip_amount = #{tipAmount,jdbcType=DECIMAL},
+		chare_weight_forsender = #{chareWeightForsender,jdbcType=DECIMAL},
+		chare_weight_fortransit = #{chareWeightFortransit,jdbcType=DECIMAL},
+		parcel_volume = #{parcelVolume,jdbcType=DECIMAL},
+		goods_num = #{goodsNum,jdbcType=INTEGER},
+		parcel_remark = #{parcelRemark,jdbcType=VARCHAR},
+		goods_payment_method = #{goodsPaymentMethod,jdbcType=SMALLINT},
+		cod_amount = #{codAmount,jdbcType=DECIMAL},
+		cod_is_recovery = #{codIsRecovery,jdbcType=SMALLINT},
+		actual_cod_amount = #{actualCodAmount,jdbcType=DECIMAL},
+		freight_payment_method = #{freightPaymentMethod,jdbcType=SMALLINT},
+		freight = #{freight,jdbcType=DECIMAL},
+		freight_payment_status = #{freightPaymentStatus,jdbcType=SMALLINT},
+		payment_method = #{paymentMethod,jdbcType=SMALLINT},
+		goods_payment_status = #{goodsPaymentStatus,jdbcType=SMALLINT},
+		freight_payment_time = #{freightPaymentTime,jdbcType=TIMESTAMP},
+		service_id = #{serviceId,jdbcType=BIGINT},
+		tacking_status = #{tackingStatus,jdbcType=SMALLINT},
+		sign_result = #{signResult,jdbcType=SMALLINT},
+		sign_member = #{signMember,jdbcType=VARCHAR},
+		sign_time = #{signTime,jdbcType=TIMESTAMP},
+		sign_goods_total = #{signGoodsTotal,jdbcType=DECIMAL},
+		create_user_id = #{createUserId,jdbcType=BIGINT},
+		comp_id = #{compId,jdbcType=BIGINT},
+		net_id = #{netId,jdbcType=BIGINT},
+		sign_img_url = #{signImgUrl,jdbcType=VARCHAR},
+		parcel_type = #{parcelType,jdbcType=CHAR},
+		parcel_end_mark = #{parcelEndMark,jdbcType=CHAR},
+		take_task_id = #{takeTaskId,jdbcType=BIGINT},
+		send_task_id = #{sendTaskId,jdbcType=BIGINT},
+		actual_take_member = #{actualTakeMember,jdbcType=BIGINT},
+		actual_send_member = #{actualSendMember,jdbcType=BIGINT},
+		receipt_id = #{receiptId,jdbcType=BIGINT},
+		print_flag = #{printFlag,jdbcType=SMALLINT},
+		no_fly = #{noFly,jdbcType=SMALLINT},
+		packing_charges = #{packingCharges,jdbcType=DECIMAL},
+		price_premium = #{pricePremium,jdbcType=DECIMAL},
+		goods_desc = #{goodsDesc,jdbcType=LONGVARCHAR},
+		parcel_status = #{parcelStatus,jdbcType=SMALLINT} 
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<update id="updateParcelSelective" parameterType="net.okdi.api.entity.ParParcelinfo">
+		update par_parcelinfo
+		<set>
+			<if test="expWaybillNum != null">
+				exp_waybill_num = #{expWaybillNum,jdbcType=VARCHAR},	
+			</if>
+			<if test="senderType != null">
+				sender_type = #{senderType,jdbcType=SMALLINT},
+			</if>
+			<if test="senderCompId != null">
+				sender_comp_id = #{senderCompId,jdbcType=BIGINT},
+			</if>
+			<if test="senderUserId != null">
+				sender_user_id = #{senderUserId,jdbcType=BIGINT},
+			</if>
+			<if test="ordOfSellerId != null">
+				ord_of_seller_id = #{ordOfSellerId,jdbcType=VARCHAR},
+			</if>
+			<if test="totalGoodsAmount != null">
+				total_goods_amount = #{totalGoodsAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="insureAmount != null">
+				insure_amount = #{insureAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="tipAmount != null">
+				tip_amount = #{tipAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="chareWeightForsender != null">
+				chare_weight_forsender = #{chareWeightForsender,jdbcType=DECIMAL},
+			</if>
+			<if test="chareWeightFortransit != null">
+				chare_weight_fortransit = #{chareWeightFortransit,jdbcType=DECIMAL},
+			</if>
+			<if test="parcelVolume != null">
+				parcel_volume = #{parcelVolume,jdbcType=DECIMAL},
+			</if>
+			<if test="goodsNum != null">
+				goods_num = #{goodsNum,jdbcType=INTEGER},
+			</if>
+			<if test="parcelRemark != null">
+				parcel_remark = #{parcelRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="goodsPaymentMethod != null">
+				goods_payment_method = #{goodsPaymentMethod,jdbcType=SMALLINT},
+			</if>
+			<if test="codAmount != null">
+				cod_amount = #{codAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="codIsRecovery != null">
+				cod_is_recovery = #{codIsRecovery,jdbcType=SMALLINT},
+			</if>
+			<if test="actualCodAmount != null">
+				actual_cod_amount = #{actualCodAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="freightPaymentMethod != null">
+				freight_payment_method = #{freightPaymentMethod,jdbcType=SMALLINT},
+			</if>
+			<if test="freight != null">
+				freight = #{freight,jdbcType=DECIMAL},
+			</if>
+			<if test="freightPaymentStatus != null">
+				freight_payment_status = #{freightPaymentStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="paymentMethod != null">
+				payment_method = #{paymentMethod,jdbcType=SMALLINT},
+			</if>
+			<if test="goodsPaymentStatus != null">
+				goods_payment_status = #{goodsPaymentStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="freightPaymentTime != null">
+				freight_payment_time = #{freightPaymentTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="serviceId != null">
+				service_id = #{serviceId,jdbcType=BIGINT},
+			</if>
+			<if test="tackingStatus != null">
+				tacking_status = #{tackingStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="signResult != null">
+				sign_result = #{signResult,jdbcType=SMALLINT},
+			</if>
+			<if test="signMember != null">
+				sign_member = #{signMember,jdbcType=VARCHAR},
+			</if>
+			<if test="signTime != null">
+				sign_time = #{signTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="signGoodsTotal != null">
+				sign_goods_total = #{signGoodsTotal,jdbcType=DECIMAL},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=BIGINT},
+			</if>
+			<if test="compId != null">
+				comp_id = #{compId,jdbcType=BIGINT},
+			</if>
+			<if test="netId != null">
+				net_id = #{netId,jdbcType=BIGINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="signImgUrl != null">
+				sign_img_url = #{signImgUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="parcelType != null">
+				parcel_type = #{parcelType,jdbcType=CHAR},
+			</if>
+			<if test="parcelEndMark != null">
+				parcel_end_mark = #{parcelEndMark,jdbcType=CHAR},
+			</if>
+			<if test="takeTaskId != null">
+				take_task_id = #{takeTaskId,jdbcType=BIGINT},
+			</if>
+			<if test="sendTaskId != null">
+				send_task_id = #{sendTaskId,jdbcType=BIGINT},
+			</if>
+			<if test="actualTakeMember != null">
+				actual_take_member = #{actualTakeMember,jdbcType=BIGINT},
+			</if>
+			<if test="actualSendMember != null">
+				actual_send_member = #{actualSendMember,jdbcType=BIGINT},
+			</if>
+			<if test="receiptId != null">
+				receipt_id = #{receiptId,jdbcType=BIGINT},
+			</if>
+			<if test="printFlag != null">
+				print_flag = #{printFlag,jdbcType=SMALLINT},
+			</if>
+			<if test="noFly != null">
+				no_fly = #{noFly,jdbcType=SMALLINT},
+			</if>
+			<if test="packingCharges != null">
+				packing_charges = #{packingCharges,jdbcType=DECIMAL},
+			</if>
+			<if test="pricePremium != null">
+				price_premium = #{pricePremium,jdbcType=DECIMAL},
+			</if>
+			<if test="goodsDesc != null">
+				goods_desc = #{goodsDesc,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="parcelStatus != null">
+				parcel_status = #{parcelStatus,jdbcType=SMALLINT},
+			</if>
+			<if test="disposalDesc != null">
+				disposal_desc = #{disposalDesc,jdbcType=VARCHAR} ,
+			</if>
+			<if test="exceptionTime != null">
+				exception_time = #{exceptionTime} 
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	
+	 <update id="updateParcelStatus"  parameterType="java.util.Map">
+    	update par_parcelinfo
+    		    set
+                send_task_id = null,
+                parcel_status = 10,
+                tacking_status = 0,
+                tacking_status = null,
+                error_message = #{errorMessage},
+                disposal_desc = #{disposalDesc},
+                exception_time = #{exceptionTime}
+      			  where id = #{parcelId}
+    </update>
+
+	 <update id="delTakeTaskRelationParcel" >
+    	update par_parcelinfo p set p.take_task_id = null,parcel_status = 1 where id in   
+         <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+	<!-- 根据id删除 -->
+	<delete id="deleteParcel" parameterType="java.lang.Long">
+		delete from par_parcelinfo
+		where id = #{id, jdbcType=BIGINT}
+	</delete>
+
+	<select id="findParcelInfoByExpWayBillNum" parameterType="java.util.HashMap"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from par_parcelinfo
+		where exp_waybill_num =#{expWayBillNum} and net_id=#{netId}
+	</select>
+	<!-- 通过运单号和网络id查询包裹id -->
+	<select id="getParcelId" parameterType="java.util.HashMap"
+		resultType="java.lang.Long">
+		select a.id as parcelId from par_parcelinfo a where
+		a.exp_waybill_num=#{expWayBillNum} and a.net_id=#{netId} 
+		<!-- and parcel_end_mark != 1 and tacking_status != 1 -->
+	</select>
+  <!-- 通过派件人 查找包裹ids -->
+  <select id = "queryParcelIdsByMemberId" parameterType="java.util.HashMap" resultType="java.lang.Long">
+	select p.id from par_parcelinfo p
+	where p.actual_send_member is not null and p.actual_send_member !=''
+	and p.send_task_id is null and p.actual_send_member=#{memberId} and parcel_end_mark != 1
+	ORDER BY p.create_time DESC  
+	limit #{page.offset},#{page.pageSize};
+  </select>	
+  <select id = "getParcelListBySendMemberIdCount" parameterType="java.lang.Long" resultType="java.lang.Long">
+	select count(p.id) from par_parcelinfo p
+	where p.actual_send_member is not null and p.actual_send_member !=''
+	and p.send_task_id is null and p.actual_send_member=#{memberId} and parcel_end_mark != 1
+  </select>	
+<!--   cast(DATE_FORMAT(par.create_time,'%Y-%m-%d %h') as CHAR) as time -->
+  <select id = "queryTakeTaskList" parameterType="java.lang.Long" resultType="java.util.HashMap">
+     select  par.id,count(par.receipt_id) as task,unix_timestamp(par.create_time) * 1000 as time,par.receipt_Id as receiptId,ac.total_freight as freight
+	  FROM par_parcelinfo par left join acc_srecpayvouchers ac on ac.id = par.receipt_id 
+	  where par.actual_take_member = #{actualTakeMember}    and date(par.create_time) = CURDATE() and par.receipt_id IS NOT NULL
+         AND par.take_task_id is null AND par.send_task_id is null
+      GROUP BY par.receipt_id ORDER BY par.create_time DESC
+  </select>
+
+  <select id = "queryTakeByWaybillNum" parameterType="net.okdi.api.entity.ParParcelinfo" resultType="java.util.HashMap">
+   select  unix_timestamp(par.create_time) * 1000 as time , par.exp_waybill_num as wayBillNum ,par_d.addressee_address as addresseeAddress 
+     ,par_d.addressee_address_id as addresseeAddressId, par.id as parcelId,par.freight as freight  
+	 FROM par_parcelinfo par left join  par_parceladdress par_d on par.id = par_d.id  
+ 	 where par.actual_take_member = #{actualTakeMember}  and par.receipt_id = #{receiptId}   and date(par.create_time) = CURDATE() 
+ 	 AND par.take_task_id is null AND par.send_task_id is null
+  </select>
+
+  <select id = "queryTakeTaskParcel" parameterType="java.lang.Long" resultType="java.util.HashMap">
+	      select p.id,p.exp_waybill_num, d.send_name ,d.send_mobile ,d.send_address ,d.addressee_name,d.addressee_mobile,d.addressee_address,m.member_name
+			 from par_parcelinfo p LEFT JOIN par_parceladdress d on p.id = d.id LEFT JOIN member_info m on p.actual_take_member = m.member_id 
+				where 1=1  and p.take_task_id = #{takeTaskId}  and p.parcel_status = 1
+  </select>
+  <!-- 批量插入包裹内容信息 -->
+    <insert id="addbatchSaveParcelInfo" parameterType="java.util.List" >
+		insert into par_parcelinfo (id, exp_waybill_num, sender_type,
+		sender_comp_id, sender_user_id, ord_of_seller_id,
+		total_goods_amount, insure_amount, tip_amount,
+		chare_weight_forsender, chare_weight_fortransit,
+		parcel_volume, goods_num, parcel_remark,
+		goods_payment_method, cod_amount, cod_is_recovery,
+		actual_cod_amount, freight_payment_method,
+		freight, freight_payment_status, payment_method,
+		goods_payment_status, freight_payment_time,
+		service_id, tacking_status, sign_result,
+		sign_member, sign_time, sign_goods_total,
+		create_user_id, comp_id, net_id,
+		create_time, sign_img_url, parcel_type,
+		parcel_end_mark, take_task_id, send_task_id,
+		actual_take_member, actual_send_member, receipt_id,
+		print_flag, no_fly, packing_charges,
+		price_premium, goods_desc,parcel_status)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >  
+		(
+		#{item.id,jdbcType=BIGINT}, #{item.expWaybillNum,jdbcType=VARCHAR},
+		#{item.senderType,jdbcType=SMALLINT},
+		#{item.senderCompId,jdbcType=BIGINT}, #{item.senderUserId,jdbcType=BIGINT}, #{item.ordOfSellerId,jdbcType=VARCHAR},
+		#{item.totalGoodsAmount,jdbcType=DECIMAL},
+		#{item.insureAmount,jdbcType=DECIMAL}, #{item.tipAmount,jdbcType=DECIMAL},
+		#{item.chareWeightForsender,jdbcType=DECIMAL},
+		#{item.chareWeightFortransit,jdbcType=DECIMAL},
+		#{item.parcelVolume,jdbcType=DECIMAL}, #{item.goodsNum,jdbcType=INTEGER},
+		#{item.parcelRemark,jdbcType=VARCHAR},
+		#{item.goodsPaymentMethod,jdbcType=SMALLINT},
+		#{item.codAmount,jdbcType=DECIMAL}, #{item.codIsRecovery,jdbcType=SMALLINT},
+		#{item.actualCodAmount,jdbcType=DECIMAL},
+		#{item.freightPaymentMethod,jdbcType=SMALLINT},
+		#{item.freight,jdbcType=DECIMAL},
+		#{item.freightPaymentStatus,jdbcType=SMALLINT},
+		#{item.paymentMethod,jdbcType=SMALLINT},
+		#{item.goodsPaymentStatus,jdbcType=SMALLINT},
+		#{item.freightPaymentTime,jdbcType=TIMESTAMP},
+		#{item.serviceId,jdbcType=BIGINT}, #{item.tackingStatus,jdbcType=SMALLINT},
+		#{item.signResult,jdbcType=SMALLINT},
+		#{item.signMember,jdbcType=VARCHAR}, #{item.signTime,jdbcType=TIMESTAMP}, #{item.signGoodsTotal,jdbcType=DECIMAL},
+		#{item.createUserId,jdbcType=BIGINT}, #{item.compId,jdbcType=BIGINT},
+		#{item.netId,jdbcType=BIGINT},
+		#{item.createTime,jdbcType=TIMESTAMP}, #{item.signImgUrl,jdbcType=VARCHAR}, #{item.parcelType,jdbcType=CHAR},
+		#{item.parcelEndMark,jdbcType=CHAR}, #{item.takeTaskId,jdbcType=BIGINT},
+		#{item.sendTaskId,jdbcType=BIGINT},
+		#{item.actualTakeMember,jdbcType=BIGINT}, #{item.actualSendMember,jdbcType=BIGINT}, #{item.receiptId,jdbcType=BIGINT},
+		#{item.printFlag,jdbcType=SMALLINT}, #{item.noFly,jdbcType=SMALLINT},
+		#{item.packingCharges,jdbcType=DECIMAL},
+		#{item.pricePremium,jdbcType=DECIMAL}, #{item.goodsDesc,jdbcType=LONGVARCHAR},#{item.parcelStatus,jdbcType=SMALLINT})
+    </foreach>  
+  </insert>
+  
+  <select id="queryParcelInfoByTaskId" parameterType="java.lang.Long" resultType="java.util.HashMap">
+  	select pi.id, pi.chare_weight_forsender as chareWeightForsender, pd.addressee_address as addresseeAddress, pd.addressee_address_id as addresseeAddressId
+  	,addressee_mobile as addresseeMobile,addressee_name as addresseeName
+  	from par_parcelinfo pi LEFT JOIN par_parceladdress pd ON pi.id = pd.id 
+  	where pi.take_task_id = #{taskId} and pi.exp_waybill_num is null
+  </select>
+  
+  <select id = "queryParcelIdsByCreateUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+	select p.id from par_parcelinfo p
+	where p.create_user_id=#{memberId} ORDER BY p.create_time
+  </select>	
+  
+  
+  <select id="queryParcelInfoList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  	select i.id as parcelId, a.send_customer_id as customerId from par_parcelinfo i LEFT JOIN par_parceladdress a ON i.id=a.id  
+  	where i.comp_id = #{compId} 
+  	<if test="createTimeStart != null">
+  		and i.create_time <![CDATA[>=]]> #{createTimeStart} 
+  		and i.create_time <![CDATA[<=]]> #{createTimeEnd} 
+  	</if>
+  	<if test="expWaybillNum != null and expWaybillNum != ''">
+  		and i.exp_waybill_num = #{expWaybillNum} 
+  	</if>
+  	<if test="memberId != null and memberId != -1">
+  		and i.actual_take_member = #{memberId}
+  	</if>
+  	<if test="customerName != null and customerName != '-1'">
+  		and a.send_customer_id = #{customerName}
+  	</if>
+  	<if test="senderPhone != null and senderPhone != ''">
+  		and a.send_mobile = #{senderPhone}
+  	</if>
+  	<if test="parcelStatus != null and parcelStatus != -1">
+  		and i.parcel_status = #{parcelStatus}  
+  	</if>
+  	and i.parcel_status <![CDATA[<=]]> 1 
+  	order by i.parcel_status,i.create_time desc  limit #{page.offset},#{page.pageSize}
+  </select>
+  
+  <select id="queryParcelInfoListCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+   select count(i.id) from par_parcelinfo i LEFT JOIN par_parceladdress a ON i.id=a.id  
+  	where i.comp_id = #{compId} 
+  	<if test="createTimeStart != null">
+  		and i.create_time <![CDATA[>=]]> #{createTimeStart} 
+  		and i.create_time <![CDATA[<=]]> #{createTimeEnd} 
+  	</if>
+  	<if test="expWaybillNum != null and expWaybillNum != ''">
+  		and i.exp_waybill_num = #{expWaybillNum} 
+  	</if>
+  	<if test="memberId != null and memberId != -1">
+  		and i.actual_take_member = #{memberId} 
+  	</if>
+  	<if test="customerName != null and customerName != '-1'">
+  		and a.send_customer_id = #{customerName} 
+  	</if>
+  	<if test="senderPhone != null and senderPhone != ''">
+  		and a.send_mobile = #{senderPhone} 
+  	</if>
+  	<if test="parcelStatus != null and parcelStatus != -1">
+  		and i.parcel_status = #{parcelStatus} 
+  	</if>
+  	and i.parcel_status <![CDATA[<=]]> 1 
+  </select>
+  
+  <select id="queryParcelInfoListByTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">
+  	select pi.id 
+  	from par_parcelinfo pi 
+  	where pi.take_task_id = #{taskId}
+  </select>
+  
+  <update id="updateCompIdByTakeTaskId" >
+   	update par_parcelinfo p set p.comp_id = #{compId} 
+   	where p.take_task_id = #{takeTaskId}
+  </update>
+  
+  <select id="takeRecordList" parameterType="java.util.Map" resultType="net.okdi.api.vo.VO_ParcelList">
+  	SELECT
+		a.send_address,
+		a.send_mobile,
+		a.send_name,
+		p.chare_weight_forsender,
+		p.freight_payment_method,
+		p.freight,
+		p.exp_waybill_num,
+		B.net_name,
+		p.price_premium,
+		p.cod_amount,
+		p.packing_charges,
+		p.insure_amount
+	FROM
+		par_parcelinfo p
+	LEFT JOIN par_parceladdress a ON p.id = a.id
+	LEFT JOIN bas_netinfo B ON P.net_id = B.net_id
+	WHERE
+		p.actual_take_member =#{memberId}
+	AND DATE_FORMAT(p.pickup_time, '%Y-%m-%d') =#{date}
+	AND p.exp_waybill_num is not null
+	ORDER BY
+		p.pickup_time DESC
+  </select>
+  
+  <select id="sendRecordListFinish" resultType="java.util.Map">
+  SELECT
+   a.id as parcelId,
+	b.addressee_address as addresseeAddress,
+  b.addressee_mobile as addresseeMobile,
+  b.addressee_name as addresseeName,
+  a.exp_waybill_num as expWaybillNum,
+  c.net_name as netName,
+   IFNULL(a.freight,0.00) as freight,
+  IFNULL(a.cod_amount,0.00) as codAmount
+FROM
+	par_parcelinfo a LEFT JOIN par_parceladdress b on a.id = b.id
+LEFT JOIN bas_netinfo c on a.net_id = c.net_ID
+WHERE
+	a.actual_send_member = #{memberId}
+AND date(a.sign_time) = date(#{queryTime})
+and  a.tacking_status = 1
+order by a.sign_time desc
+  </select>
+  
+  <select id="sendRecordListException" resultType="java.util.Map">
+  SELECT
+   a.id as parcelId,
+	b.addressee_address as addresseeAddress,
+  b.addressee_mobile as addresseeMobile,
+  b.addressee_name as addresseeName,
+  a.exp_waybill_num as expWaybillNum,
+  c.net_name as netName,
+   IFNULL(a.freight,0.00) as freight,
+  IFNULL(a.cod_amount,0.00) as codAmount,
+  a.disposal_desc as disposalDesc
+FROM
+	par_parcelinfo a LEFT JOIN par_parceladdress b on a.id = b.id
+LEFT JOIN bas_netinfo c on a.net_id = c.net_ID
+WHERE
+	a.actual_send_member = #{memberId}
+AND date(a.exception_time) = date(#{queryTime})
+and  (a.tacking_status <![CDATA[<>]]> 1 or a.tacking_status is null)
+order by a.exception_time desc
+  </select>
+  
+  <update id="updatePickupTime" parameterType="java.lang.Long">
+   	update par_parcelinfo p set p.pickup_time =now()
+   	where p.take_task_id = #{taskId}
+  </update>
+  
+  <update id="updateExceptionTime" parameterType="java.lang.Long">
+   	update par_parcelinfo p set p.exception_time =null
+   	where p.id = #{parcelId}
+  </update>
+  
+</mapper>

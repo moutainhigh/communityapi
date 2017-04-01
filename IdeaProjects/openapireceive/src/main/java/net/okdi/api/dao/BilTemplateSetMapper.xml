@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BilTemplateSetMapper">
+<!-- 添加 -->
+	<insert id="insert" parameterType="net.okdi.api.entity.BilTemplateSet">
+		insert into bil_template_set
+		(ID,TEMPLATE_TYPE,COMP_ID,MEMBER_ID,ACCOUNT_ID,TEMPLATE_CONTENT,TEMPLATE_SIGN,CREATE_USER,CREATE_TIME,DELETE_MARK)
+		values
+		(#{id,jdbcType=BIGINT},
+		#{templateType,jdbcType=VARCHAR},
+		#{compId,jdbcType=BIGINT},
+		#{memberId,jdbcType=BIGINT}, 
+		#{accountId,jdbcType=BIGINT},
+		#{templateContent,jdbcType=VARCHAR},
+		#{templateSign,jdbcType=VARCHAR},
+		#{createUser,jdbcType=BIGINT},
+		#{createTime,jdbcType=VARCHAR},
+		#{deleteMark,jdbcType=SMALLINT})
+  	</insert>
+	<!-- 更新 -->
+	<update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.BilTemplateSet">
+		update bil_template_set
+		<set>
+			<if test="templateType != null">
+				TEMPLATE_TYPE = #{templateType,jdbcType=VARCHAR},
+      		</if>
+			<if test="compId != null">
+				COMP_ID = #{compId,jdbcType=BIGINT},
+      		</if>
+			<if test="memberId != null">
+				MEMBER_ID = #{memberId,jdbcType=BIGINT},
+      		</if>
+			<if test="accountId != null">
+				ACCOUNT_ID = #{accountId,jdbcType=BIGINT},
+      		</if>
+      		<if test="templateContent != null">
+				TEMPLATE_CONTENT = #{templateContent,jdbcType=VARCHAR},
+      		</if>
+			<if test="templateSign != null">
+				TEMPLATE_SIGN = #{templateSign,jdbcType=VARCHAR},
+      		</if>
+			<if test="createUser != null">
+				CREATE_USER = #{createUser,jdbcType=BIGINT},
+      		</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=VARCHAR},
+      		</if>
+			<if test="deleteMark != null">
+				DELETE_MARK =#{deleteMark,jdbcType=SMALLINT},
+      		</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+	<delete id="delete" parameterType="java.lang.Long" >
+	delete from bil_template_set
+    where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<!-- 删除 -->
+    <delete id="deleteByMap" parameterType="java.util.Map">
+    	delete from bil_template_set where id=#{id} and MEMBER_ID=#{memberId}
+    </delete>
+	<select id="list" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+		ID AS id,
+		TEMPLATE_TYPE AS templateType,
+		COMP_ID AS compId,
+		MEMBER_ID AS memberId,
+		ACCOUNT_ID AS accountId,
+		TEMPLATE_CONTENT AS templateContent,
+		TEMPLATE_SIGN AS templateSign,
+		CREATE_USER AS createUser,
+		CREATE_TIME AS createTime,
+		DELETE_MARK AS deleteMark
+		FROM
+		bil_template_set b
+		WHERE b.COMP_ID=#{compId}
+		AND
+		b.MEMBER_ID=#{memberId}
+	</select>
+	
+	
+	
+	
+</mapper>

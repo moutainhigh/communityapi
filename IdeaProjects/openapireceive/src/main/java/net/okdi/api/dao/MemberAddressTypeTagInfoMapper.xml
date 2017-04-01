@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberAddressTypeTagInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberAddressTypeTagInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="address_type_name" property="addressTypeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, member_id, address_type_name
+  </sql>
+  
+  <delete id="deleteByPrimaryKey" parameterType="net.okdi.api.entity.MemberAddressTypeTagInfo" >
+    delete from member_address_type_tag_info
+    where id = #{id,jdbcType=BIGINT}
+          and member_id = #{memberId}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.MemberAddressTypeTagInfo" >
+    insert into member_address_type_tag_info (id, member_id, address_type_name
+      )
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{addressTypeName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <select id="getAddressTagByMemberId" parameterType="net.okdi.api.entity.MemberAddressTypeTagInfo" resultType="java.util.Map">
+   select  id,address_type_name from member_address_type_tag_info where member_id = #{memberId} or member_id is null
+  </select>
+  
+</mapper>

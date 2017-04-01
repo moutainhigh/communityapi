@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.SmsTempleAuditMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.SmsTempleAudit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="member_phone" property="memberPhone" jdbcType="VARCHAR" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="comp_name" property="compName" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="temple_content" property="templeContent" jdbcType="VARCHAR" />
+    <result column="audit_status" property="auditStatus" jdbcType="SMALLINT" />
+    <result column="audit_count" property="auditCount" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="delete_flag" property="deleteFlag" jdbcType="SMALLINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, member_id, member_phone, comp_id, comp_name, real_name, temple_content, audit_status, 
+    audit_count, create_time, update_time, delete_flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from sms_temple_audit
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="findSmsTemple" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from sms_temple_audit
+    where member_id = #{memberId,jdbcType=BIGINT}
+    and delete_flag = 0
+  </select>
+  <!-- String phone, String realName, String compName, String auditCount, Short auditStatus -->
+  <select id="findSmsTemplePT" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from sms_temple_audit
+    where delete_flag = 0
+    <if test="phone != null" >
+    	and member_phone like CONCAT('%',#{phone},'%')
+    </if>
+    <if test="realName != null" >
+    	and real_name like CONCAT('%',#{realName},'%')
+    </if>
+    <if test="compName != null" >
+    	and comp_name like CONCAT('%',#{compName},'%')
+    </if>
+    <if test="auditCount != null and auditCount &lt; 3" >
+    	and audit_count = #{auditCount}
+    </if>
+    <if test="auditCount != null and auditCount &gt; 2" >
+    	and audit_count <![CDATA[ > ]]> #{auditCount}  
+    </if>
+    <if test="auditStatus != null" >
+    	and audit_Status = #{auditStatus}  
+    </if>
+    order by create_time desc
+    limit #{page.offset},#{page.pageSize} 
+    
+  </select>
+  <update id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    update sms_temple_audit set delete_flag = 1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <insert id="insert" parameterType="net.okdi.api.entity.SmsTempleAudit" >
+    insert into sms_temple_audit (id, member_id, member_phone, 
+      comp_id, comp_name, real_name, 
+      temple_content, audit_status, audit_count, 
+      create_time, update_time, delete_flag
+      )
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{memberPhone,jdbcType=VARCHAR}, 
+      #{compId,jdbcType=BIGINT}, #{compName,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
+      #{templeContent,jdbcType=VARCHAR}, #{auditStatus,jdbcType=SMALLINT}, #{auditCount,jdbcType=SMALLINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=SMALLINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.SmsTempleAudit" >
+    insert into sms_temple_audit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="memberId != null" >
+        member_id,
+      </if>
+      <if test="memberPhone != null" >
+        member_phone,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="compName != null" >
+        comp_name,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="templeContent != null" >
+        temple_content,
+      </if>
+      <if test="auditStatus != null" >
+        audit_status,
+      </if>
+      <if test="auditCount != null" >
+        audit_count,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="deleteFlag != null" >
+        delete_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="memberPhone != null" >
+        #{memberPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="compName != null" >
+        #{compName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="templeContent != null" >
+        #{templeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="auditStatus != null" >
+        #{auditStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="auditCount != null" >
+        #{auditCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null" >
+        #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.SmsTempleAudit" >
+    update sms_temple_audit
+    <set >
+      <if test="memberId != null" >
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="memberPhone != null" >
+        member_phone = #{memberPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="compName != null" >
+        comp_name = #{compName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="templeContent != null" >
+        temple_content = #{templeContent,jdbcType=VARCHAR},
+      </if>
+      <if test="auditStatus != null" >
+        audit_status = #{auditStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="auditCount != null" >
+        audit_count = #{auditCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null" >
+        delete_flag = #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="editSmsTemple" parameterType="java.util.Map" >
+    update sms_temple_audit
+    set temple_content = #{templeContent,jdbcType=VARCHAR},
+    audit_status = #{auditStatus,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="auditSmsTemple" parameterType="java.util.Map" >
+    update sms_temple_audit
+    set audit_status = #{auditStatus,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

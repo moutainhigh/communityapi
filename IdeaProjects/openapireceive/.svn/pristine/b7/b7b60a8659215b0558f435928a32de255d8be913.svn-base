@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV4.dao.QueryTaskMapperV4">
+
+	<select id="getMemberName" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select member_name as memberName from member_info  where
+		member_id=#{actorMemberId}
+	</select>
+	<select id="getNetName" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select net_name as netName from bas_netinfo  where
+		net_id=#{coopNetId}
+	</select>
+	<select id="getCompName" parameterType="java.lang.Long"
+		resultType="java.lang.String">
+		select comp_name as compName  from bas_compinfo  where
+		comp_id=#{coopCompId}
+	</select>
+	<select id="getNetIdByName" parameterType="java.lang.String"
+		resultType="java.lang.Long">
+		select net_id as netId  from bas_netinfo  where
+		net_name like '%${_parameter}%'
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.apiV2.dao.NewUserRegisterActivityMapperV2" >
+  <resultMap id="BaseResultMap" type="net.okdi.apiV2.entity.NewUserRegisterActivity" >
+    <id column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="site_reward_price" property="siteRewardPrice" jdbcType="DECIMAL" />
+    <result column="point_reward_price" property="pointRewardPrice" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+ 
+	 <select id="queryNewUserExperienceGold" resultType="java.util.Map">
+	 	select activity_id,province,site_reward_price,point_reward_price 
+	 	from new_user_register_activity
+	 </select>
+ 
+ 	<update id="updateNewUserExperienceGold" parameterType="net.okdi.apiV2.entity.NewUserRegisterActivity">
+ 		update new_user_register_activity
+ 		set
+ 		site_reward_price = #{siteRewardPrice}
+ 		point_reward_price = #{pointRewardPrice}
+ 		where activity_id = #{activityId}
+ 	</update>
+ 
+</mapper>

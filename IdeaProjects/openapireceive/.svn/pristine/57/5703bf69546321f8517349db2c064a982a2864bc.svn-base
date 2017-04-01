@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.HandleDateMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.BasEmployeeRelation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="member_id" property="memberId" jdbcType="BIGINT" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="SMALLINT" />
+    <result column="area_color" property="areaColor" jdbcType="CHAR" />
+    <result column="employee_work_status_flag" property="employeeWorkStatusFlag" jdbcType="SMALLINT" />
+    <result column="review_task_receiving_flag" property="reviewTaskReceivingFlag" jdbcType="SMALLINT" />
+    <result column="margin" property="margin" jdbcType="BIGINT" />
+    <result column="credit_limit" property="creditLimit" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, comp_id, image_use, image_type, image_seque_num, image_synopsis, image_detail, 
+    image_url
+  </sql>
+  
+<select id = "queryAllRelationData" resultType="java.util.HashMap">
+
+select a.member_id as memberId,a.comp_id as compId,a.role_id as roleId from bas_employee_relation a where a.member_id not in(
+
+select b.member_id from bas_employeeaudit b  where b.audit_item=2
+
+)
+</select>
+
+<insert id = "insert">
+
+  insert into bas_employeeaudit(
+  								id,
+  								member_id,
+  								audit_comp,
+  								application_role_type,
+  								application_time,
+  								audit_item,
+  								audit_opinion,
+  								audit_time)
+							values(
+								#{id},
+								#{memberId},
+								#{compId},
+								#{roleId},
+								#{auditTime},
+								2,
+								1,
+								#{auditTime}
+								)
+		 							  
+</insert>
+
+<select id = "queryPasswordByMobile" resultType="java.util.HashMap">
+
+SELECT
+	a.login_id AS loginPhone,
+	a.login_pwd AS loginPassword,
+	a.member_id AS memberId
+FROM
+	user_center.okdi_login a
+WHERE
+	a.login_id =#{mobile}
+AND data_type = 1
+
+</select>
+</mapper>

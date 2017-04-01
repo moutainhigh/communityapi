@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+            http://www.springframework.org/schema/data/mongo  
+            http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+            http://www.springframework.org/schema/data/repository
+            http://www.springframework.org/schema/data/repository/spring-repository-1.5.xsd">
+
+	<!-- 最大连接数 connections-per-host -->
+	<!-- 最大队列数 threads-allowed-to-block-for-connection-multiplier -->
+	<!-- 自动重试连接 auto-connect-retry -->
+	<!-- 连接超时时间 connect-timeout -->
+	<!-- 最大连接数与最大队列数值相乘的结果就是线程队列最大值,如果连接线程排满了队列就会抛出"Out of semaphores to get 
+		db" -->
+	<!-- 最大等待时间 max-wait-time -->
+	<!-- Socket保持活跃 socket-keep-alive -->
+	<!-- Socket超时时间 socket-timeout -->
+	<!-- 通过在连接时指定或者在主库指定slaveOk，由Secondary来分担读的压力，Primary只承担写操作 ，让mongo的secondary支持读操作 -->
+	<!-- 写入超时 write-timeout -->
+	<!-- replica-set格式：ip1:port1,ip2:port2,... -->
+
+	<mongo:mongo id="mongo" replica-set="${mongodb_url}">
+		<mongo:options connections-per-host="20000"
+			threads-allowed-to-block-for-connection-multiplier="10"
+			connect-timeout="2000" max-wait-time="4000" auto-connect-retry="true"
+			socket-keep-alive="true" socket-timeout="0" slave-ok="true"
+			write-number="1" write-timeout="0" write-fsync="true" />
+	</mongo:mongo>
+	<mongo:mapping-converter id="mongoConverter" base-package="net.okdi.apiV1.entity" />
+	<mongo:db-factory id="mongoDbFactory" mongo-ref="mongo"
+		dbname="${mongodb_dbname}" username="${mongodb_username}" password="${mongodb_password}" />
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+	</bean>
+
+</beans>

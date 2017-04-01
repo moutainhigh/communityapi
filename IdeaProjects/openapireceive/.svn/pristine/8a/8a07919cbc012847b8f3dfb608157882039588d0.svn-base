@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.VisitShortUrlDsLogMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.VisitShortUrlDsLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="short_url" property="shortUrl" jdbcType="VARCHAR" />
+    <result column="visit_count" property="visitCount" jdbcType="INTEGER" />
+    <result column="down_count" property="downCount" jdbcType="INTEGER" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="shop_Id" property="shopId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, short_url, visit_count, down_count, time, shop_Id, create_time, update_time
+  </sql>
+  <select id="selectByShortKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from visit_short_url_ds_log
+    where short_url = #{shortkey,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="net.okdi.api.entity.VisitShortUrlDsLog" >
+    insert into visit_short_url_ds_log (id, short_url, visit_count, 
+      down_count, time, shop_Id, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{shortUrl,jdbcType=VARCHAR}, #{visitCount,jdbcType=INTEGER}, 
+      #{downCount,jdbcType=INTEGER}, #{time,jdbcType=DECIMAL}, #{shopId,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.VisitShortUrlDsLog" >
+    update visit_short_url_ds_log
+    <set >
+      <if test="visitCount != null" >
+        visit_count = #{visitCount,jdbcType=INTEGER},
+      </if>
+      <if test="downCount != null" >
+        down_count = #{downCount,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=DECIMAL},
+      </if>
+      <if test="shopId != null" >
+        shop_Id = #{shopId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

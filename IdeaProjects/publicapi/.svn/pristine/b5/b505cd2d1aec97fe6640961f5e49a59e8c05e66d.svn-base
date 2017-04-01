@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/cache
+		http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd"
+	default-lazy-init="true">
+
+	<context:component-scan base-package="net.**.service" />
+	<context:property-placeholder location="classpath*:/constant_config.properties"
+		ignore-unresolvable="true" />
+		
+	<bean id="cacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation">
+			<value>classpath:ehcache.xml</value>
+		</property>
+	</bean>
+	
+	<!-- *********************redis相关配置*************************** -->
+	<!-- <bean id="ehcacheService" class="net.okdi.core.common.redis.RedisServiceImpl"/>  -->
+ 	<bean id="redisService" class="net.okdi.core.common.redis.RedisServiceImpl"/>
+	
+	<context:property-placeholder location="classpath:/redis.properties" ignore-unresolvable="true" />
+	<bean id="jedisConfig" class="redis.clients.jedis.JedisPoolConfig"> 
+		<property name="maxTotal" value="${redis_max_active}"></property>
+		<property name="maxIdle" value="${redis_max_idle}"></property>
+		<property name="maxWaitMillis" value="${redis_max_wait}"></property>
+		<property name="testOnBorrow" value="${redis_test_on_borrow}"></property>
+	</bean>
+	<bean id="connectionFactory2" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="hostName" value="${redis_addr}"></property>
+		<property name="port" value="${redis_port}"></property>
+		<property name="password" value="${redis_auth}"></property>
+		<property name="poolConfig" ref="jedisConfig"></property>
+		<property name="database" value="${redis_database}"></property>
+	</bean>
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+		<property name="connectionFactory" ref="connectionFactory2" />
+		<!-- 如果不配置Serializer，那么存储的时候智能使用String，如果用User类型存储，那么会提示错误User can't cast to String！！！ -->
+		<property name="keySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="valueSerializer">
+			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+		</property>
+	</bean>	
+	
+	<bean id="redisConstant" class="net.okdi.core.common.redis.RedisConstant">
+		<constructor-arg>
+   			<map>
+   			<!-- 防多次提交 -->
+   			<entry key="getReqOnceKeyByPhone" value="60" />
+   			<entry key="memberIdHomepage" value="180" />
+   			</map>
+  		</constructor-arg>
+	</bean>
+	
+	<!-- *********************redis相关配置*************************** -->
+	<!-- 管理passPortHttpClient -->
+	<bean id="smsHttpClient"      class="net.okdi.core.passport.SmsHttpClient"></bean>
+	<bean id="passportHttpClient" class="net.okdi.core.passport.PassportHttpClient"></bean>
+	<bean id="openApiHttpClient"  class="net.okdi.core.passport.OpenApiHttpClient"></bean>
+	<bean id="compInfoHttpClient"  class="net.okdi.httpClient.CompInfoHttpClient"></bean>
+	<bean id="taskHttpClient"  class="net.okdi.httpClient.TaskHttpClient"></bean>
+	<bean id="parcelInfoHttpClient"  class="net.okdi.httpClient.ParcelInfoHttpClient"></bean>
+	<bean id="expressPriceHttpClient"  class="net.okdi.httpClient.ExpressPriceHttpClient"></bean>
+	<bean id="smsClient"  class="net.okdi.httpClient.SmsHttpClient"></bean>
+	<bean id="robInfoHttpClient"  class="net.okdi.httpClient.RobInfoHttpClient"></bean>
+	<bean id="payHttpClient"  class="net.okdi.httpClient.PayHttpClient"></bean>
+	<bean id="expressSiteHttpClient"  class="net.okdi.httpClient.ExpressSiteHttpClient"></bean>
+	<bean id="wechatHttpClient"  class="net.okdi.httpClient.WechatHttpClient"></bean>
+	<bean id="commExpressHttpClient"  class="net.okdi.track.httpclient.CommExpressHttpClient"></bean>
+	
+	<!-- 管理过滤器 -->
+	<bean id="isThisPhoneLoginFilter" class="net.okdi.core.common.filter.IsThisPhoneLoginFilter"></bean>
+	<!-- 管理公共ApplicationContextUtil类方法 -->
+	<bean class="net.okdi.core.util.service.ApplicationContextUtil" lazy-init="false"></bean>
+	
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">                 
+        <!-- 线程池活跃的线程数 -->     
+	    <property name="corePoolSize" value="10" />   
+	     <!-- 线程池最大活跃的线程数 -->    
+	    <property name="maxPoolSize" value="50" />   
+	    <!-- 队列的最大容量 -->    
+	    <property name="queueCapacity" value="100" />  
+	</bean>  
+
+	<!-- httpClient连接池 -->
+	<bean id="pollingConnectionManager"
+		class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+		<property name="maxTotal" value="200" />
+		<property name="defaultMaxPerRoute" value="20" />
+	</bean>
+
+	<!-- 使用httpbuilder构造合适的http方法 -->
+	<bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">
+		<property name="connectionManager" ref="pollingConnectionManager" />
+	</bean>
+
+	<bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
+	
+	<!-- 配置httpClient的连接工厂 -->
+	<bean id="clientHttpRequestFactory"
+		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+		<constructor-arg ref="httpClient" />
+		<property name="connectTimeout" value="10000" />
+		<property name="readTimeout" value="10000" />
+	</bean>
+	
+    
+	<beans profile="dev">
+		<context:property-placeholder location="classpath*:/config_develop.properties"
+			ignore-unresolvable="true" />
+	</beans>
+
+	<beans profile="prod">
+		<context:property-placeholder
+			location="classpath*:/config_production.properties"
+			ignore-unresolvable="true" />
+	</beans>
+	<beans profile="test">
+		<context:property-placeholder location="classpath*:/config_test.properties"
+			ignore-unresolvable="true" />
+	</beans>
+	
+  
+    
+    
+    
+</beans>

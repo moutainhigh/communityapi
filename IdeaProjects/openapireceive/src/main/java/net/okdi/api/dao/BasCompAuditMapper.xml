@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.BasCompAuditMapper">
+	<select id="getNewCompauditList" resultType="java.lang.Long"
+		parameterType="java.lang.Long">
+		SELECT
+		DISTINCT comp_id
+		FROM
+		bas_compaudit
+		WHERE
+		audit_opinion = 1
+		ORDER BY
+		AUDIT_TIME DESC
+		LIMIT #{total}
+  </select>
+  
+  <select id="queryCompaudit" resultType="java.util.Map">
+  select m.member_name memberName,
+       m.member_phone memberPhone, 
+       m.create_time createTime,
+       m.member_id memberId
+	from
+	   member_info m,
+	   bas_employee_relation b
+	where m.member_id=b.member_id
+	and b.role_id='1'
+	and b.comp_id=#{compId}
+  </select>
+
+</mapper>

@@ -1,0 +1,31 @@
+<--- 测试环境服务-->
+查询管理分部（sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/memberInfo/getBranchInfo?compId=14383265874968576&pageno=1&pagesize=10
+
+查询手机端的人员列表（sql分离 数据库+缓存调用）
+http://192.168.35.38:8080/openapi/memberInfo/loadMemberInfo?compId=14365879010852864
+
+查询站点人员列表(按compId缓存结果集)
+http://192.168.35.38:8080/openapi/memberInfo/queryMemberInfo?compId=14365879010852864
+
+查询人员履历（按memberId缓存结果集）
+http://192.168.35.38:8080/openapi/memberInfo/queryMemberResume?memberId=14435968307698688
+
+站点下的营业分部+人员 （按compId缓存结果集）
+http://192.168.35.38:8080/openapi/memberInfo/getMemberInfoByCompId?parentId=14365879010852864
+
+查询所有网络（缓存）
+
+http://192.168.35.38:8080/openapi/netInfo/getNetFirstLetter
+
+查询网点基础信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompBasicInfo?loginCompId=14365879010852864
+
+查询网点认证信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompVerifyInfo?loginCompId=14365879010852864
+
+查询网点信息（缓存）
+
+http://192.168.35.38:8080/openapi/compInfo/queryCompInfo?loginCompId=14365879010852864

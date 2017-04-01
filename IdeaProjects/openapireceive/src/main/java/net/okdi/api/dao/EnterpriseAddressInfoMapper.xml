@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.EnterpriseAddressInfoMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.EnterpriseAddressInfo" >
+    <id column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="enterprise_address_id" property="enterpriseAddressId" jdbcType="BIGINT" />
+    <result column="enterprise_shop_id" property="enterpriseShopId" jdbcType="BIGINT" />
+    <result column="detailed_addresss_id" property="detailedAddresssId" jdbcType="BIGINT" />
+    <result column="detailed_addresss" property="detailedAddresss" jdbcType="VARCHAR" />
+    <result column="contact_phone_1" property="contactPhone1" jdbcType="VARCHAR" />
+    <result column="contact_phone_2" property="contactPhone2" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    enterprise_id, enterprise_address_id, enterprise_shop_id, detailed_addresss_id, detailed_addresss, 
+    contact_phone_1, contact_phone_2
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from enterprise_address_info
+    where enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from enterprise_address_info
+    where enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.EnterpriseAddressInfo" >
+    insert into enterprise_address_info (enterprise_id, enterprise_address_id, 
+      enterprise_shop_id, detailed_addresss_id, detailed_addresss, 
+      contact_phone_1, contact_phone_2)
+    values (#{enterpriseId,jdbcType=BIGINT}, #{enterpriseAddressId,jdbcType=BIGINT}, 
+      #{enterpriseShopId,jdbcType=BIGINT}, #{detailedAddresssId,jdbcType=BIGINT}, #{detailedAddresss,jdbcType=VARCHAR}, 
+      #{contactPhone1,jdbcType=VARCHAR}, #{contactPhone2,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.EnterpriseAddressInfo" >
+    insert into enterprise_address_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="enterpriseAddressId != null" >
+        enterprise_address_id,
+      </if>
+      <if test="enterpriseShopId != null" >
+        enterprise_shop_id,
+      </if>
+      <if test="detailedAddresssId != null" >
+        detailed_addresss_id,
+      </if>
+      <if test="detailedAddresss != null" >
+        detailed_addresss,
+      </if>
+      <if test="contactPhone1 != null" >
+        contact_phone_1,
+      </if>
+      <if test="contactPhone2 != null" >
+        contact_phone_2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseAddressId != null" >
+        #{enterpriseAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseShopId != null" >
+        #{enterpriseShopId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresssId != null" >
+        #{detailedAddresssId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresss != null" >
+        #{detailedAddresss,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPhone1 != null" >
+        #{contactPhone1,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPhone2 != null" >
+        #{contactPhone2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.EnterpriseAddressInfo" >
+    update enterprise_address_info
+    <set >
+      <if test="enterpriseAddressId != null" >
+        enterprise_address_id = #{enterpriseAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseShopId != null" >
+        enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresssId != null" >
+        detailed_addresss_id = #{detailedAddresssId,jdbcType=BIGINT},
+      </if>
+      <if test="detailedAddresss != null" >
+        detailed_addresss = #{detailedAddresss,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPhone1 != null" >
+        contact_phone_1 = #{contactPhone1,jdbcType=VARCHAR},
+      </if>
+      <if test="contactPhone2 != null" >
+        contact_phone_2 = #{contactPhone2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.EnterpriseAddressInfo" >
+    update enterprise_address_info
+    set enterprise_address_id = #{enterpriseAddressId,jdbcType=BIGINT},
+      enterprise_shop_id = #{enterpriseShopId,jdbcType=BIGINT},
+      detailed_addresss_id = #{detailedAddresssId,jdbcType=BIGINT},
+      detailed_addresss = #{detailedAddresss,jdbcType=VARCHAR},
+      contact_phone_1 = #{contactPhone1,jdbcType=VARCHAR},
+      contact_phone_2 = #{contactPhone2,jdbcType=VARCHAR}
+    where enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+  </update>
+</mapper>

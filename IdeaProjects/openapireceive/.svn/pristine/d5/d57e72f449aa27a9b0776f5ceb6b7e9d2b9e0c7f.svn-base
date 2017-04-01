@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.MemberCollectExpMemberMapper" >
+  <resultMap id="BaseResultMap" type="net.okdi.api.entity.MemberCollectExpMember" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+    <result column="exp_member_name" property="expMemberName" jdbcType="VARCHAR" />
+    <result column="exp_member_phone" property="expMemberPhone" jdbcType="VARCHAR" />
+    <result column="exp_member_address_id" property="expMemberAddressId" jdbcType="BIGINT" />
+    <result column="exp_member_detaile_display" property="expMemberDetaileDisplay" jdbcType="VARCHAR" />
+    <result column="exp_member_detailed_address" property="expMemberDetailedAddress" jdbcType="VARCHAR" />
+    <result column="net_id" property="netId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="comp_id" property="compId" jdbcType="BIGINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="cas_member_id" property="casMemberId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, create_user_id, exp_member_name, exp_member_phone, exp_member_address_id, exp_member_detaile_display, 
+    exp_member_detailed_address, net_id, create_time, comp_id, remark, cas_member_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="net.okdi.api.entity.MemberCollectExpMemberExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from member_collect_exp_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from member_collect_exp_member
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from member_collect_exp_member
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="net.okdi.api.entity.MemberCollectExpMemberExample" >
+    delete from member_collect_exp_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="net.okdi.api.entity.MemberCollectExpMember" >
+    insert into member_collect_exp_member (id, create_user_id, exp_member_name, 
+      exp_member_phone, exp_member_address_id, exp_member_detaile_display, 
+      exp_member_detailed_address, net_id, create_time, 
+      comp_id, remark, cas_member_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{createUserId,jdbcType=BIGINT}, #{expMemberName,jdbcType=VARCHAR}, 
+      #{expMemberPhone,jdbcType=VARCHAR}, #{expMemberAddressId,jdbcType=BIGINT}, #{expMemberDetaileDisplay,jdbcType=VARCHAR}, 
+      #{expMemberDetailedAddress,jdbcType=VARCHAR}, #{netId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{compId,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, #{casMemberId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="net.okdi.api.entity.MemberCollectExpMember" >
+    insert into member_collect_exp_member
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="expMemberName != null" >
+        exp_member_name,
+      </if>
+      <if test="expMemberPhone != null" >
+        exp_member_phone,
+      </if>
+      <if test="expMemberAddressId != null" >
+        exp_member_address_id,
+      </if>
+      <if test="expMemberDetaileDisplay != null" >
+        exp_member_detaile_display,
+      </if>
+      <if test="expMemberDetailedAddress != null" >
+        exp_member_detailed_address,
+      </if>
+      <if test="netId != null" >
+        net_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="compId != null" >
+        comp_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="casMemberId != null" >
+        cas_member_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberName != null" >
+        #{expMemberName,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberPhone != null" >
+        #{expMemberPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberAddressId != null" >
+        #{expMemberAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberDetaileDisplay != null" >
+        #{expMemberDetaileDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberDetailedAddress != null" >
+        #{expMemberDetailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="netId != null" >
+        #{netId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="compId != null" >
+        #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="casMemberId != null" >
+        #{casMemberId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="net.okdi.api.entity.MemberCollectExpMemberExample" resultType="java.lang.Integer" >
+    select count(*) from member_collect_exp_member
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update member_collect_exp_member
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.createUserId != null" >
+        create_user_id = #{record.createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="record.expMemberName != null" >
+        exp_member_name = #{record.expMemberName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expMemberPhone != null" >
+        exp_member_phone = #{record.expMemberPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expMemberAddressId != null" >
+        exp_member_address_id = #{record.expMemberAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="record.expMemberDetaileDisplay != null" >
+        exp_member_detaile_display = #{record.expMemberDetaileDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expMemberDetailedAddress != null" >
+        exp_member_detailed_address = #{record.expMemberDetailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.netId != null" >
+        net_id = #{record.netId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.compId != null" >
+        comp_id = #{record.compId,jdbcType=BIGINT},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.casMemberId != null" >
+        cas_member_id = #{record.casMemberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update member_collect_exp_member
+    set id = #{record.id,jdbcType=BIGINT},
+      create_user_id = #{record.createUserId,jdbcType=BIGINT},
+      exp_member_name = #{record.expMemberName,jdbcType=VARCHAR},
+      exp_member_phone = #{record.expMemberPhone,jdbcType=VARCHAR},
+      exp_member_address_id = #{record.expMemberAddressId,jdbcType=BIGINT},
+      exp_member_detaile_display = #{record.expMemberDetaileDisplay,jdbcType=VARCHAR},
+      exp_member_detailed_address = #{record.expMemberDetailedAddress,jdbcType=VARCHAR},
+      net_id = #{record.netId,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      comp_id = #{record.compId,jdbcType=BIGINT},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      cas_member_id = #{record.casMemberId,jdbcType=BIGINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="net.okdi.api.entity.MemberCollectExpMember" >
+    update member_collect_exp_member
+    <set >
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberName != null" >
+        exp_member_name = #{expMemberName,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberPhone != null" >
+        exp_member_phone = #{expMemberPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberAddressId != null" >
+        exp_member_address_id = #{expMemberAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="expMemberDetaileDisplay != null" >
+        exp_member_detaile_display = #{expMemberDetaileDisplay,jdbcType=VARCHAR},
+      </if>
+      <if test="expMemberDetailedAddress != null" >
+        exp_member_detailed_address = #{expMemberDetailedAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="netId != null" >
+        net_id = #{netId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="compId != null" >
+        comp_id = #{compId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="casMemberId != null" >
+        cas_member_id = #{casMemberId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.okdi.api.entity.MemberCollectExpMember" >
+    update member_collect_exp_member
+    set create_user_id = #{createUserId,jdbcType=BIGINT},
+      exp_member_name = #{expMemberName,jdbcType=VARCHAR},
+      exp_member_phone = #{expMemberPhone,jdbcType=VARCHAR},
+      exp_member_address_id = #{expMemberAddressId,jdbcType=BIGINT},
+      exp_member_detaile_display = #{expMemberDetaileDisplay,jdbcType=VARCHAR},
+      exp_member_detailed_address = #{expMemberDetailedAddress,jdbcType=VARCHAR},
+      net_id = #{netId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      comp_id = #{compId,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      cas_member_id = #{casMemberId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByMemberId" parameterType="java.lang.Long" resultType="net.okdi.api.entity.MemberCollectExpMember">
+    select 
+     id,
+     create_user_id as createUserId,
+     exp_member_name as expMemberName, 
+     exp_member_phone as expMemberPhone,
+     exp_member_address_id as expMemberAddressId,
+     exp_member_detaile_display as expMemberDetaileDisplay, 
+     exp_member_detailed_address as expMemberDetailedAddress, 
+     net_id as netId, 
+     create_time as createTime,
+     ifnull(comp_id,-1) as compId,
+     remark as remark,  
+     cas_member_id as casMemberId
+    
+    from member_collect_exp_member
+    where create_user_id = #{memberId}
+  </select>
+  <select id="getMemberIdByPhone" resultType="java.lang.Long">
+  select id from member_collect_exp_member where create_user_id = #{createUserId} and exp_member_phone=#{expMemberPhone}
+  </select>
+ 
+  	<select id="getMemberByPhone" parameterType="java.lang.String"
+		resultType="java.util.Map">
+			SELECT
+			ifnull(b.comp_id ,- 1) AS compId,
+			ifnull(m.member_id ,- 1) AS memberId,
+			ifnull(m.member_name, '') AS memberName,
+			ifnull(m.member_phone, '') AS memberPhone,
+			ifnull(b.role_id, 0) AS roleId
+		FROM
+		  bas_employee_relation b
+		LEFT JOIN member_info m  ON b.member_id = m.member_id
+		WHERE
+			1 = 1
+		AND m.member_phone =#{memberPhone} and m.verif_flag = 1
+	</select>
+</mapper>

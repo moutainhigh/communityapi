@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.okdi.api.dao.DicAddressaidMapper">
+	<resultMap id="BaseResultMap" type="net.okdi.api.entity.DicAddressaid">
+		<id column="ADDRESS_ID" property="addressId" />
+		<result column="PARENT_ID" property="parentId" />
+		<result column="COUNTRY_ID" property="countryId" />
+		<result column="COUNTRY_NAME" property="countryName" />
+		<result column="PROVINCE_ID" property="provinceId" />
+		<result column="PROVINCE_NAME" property="provinceName" />
+		<result column="CITY_ID" property="cityId" />
+		<result column="CITY_NAME" property="cityName" />
+		<result column="COUNTY_ID" property="countyId" />
+		<result column="COUNTY_NAME" property="countyName" />
+		<result column="TOWN_ID" property="townId" />
+		<result column="TOWN_NAME" property="townName" />
+		<result column="VILLAGE_ID" property="villageId" />
+		<result column="VILLAGE_NAME" property="villageName" />
+		<result column="ZIP_CODE" property="zipCode" />
+		<result column="ADDRESS_NAME" property="addressName" />
+		<result column="ADDRESS_LEVEL" property="addressLevel" />
+		<result column="DISTRICT_ID" property="districtId" />
+		<result column="DISTRICT_NAME" property="districtName" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ADDRESS_ID, PARENT_ID, COUNTRY_ID, COUNTRY_NAME,
+		PROVINCE_ID, PROVINCE_NAME,
+		CITY_ID,
+		CITY_NAME, COUNTY_ID, COUNTY_NAME,
+		TOWN_ID, TOWN_NAME, VILLAGE_ID, VILLAGE_NAME,
+		ZIP_CODE, ADDRESS_NAME,
+		ADDRESS_LEVEL, DISTRICT_ID, DISTRICT_NAME
+	</sql>
+	<select id="findById" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from dic_addressaid
+		where ADDRESS_ID = #{addressId,jdbcType=BIGINT}
+	</select>
+
+	<select id="ifTwx" resultType="java.util.Map"
+		parameterType="java.lang.String">
+		SELECT
+		CITY_ID
+		FROM
+		dic_addressaid
+		WHERE
+		PROVINCE_ID = 71
+		AND
+		ADDRESS_LEVEL
+		= 3
+		AND CITY_ID NOT IN (
+		SELECT
+		CITY_ID
+		FROM
+		dic_addressaid
+		WHERE
+		ADDRESS_LEVEL = 4
+		AND PROVINCE_ID = 71
+		)
+		AND CITY_ID =#{cityId}
+	</select>
+
+	<select id="getCityNameByProvince" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT DISTINCT
+		PROVINCE_NAME
+		FROM
+		dic_addressaid
+		WHERE
+		ADDRESS_LEVEL = 2
+		AND PROVINCE_ID = #{provinceId}
+	</select>
+
+	<select id="getCityNameBySzs" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT DISTINCT
+		PROVINCE_NAME
+		FROM
+		dic_addressaid
+		WHERE
+		ADDRESS_LEVEL = 4
+		AND COUNTY_ID = #{countyId}
+	</select>
+
+	<select id="getCityNameByCity" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT DISTINCT
+		PROVINCE_NAME
+		FROM
+		dic_addressaid
+		WHERE
+		ADDRESS_LEVEL = 3
+		AND CITY_ID = #{cityId}
+	</select>
+
+
+	<select id="getAreaListByProvinceId" resultType="net.okdi.api.vo.VO_NetWork"
+		parameterType="java.util.Map">
+		SELECT
+		count(c.COMP_COUNTY) AS total,
+		c.COMP_COUNTY as countyId,
+		d.COUNTY_NAME as countyName
+		FROM
+		bas_compinfo c
+		LEFT JOIN dic_addressaid d ON c.COMP_COUNTY =
+		d.county_id
+		AND d.ADDRESS_LEVEL = 4
+		WHERE
+		C.COMP_PROVINCE =#{cityId}
+		<if test="netId != null and netId!=''">
+			AND C.BELONG_TO_NET_ID = #{netId}
+      	</if>
+		AND C.COMP_STATUS = 1
+		AND C.BELONG_TO_COMP_ID =- 1
+		AND d.COUNTY_NAME is
+		not null
+		GROUP BY
+		c.COMP_COUNTY
+		ORDER BY
+		TOTAL DESC
+	</select>
+
+	<select id="getAreaListByCountyId" resultType="net.okdi.api.vo.VO_NetWork"
+		parameterType="java.util.Map">
+		SELECT
+		count(c.COMP_COUNTY) AS total,
+		c.COMP_COUNTY as countyId,
+		d.COUNTY_NAME as countyName
+		FROM
+		bas_compinfo c
+		LEFT JOIN dic_addressaid d ON c.COMP_COUNTY =
+		d.county_id
+		AND d.ADDRESS_LEVEL = 4
+		WHERE
+		C.COMP_TOWN =#{cityId}
+		<if test="netId != null and netId!=''">
+			AND C.BELONG_TO_NET_ID = #{netId}
+      	</if>
+		AND C.COMP_STATUS = 1
+		AND C.BELONG_TO_COMP_ID =- 1
+		AND d.COUNTY_NAME is
+		not null
+		GROUP BY
+		c.COMP_COUNTY
+		ORDER BY
+		TOTAL DESC
+	</select>
+
+	<select id="getAreaListByCityId" resultType="net.okdi.api.vo.VO_NetWork"
+		parameterType="java.util.Map">
+		SELECT
+		count(c.COMP_COUNTY) AS total,
+		c.COMP_COUNTY as countyId,
+		d.COUNTY_NAME as countyName
+		FROM
+		bas_compinfo c
+		LEFT JOIN dic_addressaid d ON c.COMP_COUNTY =
+		d.county_id
+		AND d.ADDRESS_LEVEL = 4
+		WHERE
+		C.COMP_CITY =#{cityId}
+		<if test="netId != null and netId!=''">
+			AND C.BELONG_TO_NET_ID = #{netId}
+      	</if>
+		AND C.COMP_STATUS = 1
+		AND C.BELONG_TO_COMP_ID =- 1
+		AND d.COUNTY_NAME is
+		not null
+		GROUP BY
+		c.COMP_COUNTY
+		ORDER BY
+		TOTAL DESC
+	</select>
+	<select id="queryRelevantAddressList" resultType="java.util.HashMap"
+		parameterType="java.util.Map">
+		select t1.VILLAGE_NAME,t1.ADDRESS_NAME,t1.ADDRESS_LEVEL,t1.ADDRESS_ID 
+		from dic_addressaid t1,dic_address t2,dic_address_concat t3 
+		where t1.address_id = t2.address_id and t1.address_id = t3.address_id and t1.TOWN_ID=#{townId} 
+		and t1.ADDRESS_LEVEL in (6,7) and t2.LONGITUDE  <![CDATA[<>]]> 181 and t2.LONGITUDE is not null 
+		and (t1.ADDRESS_NAME like CONCAT(#{keyword},'%') 
+		or t2.address_num like CONCAT(#{keyword},'%') 
+		OR t2.address_spell like CONCAT(#{keyword},'%') 
+		OR t2.address_abridge like CONCAT(#{keyword},'%') 
+		OR t3.concat_name like CONCAT(#{keyword},'%') 
+		OR t3.concat_spell like CONCAT(#{keyword},'%') 
+		OR t3.concat_abridge like CONCAT(#{keyword},'%') 
+		) ORDER BY t1.ADDRESS_NAME LIMIT 0,#{count} 
+	</select>
+	
+	<select id="getProvinceId" resultType="java.lang.Long"
+		parameterType="java.lang.Long">
+		select PROVINCE_ID  from dic_addressaid where ADDRESS_ID=#{addressId} 
+	</select>
+	
+	<select id="getParentId" resultType="java.lang.Long"
+		parameterType="java.lang.Long">
+		select parent_id  from dic_addressaid where ADDRESS_ID=#{addressId} 
+	</select>
+	
+	<select id="getAddressList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from dic_addressaid
+		where ADDRESS_LEVEL<![CDATA[<]]> 6
+	</select>
+	
+	<select id = "queryDicAddressaid" parameterType="java.lang.String" resultMap="BaseResultMap">
+			select
+		<include refid="Base_Column_List" />
+		from dic_addressaid
+		where ADDRESS_LEVEL = 2 and PROVINCE_NAME like #{addressName}
+	</select>
+	
+	<select id="queryProvinceInfo" resultType="net.okdi.api.entity.DicAddressaid" >
+		SELECT DISTINCT
+		ADDRESS_ID as addressId,
+		PROVINCE_NAME as provinceName
+		FROM
+			dic_addressaid
+		WHERE
+			ADDRESS_LEVEL = 2
+		AND use_flag = 1
+		GROUP BY
+			ADDRESS_ID
+		ORDER BY
+		ADDRESS_ID
+	</select>
+	
+</mapper>
